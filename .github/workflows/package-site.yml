@@ -18,12 +18,13 @@ jobs:
 
       - name: Build root-level ZIP
         run: |
-          zip -r "KillZone-Site-Latest.zip" . -x ".git/*" ".github/*" "*.zip"
+          mkdir -p dist
+          zip -r "dist/KillZone-Site-Latest.zip" . -x ".git/*" ".github/*" "*.zip" "dist/*"
 
-      - name: Upload latest ZIP
+      - name: Upload ZIP file
         uses: actions/upload-artifact@v4
         with:
           name: KillZone-Site-Latest
-          path: KillZone-Site-Latest.zip
+          path: dist/KillZone-Site-Latest.zip
           if-no-files-found: error
           retention-days: 30
