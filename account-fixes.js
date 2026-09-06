@@ -97,7 +97,6 @@
     if(!confirm('مطمئنی؟ این عملیات قابل برگشت نیست.')) return;
     profileBusy=true;
     try{
-      // پیام‌ها و درخواست‌های خود کاربر را قبل از حساب پاک می‌کنیم تا FKها مانع حذف نشوند.
       await sb.from('team_join_messages').delete().eq('account_id',u.id);
       await sb.from('team_join_requests').delete().eq('account_id',u.id);
       const {error}=await sb.from('accounts').delete().eq('id',u.id);
@@ -121,7 +120,6 @@
     if(logout) box.insertBefore(b,logout); else box.appendChild(b);
   }
 
-  // Patch the existing user-box renderer so the account controls appear on every page.
   function patchUserBox(){
     if(typeof window.renderUserBox!=='function' || window.renderUserBox.__kzAccountFix) return;
     const original=window.renderUserBox;
@@ -151,7 +149,6 @@
     patchUserBox(); patchRegistration();
     if(typeof window.initSession==='function') await window.initSession();
     if(typeof window.renderUserBox==='function') window.renderUserBox();
-    // Membership page can initialize before app.js restores the session. Reload its UI once session is ready.
     if(location.pathname.endsWith('/join.html') || location.pathname.endsWith('join.html')){
       if(typeof window.kzRenderJoinPage==='function') window.kzRenderJoinPage();
       else if(typeof window.renderJoinPage==='function') window.renderJoinPage();
@@ -160,11 +157,42 @@
     }
   }
 
+  // Guests may not access the team Rubika group. Registered-but-unapproved users are guests too.
+  function updateRubikaAccess(){
+    const allowed=!!(window.currentUser && window.currentUser.team_status==='approved');
+    document.querySelectorAll('.rubika-link').forEach(link=>{
+      link.style.display=allowed?'':'none';
+      link.setAttribute('aria-hidden', allowed?'false':'true');
+      if(!allowed){
+        link.removeAttribute('href');
+        link.setAttribute('title','فقط اعضای تأییدشده تیم دسترسی دارند');
+        link.onclick=e=>e.preventDefault();
+      }else{
+        link.href='https://rubika.ir/joing/BBEDHCIEG0CUGHJUEJWPLKHRDAWOCCSB';
+      }
+    });
+  }
+
+  // Remove HTML character-count limits from text fields across all KillZone forms.
+  function removeTextLimits(){
+    document.querySelectorAll('input, textarea').forEach(el=>{
+      if(el.type==='number' || el.type==='file' || el.type==='checkbox' || el.type==='radio') return;
+      el.removeAttribute('maxlength');
+      el.removeAttribute('minlength');
+    });
+  }
+
   function boot(){
     ensureStyles();
     patchUserBox(); patchRegistration();
-    // app.js defines these functions synchronously; defer one tick so its page listeners are installed.
-    setTimeout(syncSessionThenFixUI,0);
+    setTimeout(async ()=>{
+      await syncSessionThenFixUI();
+      updateRubikaAccess();
+      removeTextLimits();
+      // Keep access state correct if the user logs in/out or another script rerenders the header.
+      const observer=new MutationObserver(()=>{ updateRubikaAccess(); removeTextLimits(); });
+      observer.observe(document.body,{childList:true,subtree:true});
+    },0);
   }
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
