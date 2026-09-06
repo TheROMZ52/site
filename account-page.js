@@ -18,6 +18,7 @@
     const root=document.getElementById('kzAccountApp'); if(!root)return;
     const [statusLabel,statusTone]=statusInfo(u.team_status||'none');
     const staff=REVIEWERS.includes(u.rank);
+    const membershipVisible=u.rank==='guest';
     root.innerHTML=`
       <section class="account-card account-profile-card">
         <div class="account-card-head"><span class="mini-label">IDENTITY</span><span class="account-status ${statusTone}">${esc(statusLabel)}</span></div>
@@ -36,11 +37,11 @@
         </form>
       </section>
 
-      <section class="account-card account-membership-card">
+      ${membershipVisible ? `<section class="account-card account-membership-card">
         <div class="account-card-head"><div><span class="mini-label">TEAM ACCESS</span><h2>وضعیت عضویت</h2></div><span class="card-mark">◈</span></div>
         ${request ? `<div class="membership-status"><div><span class="status-orb ${statusTone}"></span><strong>${esc(statusLabel)}</strong></div><a class="btn ghost" href="/join">مشاهده تیکت ←</a></div><p class="membership-copy">آخرین درخواست عضویتت همین‌جاست. برای ادامه گفت‌وگو یا دیدن پاسخ مدیریت وارد تیکت شو.</p>` : `<div class="membership-empty"><strong>هنوز درخواست عضویت ندادی.</strong><p>اگر آماده‌ای، فرم عضویت رو پر کن تا مدیریت KillZone بررسیش کنه.</p><a class="btn primary" href="/join">درخواست عضویت</a></div>`}
         ${u.team_status==='approved'?`<div class="approved-note">✓ دسترسی گروه روبیکا برای اکانتت فعاله.</div>`:''}
-      </section>
+      </section>` : ''}
 
       <section class="account-card account-security-card">
         <div class="account-card-head"><div><span class="mini-label">SECURITY</span><h2>امنیت و حساب</h2></div><span class="card-mark">⌁</span></div>
