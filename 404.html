@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10100e">
+  <title>404 | KillZone</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Vazirmatn:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root{--ink:#10100e;--surface:#191812;--surface2:#211f18;--stroke:#3b362a;--strong:#59503e;--ember:#df6330;--green:#728b4b;--text:#f4eddc;--muted:#a59b86}
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:var(--ink);color:var(--text);font-family:Vazirmatn,sans-serif}
+    body{overflow-x:hidden}
+    body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.18;background-image:linear-gradient(rgba(244,237,220,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(244,237,220,.08) 1px,transparent 1px);background-size:32px 32px;mask-image:linear-gradient(to bottom,#000,transparent 90%)}
+    .wrap{min-height:100vh;display:grid;place-items:center;padding:28px}
+    .console{width:min(920px,100%);position:relative;border:1px solid var(--stroke);background:linear-gradient(145deg,rgba(33,31,24,.97),rgba(16,16,14,.98));box-shadow:0 28px 90px rgba(0,0,0,.55);padding:clamp(24px,5vw,58px);overflow:hidden}
+    .console:after{content:"404";position:absolute;left:-18px;bottom:-65px;font:900 clamp(150px,30vw,300px)/1 "Press Start 2P";color:rgba(223,99,48,.045);pointer-events:none;transform:rotate(-7deg)}
+    .tag{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--strong);padding:8px 12px;color:var(--muted);font-size:12px;font-weight:800;letter-spacing:.04em}
+    .dot{width:8px;height:8px;background:var(--ember);box-shadow:0 0 14px var(--ember);animation:blink 1s steps(2,end) infinite}
+    h1{font:400 clamp(72px,16vw,150px)/.9 "Press Start 2P";letter-spacing:-.08em;margin:30px 0 18px;color:var(--ember);text-shadow:7px 7px 0 rgba(223,99,48,.08)}
+    h2{font-size:clamp(25px,5vw,46px);margin:0 0 12px;font-weight:900}
+    .lead{max-width:650px;color:var(--muted);font-size:clamp(16px,2.4vw,20px);line-height:1.9;margin:0 0 28px}
+    .terminal{position:relative;z-index:1;border:1px solid var(--stroke);background:#0b0b09;padding:17px 18px;margin:22px 0 28px;font:13px/2 "Press Start 2P",monospace;color:#b9c89a;direction:ltr;text-align:left;box-shadow:inset 0 0 30px rgba(0,0,0,.35)}
+    .terminal .bad{color:#df6330}.cursor{display:inline-block;width:9px;height:16px;background:#b9c89a;vertical-align:-3px;animation:blink .8s steps(2,end) infinite}
+    .actions{position:relative;z-index:2;display:flex;gap:12px;flex-wrap:wrap}
+    a,button{font:800 15px Vazirmatn,sans-serif;text-decoration:none;cursor:pointer;border:1px solid var(--strong);padding:12px 18px;background:var(--surface2);color:var(--text);transition:transform .16s ease,border-color .16s ease,background .16s ease}
+    a:hover,button:hover{transform:translateY(-2px);border-color:var(--ember);background:#29251c}
+    a.primary{background:var(--ember);border-color:var(--ember);color:#fff8eb}
+    .intel{position:relative;z-index:1;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:34px;padding-top:18px;border-top:1px dashed var(--stroke);color:var(--muted);font-size:12px}
+    .intel b{color:var(--text)}
+    @keyframes blink{50%{opacity:.2}}
+    @media(max-width:600px){.wrap{padding:14px}.console{padding:24px 20px}h1{margin-top:25px}.terminal{font-size:10px;overflow:auto}.actions>*{width:100%;text-align:center}.intel{display:block}.intel div+div{margin-top:8px}}
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="console" aria-labelledby="title">
+      <div class="tag"><span class="dot" aria-hidden="true"></span> KILLZONE FIELD CONSOLE // ROUTE LOST</div>
+      <h1 aria-label="خطای 404">404</h1>
+      <h2 id="title">اوه! این صفحه فرار کرد. 🏃‍♂️💨</h2>
+      <p class="lead">مسیر موردنظر پیدا نشد. یا صفحه جابه‌جا شده، یا یک سرباز ناشناس لینک را با خودش برده! نگران نباش؛ هنوز مأموریت شکست نخورده.</p>
+
+      <div class="terminal" aria-live="polite">
+        <div>&gt; scanning_sector: <span class="bad">NOT_FOUND</span></div>
+        <div>&gt; searching_for_page: ██████████ 0%</div>
+        <div>&gt; result: target escaped through ventilation shaft</div>
+        <div>&gt; recommendation: return_to_base <span class="cursor" aria-hidden="true"></span></div>
+      </div>
+
+      <div class="actions">
+        <a class="primary" href="/">🏠 برگشت به پایگاه</a>
+        <button type="button" id="retry">🔎 دوباره اسکن کن</button>
+      </div>
+
+      <div class="intel">
+        <div>ERROR CODE: <b>404 // ROUTE MISSING</b></div>
+        <div>STATUS: <b id="status">TARGET ESCAPED</b></div>
+      </div>
+    </section>
+  </main>
+  <script>
+    const messages=[
+      'TARGET ESCAPED // خیلی سریع بود 😭',
+      'NPC NOT FOUND // احتمالاً AFK است.',
+      'MAP SCAN FAILED // نقشه را برعکس گرفته بودیم.',
+      'ROUTE HIDING // قایم‌باشک بازی می‌کند.',
+      'MISSION UPDATE // صفحه هنوز پیدا نشده، ولی باحال بود.'
+    ];
+    document.getElementById('retry').addEventListener('click',()=>{
+      document.getElementById('status').textContent=messages[Math.floor(Math.random()*messages.length)];
+    });
+  </script>
+</body>
+</html>
