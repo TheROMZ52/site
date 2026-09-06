@@ -1,6 +1,7 @@
 // Designed & developed by TheROMZ52 for KillZone Team — 2026
 /* ================= ثابت‌ها ================= */
 const RANKS = [
+  { key:'guest', label:'مهمان' },
   { key:'new_member', label:'نیو ممبر' },
   { key:'member', label:'ممبر' },
   { key:'admin', label:'ادمین' },
@@ -199,15 +200,11 @@ function buildMemberCard(m, staff, accountsCache){
   const card = document.createElement('div');
   card.className = 'member-tile';
   card.innerHTML = `
-    ${m.photo ? `<img class="avatar" src="${escapeHtml(m.photo)}" alt="${escapeHtml(m.username)}" loading="lazy" decoding="async" onerror="this.outerHTML='<div class=avatar>${initials(m.username)}</div>'">`
-              : `<div class="avatar">${initials(m.username)}</div>`}
+    ${m.photo ? `<img class="avatar" src="${escapeHtml(m.photo)}" alt="${escapeHtml(m.username)}" loading="lazy" decoding="async" onerror="this.outerHTML='<div class=avatar>${initials(m.username)}</div>'">` : `<div class="avatar">${initials(m.username)}</div>`}
     <h4>${escapeHtml(m.username)}</h4>
     <div class="rank-badge ${ADMIN_RANKS.includes(m.rank) ? 'staff' : ''}"><span class="tier">${rankChevrons(m.rank)}</span> ${escapeHtml(rankLabel(m.rank))}</div>
     <div class="game-tag">${escapeHtml(m.game || '—')}</div>
-    ${staff ? `<div class="member-actions">
-      <button class="icon-btn edit" data-id="${m.id}">ویرایش</button>
-      <button class="icon-btn del" data-id="${m.id}">حذف</button>
-    </div>` : ''}
+    ${staff ? `<div class="member-actions"><button class="icon-btn edit" data-id="${m.id}">ویرایش</button><button class="icon-btn del" data-id="${m.id}">حذف</button></div>` : ''}
   `;
   if(staff){
     card.querySelector('.edit').addEventListener('click', ()=>openMemberModal(m.id, accountsCache));
@@ -240,427 +237,52 @@ async function renderMembersPage(){
       sec.appendChild(grid);
       container.appendChild(sec);
     });
-    // عضوهایی با رنک ناشناخته (ایمنی در برابر داده‌های قدیمی)
     const known = new Set(orderHighToLow);
     const unknown = accounts.filter(a=>!known.has(a.rank));
     if(unknown.length){
       const sec = document.createElement('div');
-      sec.innerHTML = `<div class="rank-heading"><h3>سایر</h3><div class="rule"></div></div>`;
+      sec.className = 'rank-section';
+      sec.innerHTML = `<div class="rank-heading"><span class="tier">▲</span><h3>سایر</h3><div class="rule"></div></div>`;
       const grid = document.createElement('div');
       grid.className = 'member-grid';
-      unknown.forEach(m=> grid.appendChild(buildMemberCard(m, staff, accounts)));
+      unknown.forEach(m=>grid.appendChild(buildMemberCard(m, staff, accounts)));
       sec.appendChild(grid);
       container.appendChild(sec);
     }
   }
-
-  const addBtn = document.getElementById('addMemberBtn');
-  if(addBtn) addBtn.style.display = staff ? 'inline-block' : 'none';
 }
 
 async function deleteMember(id){
   if(!isStaff(currentUser)) return;
-  if(id === currentUser.id){ alert('نمی‌تونی اکانت خودت رو حذف کنی.'); return; }
-  if(!confirm('این عضو حذف بشه؟')) return;
-  const { error } = await sb.from('accounts').delete().eq('id', id);
+  if(!confirm('این اکانت حذف بشه؟')) return;
+  await sb.from('team_join_messages').delete().eq('account_id',id);
+  await sb.from('team_join_requests').delete().eq('account_id',id);
+  const { error } = await sb.from('accounts').delete().eq('id',id);
   if(error) console.error(error);
   renderMembersPage();
 }
 
-/* ================= مودال ویرایش/افزودن عضو ================= */
-let editingId = null;
-
-function buildGameCheckboxes(containerId, selectedNames){
-  fetchGameNames().then(names=>{
-    const box = document.getElementById(containerId);
-    if(!box) return;
-    if(names.length === 0){
-      box.innerHTML = '<div class="hint">هنوز بازی‌ای تعریف نشده.</div>';
-      return;
-    }
-    box.innerHTML = names.map(n=>{
-      const checked = selectedNames.includes(n) ? 'checked' : '';
-      const safeId = 'gm-' + containerId + '-' + n.replace(/[^a-zA-Z0-9آ-ی]/g,'');
-      return `<label style="display:flex; align-items:center; gap:8px; font-size:14px; padding:6px 0;">
-        <input type="checkbox" value="${escapeHtml(n)}" id="${safeId}" class="${containerId}-check" ${checked}> ${escapeHtml(n)}
-      </label>`;
-    }).join('');
-  });
-}
-function getCheckedGames(containerId){
-  return Array.from(document.querySelectorAll('.'+containerId+'-check:checked')).map(el=>el.value);
-}
-
+let editingMemberId=null;
 function openMemberModal(id, accountsCache){
-  editingId = id;
-  const msg = document.getElementById('memberMsg');
-  if(msg) msg.innerHTML = '';
-  document.getElementById('mNewPass').value = '';
-  document.getElementById('mPhotoFile').value = '';
-  let currentGames = [];
-  if(id){
-    const m = (accountsCache || []).find(x=>x.id===id);
-    document.getElementById('memberModalTitle').textContent = 'ویرایش عضو';
-    document.getElementById('mName').value = m?.username || '';
-    document.getElementById('mPhoto').value = m?.photo || '';
-    document.getElementById('mRank').value = m?.rank || 'new_member';
-    currentGames = (m?.game || '').split('،').map(s=>s.trim()).filter(Boolean);
-  }else{
-    document.getElementById('memberModalTitle').textContent = 'افزودن عضو دستی';
-    document.getElementById('mName').value = '';
-    document.getElementById('mPhoto').value = '';
-    document.getElementById('mRank').value = 'new_member';
-  }
-  buildGameCheckboxes('mGamesBox', currentGames);
-  document.getElementById('memberOverlay').classList.add('show');
+  editingMemberId=id;
+  const m=(accountsCache||[]).find(x=>x.id===id); if(!m) return;
+  document.getElementById('memberModalTitle').textContent='ویرایش عضو';
+  document.getElementById('mUser').value=m.username||'';
+  document.getElementById('mRank').value=m.rank||'guest';
+  document.getElementById('mGame').value=m.game||'';
+  document.getElementById('memberModal').classList.add('show');
 }
 
 function wireMemberModal(){
-  const overlay = document.getElementById('memberOverlay');
-  if(!overlay) return;
-  document.getElementById('memberClose').addEventListener('click', ()=>overlay.classList.remove('show'));
-  const addBtn = document.getElementById('addMemberBtn');
-  if(addBtn) addBtn.addEventListener('click', ()=>openMemberModal(null, []));
-
-  document.getElementById('mPhotoFile').addEventListener('change', async (e)=>{
-    const file = e.target.files[0];
-    if(!file) return;
-    const msg = document.getElementById('memberMsg');
-    const url = await uploadPhoto(file, (type, text)=>{ msg.innerHTML = `<div class="form-msg ${type}">${escapeHtml(text)}</div>`; });
-    if(url) document.getElementById('mPhoto').value = url;
-  });
-
-  document.getElementById('memberSave').addEventListener('click', async ()=>{
-    const username = document.getElementById('mName').value.trim();
-    const msg = document.getElementById('memberMsg');
-    if(!username){ msg.innerHTML = '<div class="form-msg err">نام‌کاربری رو وارد کن.</div>'; return; }
-
-    const { data: dup } = await sb.from('accounts').select('id').ilike('username', username).neq('id', editingId || '___none___').maybeSingle();
-    if(dup){ msg.innerHTML = '<div class="form-msg err">این نام‌کاربری قبلاً استفاده شده.</div>'; return; }
-
-    const data = {
-      username,
-      photo: document.getElementById('mPhoto').value.trim(),
-      rank: document.getElementById('mRank').value,
-      game: getCheckedGames('mGamesBox').join('، ')
-    };
-    const newPass = document.getElementById('mNewPass').value;
-
-    if(editingId){
-      if(newPass && newPass.length>=4){ data.pass_hash = await hashPass(newPass); }
-      const { error } = await sb.from('accounts').update(data).eq('id', editingId);
-      if(error){ msg.innerHTML = '<div class="form-msg err">خطا در ذخیره.</div>'; console.error(error); return; }
-      if(currentUser && editingId===currentUser.id){
-        currentUser = { ...currentUser, ...data };
-        saveSession(currentUser);
-        renderUserBox();
-      }
-    }else{
-      const newAcc = {
-        id: 'm-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),
-        pass_hash: await hashPass(newPass && newPass.length>=4 ? newPass : Math.random().toString(36).slice(2,10)),
-        is_admin: false,
-        ...data
-      };
-      const { error } = await sb.from('accounts').insert([newAcc]);
-      if(error){ msg.innerHTML = '<div class="form-msg err">خطا در ذخیره.</div>'; console.error(error); return; }
-    }
-
-    overlay.classList.remove('show');
-    renderMembersPage();
-  });
-}
-
-/* ================= صفحه ثبت‌نام ================= */
-let regPhotoUrl = '';
-
-function wireRegisterForm(){
-  const form = document.getElementById('regForm');
-  if(!form) return;
-
-  buildGameCheckboxes('regGamesBox', []);
-
-  const fileInput = document.getElementById('regPhotoFile');
-  if(fileInput){
-    fileInput.addEventListener('change', async (e)=>{
-      const file = e.target.files[0];
-      if(!file) return;
-      const msg = document.getElementById('regMsg');
-      const url = await uploadPhoto(file, (type, text)=>{ msg.innerHTML = `<div class="form-msg ${type}">${escapeHtml(text)}</div>`; });
-      if(url) regPhotoUrl = url;
-    });
-  }
-
-  form.addEventListener('submit', async (e)=>{
-    e.preventDefault();
-    const username = document.getElementById('regName').value.trim();
-    const pass = document.getElementById('regPass').value;
-    const pass2 = document.getElementById('regPass2').value;
-    const games = getCheckedGames('regGamesBox');
-    const msg = document.getElementById('regMsg');
-
-    if(!username || username.length<3){ msg.innerHTML = '<div class="form-msg err">نام‌کاربری باید حداقل ۳ کاراکتر باشه.</div>'; return; }
-    if(pass.length<4){ msg.innerHTML = '<div class="form-msg err">رمز باید حداقل ۴ کاراکتر باشه.</div>'; return; }
-    if(pass !== pass2){ msg.innerHTML = '<div class="form-msg err">تکرار رمز مطابقت نداره.</div>'; return; }
-
-    const res = await registerUser(username, pass, games.join('، '), regPhotoUrl);
-    if(!res.ok){ msg.innerHTML = `<div class="form-msg err">${escapeHtml(res.msg)}</div>`; return; }
-
-    currentUser = res.account;
-    saveSession(res.account);
-    form.reset();
-    regPhotoUrl = '';
-    msg.innerHTML = '<div class="form-msg ok">اکانتت ساخته شد و وارد شدی! رنکت رو مدیریت تیم بعداً ارتقا می‌ده. ✔</div>';
-    renderUserBox();
-    setTimeout(()=>{ window.location.href = 'members.html'; }, 900);
-  });
-}
-
-/* ================= خانه: آمار ================= */
-async function renderHomeStats(){
-  const elMembers = document.getElementById('statMembers');
-  const elGames = document.getElementById('statGames');
-  const elModes = document.getElementById('statModes');
-
-  const queries = [];
-  if(elMembers) queries.push(sb.from('accounts').select('id', { count:'exact', head:true }));
-  if(elGames) queries.push(sb.from('game_blocks').select('id', { count:'exact', head:true }));
-  if(elModes) queries.push(sb.from('game_modes').select('id', { count:'exact', head:true }));
-  if(!queries.length) return;
-
-  const results = await Promise.all(queries);
-  let i = 0;
-  if(elMembers) elMembers.textContent = results[i++].count ?? 0;
-  if(elGames) elGames.textContent = results[i++].count ?? 0;
-  if(elModes) elModes.textContent = results[i++].count ?? 0;
-}
-
-/* ================= منوی موبایل ================= */
-function wireMobileNav(){
-  const btn = document.getElementById('menuToggle');
-  const nav = document.querySelector('nav.main');
-  if(!btn || !nav) return;
-  btn.addEventListener('click', ()=> nav.classList.toggle('open'));
-  nav.querySelectorAll('a').forEach(a=> a.addEventListener('click', ()=> nav.classList.remove('open')));
-}
-
-/* ================= رابیکا ================= */
-function wireRubikaLinks(){
-  document.querySelectorAll('.rubika-link').forEach(a=>{
-    a.href = RUBIKA_LINK;
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
+  const overlay=document.getElementById('memberModal'); if(!overlay)return;
+  document.getElementById('memberClose').addEventListener('click',()=>overlay.classList.remove('show'));
+  document.getElementById('memberSave').addEventListener('click',async()=>{
+    if(!isStaff(currentUser)||!editingMemberId)return;
+    const data={username:document.getElementById('mUser').value.trim(),rank:document.getElementById('mRank').value,game:document.getElementById('mGame').value.trim()};
+    const {error}=await sb.from('accounts').update(data).eq('id',editingMemberId);
+    if(error){document.getElementById('memberMsg').innerHTML='<div class="form-msg err">خطا در ذخیره.</div>';return;}
+    overlay.classList.remove('show'); renderMembersPage();
   });
 }
 
 /* ================= صفحه بازی‌ها (مدیریت محتوا توسط استاف) ================= */
-async function renderGamesPage(){
-  const container = document.getElementById('gamesContainer');
-  if(!container) return;
-  container.innerHTML = '<div class="loading-note">در حال بارگذاری...</div>';
-  const { blocks, modes } = await fetchGameData();
-  container.innerHTML = '';
-  const staff = isStaff(currentUser);
-
-  if(blocks.length === 0){
-    container.innerHTML = '<div class="empty-note">هنوز بازی‌ای اضافه نشده.</div>';
-  }
-
-  blocks.forEach(block=>{
-    const blockModes = modes.filter(m=>m.block_id===block.id);
-    const wrap = document.createElement('div');
-    wrap.className = 'game-block';
-    wrap.innerHTML = `
-      <div class="game-banner ${escapeHtml(block.theme || 'neutral')}\">
-        <div class="accent-strip"></div>
-        <div class="game-banner-body">
-          <h3>${escapeHtml(block.name)}</h3>
-          <div style="display:flex; align-items:center; gap:10px;">
-            ${block.tag ? `<span class="tag">${escapeHtml(block.tag)}</span>` : ''}
-            ${staff ? `
-              <button class="icon-btn edit-block" data-id="${block.id}">ویرایش</button>
-              <button class="icon-btn del del-block" data-id="${block.id}">حذف</button>
-            ` : ''}
-          </div>
-        </div>
-      </div>
-      <div class="mode-grid"></div>
-      ${staff ? `<button class="btn ghost small add-mode" data-block="${block.id}" style="margin-top:14px;">+ افزودن مود</button>` : ''}
-    `;
-    container.appendChild(wrap);
-    const grid = wrap.querySelector('.mode-grid');
-    blockModes.forEach(m=>{
-      const card = document.createElement('div');
-      card.className = 'mode-card';
-      const mapsChips = (m.maps||'').split(',').map(s=>s.trim()).filter(Boolean).map(s=>`<span>${escapeHtml(s)}</span>`).join('');
-      card.innerHTML = `
-        <h4>${escapeHtml(m.title)}</h4>
-        <p>${escapeHtml(m.description)}</p>
-        <div class="maps">${mapsChips}</div>
-        ${staff ? `<div class="member-actions" style="margin-top:12px;">
-          <button class="icon-btn edit-mode" data-id="${m.id}">ویرایش</button>
-          <button class="icon-btn del del-mode" data-id="${m.id}">حذف</button>
-        </div>` : ''}
-      `;
-      grid.appendChild(card);
-    });
-  });
-
-  container.querySelectorAll('.edit-block').forEach(b=>b.addEventListener('click', ()=>openBlockModal(b.dataset.id, blocks)));
-  container.querySelectorAll('.del-block').forEach(b=>b.addEventListener('click', ()=>deleteBlock(b.dataset.id)));
-  container.querySelectorAll('.add-mode').forEach(b=>b.addEventListener('click', ()=>openModeModal(null, b.dataset.block)));
-  container.querySelectorAll('.edit-mode').forEach(b=>b.addEventListener('click', ()=>openModeModal(b.dataset.id, null, modes)));
-  container.querySelectorAll('.del-mode').forEach(b=>b.addEventListener('click', ()=>deleteMode(b.dataset.id)));
-
-  const addGameBtn = document.getElementById('addGameBtn');
-  if(addGameBtn) addGameBtn.style.display = staff ? 'inline-block' : 'none';
-}
-
-async function deleteBlock(id){
-  if(!isStaff(currentUser)) return;
-  if(!confirm('این بازی و همه‌ی مودهاش حذف بشه؟')) return;
-  const { error } = await sb.from('game_blocks').delete().eq('id', id);
-  if(error) console.error(error);
-  renderGamesPage();
-}
-async function deleteMode(id){
-  if(!isStaff(currentUser)) return;
-  if(!confirm('این مود حذف بشه؟')) return;
-  const { error } = await sb.from('game_modes').delete().eq('id', id);
-  if(error) console.error(error);
-  renderGamesPage();
-}
-
-let editingBlockId = null;
-function openBlockModal(id, blocksCache){
-  editingBlockId = id;
-  const msg = document.getElementById('blockMsg');
-  if(msg) msg.innerHTML = '';
-  if(id){
-    const b = (blocksCache||[]).find(x=>x.id===id);
-    document.getElementById('blockModalTitle').textContent = 'ویرایش بازی';
-    document.getElementById('bName').value = b?.name || '';
-    document.getElementById('bTag').value = b?.tag || '';
-    document.getElementById('bTheme').value = b?.theme || 'mc';
-  }else{
-    document.getElementById('blockModalTitle').textContent = 'افزودن بازی جدید';
-    document.getElementById('bName').value = '';
-    document.getElementById('bTag').value = '';
-    document.getElementById('bTheme').value = 'mc';
-  }
-  document.getElementById('gameBlockOverlay').classList.add('show');
-}
-
-function wireGameBlockModal(){
-  const overlay = document.getElementById('gameBlockOverlay');
-  if(!overlay) return;
-  document.getElementById('blockClose').addEventListener('click', ()=>overlay.classList.remove('show'));
-  const addBtn = document.getElementById('addGameBtn');
-  if(addBtn) addBtn.addEventListener('click', ()=>openBlockModal(null, []));
-
-  document.getElementById('blockSave').addEventListener('click', async ()=>{
-    const name = document.getElementById('bName').value.trim();
-    const msg = document.getElementById('blockMsg');
-    if(!name){ msg.innerHTML = '<div class="form-msg err">اسم بازی رو وارد کن.</div>'; return; }
-    const data = {
-      name,
-      tag: document.getElementById('bTag').value.trim(),
-      theme: document.getElementById('bTheme').value
-    };
-    if(editingBlockId){
-      const { error } = await sb.from('game_blocks').update(data).eq('id', editingBlockId);
-      if(error){ msg.innerHTML = '<div class="form-msg err">خطا در ذخیره.</div>'; console.error(error); return; }
-    }else{
-      const newBlock = { id:'blk-'+Date.now()+'-'+Math.random().toString(36).slice(2,6), ...data, sort_order: 999 };
-      const { error } = await sb.from('game_blocks').insert([newBlock]);
-      if(error){ msg.innerHTML = '<div class="form-msg err">خطا در ذخیره.</div>'; console.error(error); return; }
-    }
-    overlay.classList.remove('show');
-    renderGamesPage();
-    if(document.getElementById('statGames')) renderHomeStats();
-  });
-}
-
-let editingModeId = null;
-let editingModeBlockId = null;
-function openModeModal(id, blockId, modesCache){
-  editingModeId = id;
-  editingModeBlockId = blockId;
-  const msg = document.getElementById('modeMsg');
-  if(msg) msg.innerHTML = '';
-  if(id){
-    const m = (modesCache||[]).find(x=>x.id===id);
-    editingModeBlockId = m?.block_id;
-    document.getElementById('modeModalTitle').textContent = 'ویرایش مود';
-    document.getElementById('moTitle').value = m?.title || '';
-    document.getElementById('moDesc').value = m?.description || '';
-    document.getElementById('moMaps').value = m?.maps || '';
-  }else{
-    document.getElementById('modeModalTitle').textContent = 'افزودن مود جدید';
-    document.getElementById('moTitle').value = '';
-    document.getElementById('moDesc').value = '';
-    document.getElementById('moMaps').value = '';
-  }
-  document.getElementById('gameModeOverlay').classList.add('show');
-}
-
-function wireGameModeModal(){
-  const overlay = document.getElementById('gameModeOverlay');
-  if(!overlay) return;
-  document.getElementById('modeClose').addEventListener('click', ()=>overlay.classList.remove('show'));
-
-  document.getElementById('modeSave').addEventListener('click', async ()=>{
-    const title = document.getElementById('moTitle').value.trim();
-    const msg = document.getElementById('modeMsg');
-    if(!title){ msg.innerHTML = '<div class="form-msg err">اسم مود رو وارد کن.</div>'; return; }
-    const data = {
-      title,
-      description: document.getElementById('moDesc').value.trim(),
-      maps: document.getElementById('moMaps').value.trim()
-    };
-    if(editingModeId){
-      const { error } = await sb.from('game_modes').update(data).eq('id', editingModeId);
-      if(error){ msg.innerHTML = '<div class="form-msg err">خطا در ذخیره.</div>'; console.error(error); return; }
-    }else{
-      const newMode = { id:'mode-'+Date.now()+'-'+Math.random().toString(36).slice(2,6), block_id: editingModeBlockId, sort_order:999, ...data };
-      const { error } = await sb.from('game_modes').insert([newMode]);
-      if(error){ msg.innerHTML = '<div class="form-msg err">خطا در ذخیره.</div>'; console.error(error); return; }
-    }
-    overlay.classList.remove('show');
-    renderGamesPage();
-    if(document.getElementById('statModes')) renderHomeStats();
-  });
-}
-
-/* ================= شروع هر صفحه ================= */
-async function initPage(){
-  // اول همه‌ی چیزهایی که به دیتابیس نیاز ندارن — این‌ها باید همیشه کار کنن
-  wireMobileNav();
-  wireRubikaLinks();
-  wireLoginModal();
-  wireMemberModal();
-  wireRegisterForm();
-  wireGameBlockModal();
-  wireGameModeModal();
-
-  // سه بررسی مستقل را هم‌زمان انجام بده تا زمان انتظار شبکه جمع نشود
-  await Promise.allSettled([
-    ensureSeedAccounts(),
-    ensureSeedGames(),
-    initSession()
-  ]);
-
-  renderUserBox();
-
-  // رندرهای مستقل صفحه را هم‌زمان شروع کن
-  const tasks = [];
-  if(document.getElementById('membersContainer')) tasks.push(renderMembersPage());
-  if(document.getElementById('statMembers') || document.getElementById('statGames') || document.getElementById('statModes')) tasks.push(renderHomeStats());
-  if(document.getElementById('gamesContainer')) tasks.push(renderGamesPage());
-  await Promise.allSettled(tasks);
-}
-document.addEventListener('DOMContentLoaded', initPage);
-
-/* ================= امضا (فقط تو کنسول، رو سایت دیده نمی‌شه) ================= */
-console.log('%cKILLZONE', 'color:#e0a93a; font-size:22px; font-weight:bold; font-family:sans-serif;');
-console.log('%cDesigned & developed by TheROMZ52', 'color:#8ea34e; font-size:12px;');
