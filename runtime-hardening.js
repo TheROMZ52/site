@@ -4,6 +4,13 @@
 
   const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg','image/png','image/webp']);
   const USERNAME_RE = /^[A-Za-z0-9_\-\.]+$/;
+  const TICKET_LABELS = {
+    pending: 'در انتظار بررسی',
+    reviewing: 'در حال بررسی',
+    waiting_applicant: 'منتظر پاسخ شما',
+    approved: 'عضو تأییدشده',
+    rejected: 'درخواست رد شده'
+  };
 
   function patchUnsafeSeed(){
     // Never create a known-password owner/developer account from a public browser.
@@ -75,8 +82,21 @@
     window.fetchAccounts = wrapped;
   }
 
+  function syncRenderedAccountStatus(status){
+    const label=TICKET_LABELS[status];
+    if(!label || !document.getElementById('kzAccountApp')) return;
+    document.querySelectorAll('#kzAccountApp .account-status').forEach(el=>{
+      el.textContent=label;
+      el.classList.remove('neutral','info','ok','danger','warn');
+      const tone=status==='approved'?'ok':status==='rejected'?'danger':status==='waiting_applicant'?'warn':'info';
+      el.classList.add(tone);
+    });
+    const meta=document.querySelectorAll('#kzAccountApp .profile-meta strong');
+    if(meta[2]) meta[2].textContent=label;
+  }
+
   async function syncApplicantStatusFromTicket(){
-    if(!document.getElementById('kzJoinApp') || !window.currentUser || typeof sb === 'undefined') return;
+    if((!document.getElementById('kzJoinApp') && !document.getElementById('kzAccountApp')) || !window.currentUser || typeof sb === 'undefined') return;
     try{
       const {data,error}=await sb.from('team_join_requests')
         .select('status,created_at')
@@ -87,8 +107,8 @@
       const status=data[0].status;
       if(['pending','reviewing','waiting_applicant','approved','rejected'].includes(status)){
         window.currentUser.team_status = status;
+        syncRenderedAccountStatus(status);
         if(typeof renderUserBox==='function') renderUserBox();
-        if(typeof updateRubikaAccess==='function') updateRubikaAccess();
       }
     }catch(e){ console.warn('KillZone ticket status sync failed', e); }
   }
