@@ -1,0 +1,80 @@
+<!-- Designed & developed by TheROMZ52 for KillZone Team — 2026 -->
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KILLZONE // خانه</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=3">
+</head>
+<body>
+
+<header>
+  <div class="brand"><div class="mark"></div><div class="name">KILL<em>ZONE</em></div></div>
+  <nav class="main">
+    <a href="index.html" class="active">خانه</a>
+    <a href="games.html">بازی‌ها</a>
+    <a href="members.html">اعضا</a>
+    <a href="register.html">ثبت‌نام</a>
+  </nav>
+  <div class="user-box" id="userBox"></div>
+  <button class="menu-toggle" id="menuToggle">☰</button>
+</header>
+
+<main>
+  <div class="hero">
+    <div class="kicker"><span class="dot"></span> سرور فعاله، اعضا آنلاینن</div>
+    <h1><span>KILL</span><span>ZONE</span></h1>
+    <p class="sub">یه تیم گیمینگ برای کسایی که فقط بردن مهمه. تو ماینکرفت خونه می‌سازیم و جنگ می‌کنیم، تو کالاف‌آف‌دیوتی زون رو کنترل می‌کنیم. دقیقاً مثل یه سرور ماینکرفت: اول ثبت‌نام می‌کنی، بعد رنکت رو می‌گیری.</p>
+    <div class="cta">
+      <a class="btn primary" href="games.html">مشاهده بازی‌ها</a>
+      <a class="btn ghost" href="register.html">عضو شو</a>
+      <a class="btn ghost rubika-link" href="#">گروه روبیکا</a>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="num" id="statMembers">…</div><div class="label">عضو ثبت‌نام‌شده</div></div>
+      <div class="stat"><div class="num" id="statGames">…</div><div class="label">بازی اصلی تیم</div></div>
+      <div class="stat"><div class="num" id="statModes">…</div><div class="label">مود / سرور فعال</div></div>
+    </div>
+  </div>
+
+  <div class="section-title"><h2>درباره تیم</h2></div>
+  <div class="about">
+    <p>
+      کیل‌زون یه گروه دوستانه و رقابتیه که دور دو تا بازی شکل گرفته: ماینکرفت و کالاف‌آف‌دیوتی.
+      تو ماینکرفت بیشتر وقت‌مون رو تو اسکای‌بلاک، اسکای‌وارز، بدوارز و سروایول می‌گذرونیم و دنبال بهترین مپ‌های محبوبیم.
+      تو کالاف هم بین مولتی‌پلیر و بتل‌رویال می‌چرخیم. عضویت هم دقیقاً مثل جوین‌شدن به یه سرور: یه اکانت با نام‌کاربری و رمز می‌سازی،
+      بعد مدیریت تیم بر اساس فعالیتت رنکت رو تعیین می‌کنه. برای هماهنگی‌های روزمره هم تو گروه روبیکای تیم باش.
+    </p>
+  </div>
+</main>
+
+<footer>
+  <div>© 2026 KillZone Team</div>
+  <div class="credit-badges">
+    <span>رهبر گروه: <b class="ltr">1Y2U3I</b></span>
+    <span>طراح سایت: <b class="ltr">TheROMZ52</b></span>
+    <a class="rubika-link" href="#">گروه روبیکا</a>
+  </div>
+</footer>
+
+<div class="overlay" id="loginOverlay">
+  <div class="modal"><button class="close" id="loginClose">✕</button>
+    <h3>ورود به اکانت</h3>
+    <div class="form-grid">
+      <div class="field"><label>نام‌کاربری</label><input type="text" id="loginUser"></div>
+      <div class="field"><label>رمز عبور</label><input type="password" id="loginPass"></div>
+      <button class="btn primary" id="loginSubmit">ورود</button>
+      <div id="loginMsg"></div>
+      <div class="hint">اکانت نداری؟ از پیج «ثبت‌نام» بساز.</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js?v=3"></script>
+<script src="app.js?v=3"></script>
+</body>
+</html>
