@@ -18,6 +18,7 @@
     const root=document.getElementById('kzAccountApp'); if(!root)return;
     const [statusLabel,statusTone]=statusInfo(u.team_status||'none');
     const staff=REVIEWERS.includes(u.rank);
+    const isApproved=u.team_status==='approved';
     const membershipVisible=u.rank==='guest';
     root.innerHTML=`
       <section class="account-card account-profile-card">
@@ -26,7 +27,7 @@
         <div class="profile-meta"><div><small>نام کاربری</small><strong>${esc(u.username)}</strong></div><div><small>بازی مورد علاقه</small><strong>${esc(u.game||'هنوز انتخاب نشده')}</strong></div><div><small>وضعیت تیم</small><strong>${esc(statusLabel)}</strong></div></div>
       </section>
 
-      <section class="account-card account-edit-card">
+      ${isApproved ? `<section class="account-card account-edit-card">
         <div class="account-card-head"><div><span class="mini-label">PROFILE / EDIT</span><h2>ویرایش اطلاعات</h2></div><span class="card-mark">✦</span></div>
         <form id="kzAccountForm" class="account-form">
           <div class="account-field"><label for="kzAccountUsername">نام کاربری</label><input id="kzAccountUsername" value="${esc(u.username)}" disabled><small>نام کاربری قابل تغییر نیست.</small></div>
@@ -35,7 +36,7 @@
           <div class="account-field full"><label for="kzAccountPass">رمز عبور جدید <span>اختیاری</span></label><input id="kzAccountPass" type="password" placeholder="اگر نمی‌خوای تغییرش بدی خالی بذار"></div>
           <div class="account-form-actions"><button class="btn primary" id="kzSaveAccount" type="submit">ذخیره تغییرات</button><div id="kzAccountMsg" aria-live="polite"></div></div>
         </form>
-      </section>
+      </section>` : ''}
 
       ${membershipVisible ? `<section class="account-card account-membership-card">
         <div class="account-card-head"><div><span class="mini-label">TEAM ACCESS</span><h2>وضعیت عضویت</h2></div><span class="card-mark">◈</span></div>
@@ -49,7 +50,9 @@
         <div class="danger-zone"><div><strong>حذف دائمی اکانت</strong><p>تمام اطلاعات اکانت و درخواست‌های عضویت حذف می‌شن و این کار قابل برگشت نیست.</p></div><button class="btn kz-danger" id="kzDeleteAccountPage">حذف اکانت</button></div>
       </section>
     `;
-    document.getElementById('kzAccountForm').addEventListener('submit',save);
+    if(isApproved){
+      document.getElementById('kzAccountForm').addEventListener('submit',save);
+    }
     document.getElementById('kzLogoutAccount').onclick=logout;
     document.getElementById('kzDeleteAccountPage').onclick=deleteAccount;
   }
@@ -62,7 +65,9 @@
     render(u,requests?.[0]||null);
   }
   async function save(e){
-    e.preventDefault(); if(busy||!window.currentUser)return; busy=true;
+    e.preventDefault();
+    if(busy||!window.currentUser||window.currentUser.team_status!=='approved')return;
+    busy=true;
     const btn=document.getElementById('kzSaveAccount'); if(btn)btn.disabled=true;
     try{
       const updates={game:(document.getElementById('kzAccountGame')?.value||'').trim()};
