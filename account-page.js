@@ -38,7 +38,7 @@
 
       <section class="account-card account-membership-card">
         <div class="account-card-head"><div><span class="mini-label">TEAM ACCESS</span><h2>وضعیت عضویت</h2></div><span class="card-mark">◈</span></div>
-        ${request ? `<div class="membership-status"><div><span class="status-orb ${statusTone}"></span><strong>${esc(statusLabel)}</strong></div><a class="btn ghost" href="join.html">مشاهده تیکت ←</a></div><p class="membership-copy">آخرین درخواست عضویتت همین‌جاست. برای ادامه گفت‌وگو یا دیدن پاسخ مدیریت وارد تیکت شو.</p>` : `<div class="membership-empty"><strong>هنوز درخواست عضویت ندادی.</strong><p>اگر آماده‌ای، فرم عضویت رو پر کن تا مدیریت KillZone بررسیش کنه.</p><a class="btn primary" href="join.html">درخواست عضویت</a></div>`}
+        ${request ? `<div class="membership-status"><div><span class="status-orb ${statusTone}"></span><strong>${esc(statusLabel)}</strong></div><a class="btn ghost" href="/join">مشاهده تیکت ←</a></div><p class="membership-copy">آخرین درخواست عضویتت همین‌جاست. برای ادامه گفت‌وگو یا دیدن پاسخ مدیریت وارد تیکت شو.</p>` : `<div class="membership-empty"><strong>هنوز درخواست عضویت ندادی.</strong><p>اگر آماده‌ای، فرم عضویت رو پر کن تا مدیریت KillZone بررسیش کنه.</p><a class="btn primary" href="/join">درخواست عضویت</a></div>`}
         ${u.team_status==='approved'?`<div class="approved-note">✓ دسترسی گروه روبیکا برای اکانتت فعاله.</div>`:''}
       </section>
 
@@ -56,7 +56,7 @@
   async function load(){
     if(typeof initSession==='function') await initSession();
     const u=window.currentUser;
-    if(!u){ location.href='index.html'; return; }
+    if(!u){ location.href='/'; return; }
     const {data:requests}=await sb.from('team_join_requests').select('id,status,created_at').eq('account_id',u.id).order('created_at',{ascending:false}).limit(1);
     render(u,requests?.[0]||null);
   }
@@ -76,7 +76,7 @@
     finally{busy=false;if(btn)btn.disabled=false;}
   }
   function logout(){
-    if(typeof clearSession==='function')clearSession(); window.currentUser=null; location.href='index.html';
+    if(typeof clearSession==='function')clearSession(); window.currentUser=null; location.href='/';
   }
   async function deleteAccount(){
     if(busy||!window.currentUser)return;
@@ -87,7 +87,7 @@
       const m=await sb.from('team_join_messages').delete().eq('account_id',u.id); if(m.error)throw m.error;
       const r=await sb.from('team_join_requests').delete().eq('account_id',u.id); if(r.error)throw r.error;
       const a=await sb.from('accounts').delete().eq('id',u.id); if(a.error)throw a.error;
-      if(typeof clearSession==='function')clearSession(); window.currentUser=null; location.href='index.html';
+      if(typeof clearSession==='function')clearSession(); window.currentUser=null; location.href='/';
     }catch(err){console.error(err);showMsg(err.message||'حذف اکانت انجام نشد.');}
     finally{busy=false;}
   }
