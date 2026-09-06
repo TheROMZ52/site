@@ -6,6 +6,7 @@
   const fmt=v=>typeof kzFormatDate==='function'?kzFormatDate(v):v||'—';
   const statusText=v=>typeof kzStatusText==='function'?kzStatusText(v):v||'نامشخص';
   const statusClass=v=>typeof kzStatusClass==='function'?kzStatusClass(v):'closed';
+  const newMessageId=()=>typeof kzNewId==='function'?kzNewId('msg'):`msg-${Date.now()}-${Math.random().toString(36).slice(2,10)}`;
   const isReviewer=()=>!!(window.currentUser&&REVIEWERS.includes(window.currentUser.rank));
 
   async function loadLatest(){
@@ -41,7 +42,7 @@
       host.querySelectorAll('.kz-ticket-list-item').forEach(b=>b.addEventListener('click',()=>{selectedId=b.dataset.requestId;render();}));
       const refresh=document.getElementById('kzReqRefresh'); if(refresh) refresh.addEventListener('click',async()=>{const fresh=await loadAllRequests();data.requests=fresh.requests;data.accounts=fresh.accounts;await render();});
       host.querySelectorAll('[data-action]').forEach(b=>b.addEventListener('click',()=>changeStatus(selected,b.dataset.action)));
-      const reply=document.getElementById('kzStaffReply'); if(reply) reply.addEventListener('submit',async e=>{ e.preventDefault(); const input=document.getElementById('kzStaffReplyInput'),msg=document.getElementById('kzStaffReplyMsg'); const text=input.value.trim(); if(!text)return; const {error}=await sb.from('team_join_messages').insert([{request_id:selected.id,account_id:selected.account_id,sender_role:'staff',message:text}]); if(error){console.error(error);msg.innerHTML='<div class="form-msg err">ارسال پیام ناموفق بود.</div>';return;} await render(); });
+      const reply=document.getElementById('kzStaffReply'); if(reply) reply.addEventListener('submit',async e=>{ e.preventDefault(); const input=document.getElementById('kzStaffReplyInput'),msg=document.getElementById('kzStaffReplyMsg'); const text=input.value.trim(); if(!text)return; const {error}=await sb.from('team_join_messages').insert([{id:newMessageId(),request_id:selected.id,account_id:selected.account_id,sender_role:'staff',message:text}]); if(error){console.error(error);msg.innerHTML='<div class="form-msg err">ارسال پیام ناموفق بود.</div>';return;} await render(); });
     };
     async function changeStatus(req,action){
       const newStatus=action==='approve'?'approved':action==='reject'?'rejected':action; const msg=document.getElementById('kzAdminMsg'); if(msg)msg.innerHTML='<div class="form-msg">در حال ذخیره...</div>';
@@ -57,7 +58,7 @@
     if(!request){ root.innerHTML=`<div class="kz-join-shell"><div class="section-title top"><h2>درخواست عضویت در KillZone</h2><p>فرم رو کامل کن؛ بعد از ارسال، همین‌جا تیکتت رو دنبال می‌کنی.</p></div>${typeof kzRequestFormHtml==='function'?kzRequestFormHtml():'<p>فرم عضویت در دسترس نیست.</p>'}</div>`; bindForm(root); return; }
     const {data:messages}=await sb.from('team_join_messages').select('*').eq('request_id',request.id).order('created_at',{ascending:true});
     root.innerHTML=`<div class="kz-join-shell">${typeof kzTicketHeaderHtml==='function'?kzTicketHeaderHtml(request):''}${typeof kzFormSummaryHtml==='function'?kzFormSummaryHtml(request):''}${typeof kzTicketThreadHtml==='function'?kzTicketThreadHtml(messages||[],request):''}${ACTIVE.includes(request.status)?`<form id="kzJoinReplyFix" class="kz-reply"><label for="kzJoinReplyInput">پیام جدید</label><textarea id="kzJoinReplyInput" rows="4" required placeholder="پیامت رو برای مدیریت بنویس..."></textarea><button class="btn primary" type="submit">ارسال پیام</button><div id="kzJoinReplyMsg"></div></form>`:''}</div>`;
-    const reply=document.getElementById('kzJoinReplyFix'); if(reply) reply.addEventListener('submit',async e=>{e.preventDefault();const input=document.getElementById('kzJoinReplyInput'),msg=document.getElementById('kzJoinReplyMsg');const text=input.value.trim();if(!text)return;const {error}=await sb.from('team_join_messages').insert([{request_id:request.id,account_id:currentUser.id,sender_role:'applicant',message:text}]);if(error){console.error(error);msg.innerHTML='<div class="form-msg err">ارسال پیام ناموفق بود.</div>';return;}await renderApplicant();});
+    const reply=document.getElementById('kzJoinReplyFix'); if(reply) reply.addEventListener('submit',async e=>{e.preventDefault();const input=document.getElementById('kzJoinReplyInput'),msg=document.getElementById('kzJoinReplyMsg');const text=input.value.trim();if(!text)return;const {error}=await sb.from('team_join_messages').insert([{id:newMessageId(),request_id:request.id,account_id:currentUser.id,sender_role:'applicant',message:text}]);if(error){console.error(error);msg.innerHTML='<div class="form-msg err">ارسال پیام ناموفق بود.</div>';return;}await renderApplicant();});
   }
   function bindForm(root){
     const form=root.querySelector('#kzJoinForm'); if(!form)return;
