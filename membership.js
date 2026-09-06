@@ -1,4 +1,4 @@
-// KillZone membership workflow — account creation is separate from team membership.
+// KillZone membership UI helpers.
 const KZ_PENDING = 'pending';
 const KZ_APPROVED = 'approved';
 const KZ_ACTIVE_TICKET_STATUSES = ['pending','reviewing','waiting_applicant'];
@@ -14,13 +14,13 @@ function kzFormatDate(value){ if(!value) return '—'; try{return new Intl.DateT
 function kzNewId(prefix){ return prefix+'-'+Date.now()+'-'+Math.random().toString(36).slice(2,9); }
 function kzMembershipButtonHtml(){
   if(!currentUser || kzIsMember(currentUser)) return '';
-  if(kzIsPending(currentUser)) return '<a class="admin-btn on" href="join.html">تیکت عضویت ⏳</a>';
-  if(currentUser.team_status==='rejected') return '<a class="link-btn" href="join.html">مشاهده درخواست عضویت</a>';
-  return '<a class="link-btn" href="join.html">درخواست عضویت</a>';
+  if(kzIsPending(currentUser)) return '<a class="admin-btn on" href="/join">تیکت عضویت ⏳</a>';
+  if(currentUser.team_status==='rejected') return '<a class="link-btn" href="/join">مشاهده درخواست عضویت</a>';
+  return '<a class="link-btn" href="/join">درخواست عضویت</a>';
 }
-function kzRefreshMembershipUI(){ const box=document.getElementById('userBox'); if(!box||!currentUser)return; const old=box.querySelector('.kz-membership-status');if(old)old.remove();const html=kzMembershipButtonHtml();if(!html)return;const wrap=document.createElement('span');wrap.className='kz-membership-status';wrap.innerHTML=html;box.insertBefore(wrap,box.querySelector('#logoutBtn')); }
+function kzRefreshMembershipUI(){ const box=document.getElementById('userBox'); if(!box||!currentUser)return;const old=box.querySelector('.kz-membership-status');if(old)old.remove();const html=kzMembershipButtonHtml();if(!html)return;const wrap=document.createElement('span');wrap.className='kz-membership-status';wrap.innerHTML=html;box.insertBefore(wrap,box.querySelector('#logoutBtn')); }
 function kzPatchUserBox(){ if(typeof renderUserBox!=='function')return;const original=renderUserBox;window.renderUserBox=function(){original();kzRefreshMembershipUI();};renderUserBox(); }
-function kzApplyJoinNav(){ document.querySelectorAll('nav.main').forEach(nav=>{if(nav.querySelector('a[href="join.html"]'))return;const reg=nav.querySelector('a[href="register.html"]');if(!reg)return;const a=document.createElement('a');a.href='join.html';a.textContent='عضویت در تیم';nav.insertBefore(a,reg);}); }
+function kzApplyJoinNav(){ document.querySelectorAll('nav.main').forEach(nav=>{if(nav.querySelector('a[href="/join"]'))return;const reg=nav.querySelector('a[href="/register"]');if(!reg)return;const a=document.createElement('a');a.href='/join';a.textContent='عضویت در تیم';nav.insertBefore(a,reg);}); }
 function kzRequestFormValues(form){ const get=id=>document.getElementById(id)?.value?.trim()||'';return{first_name:get('joinFirstName'),last_name:get('joinLastName'),rubika_id:get('joinRubika'),age:get('joinAge')?Number(get('joinAge')):null,city:get('joinCity'),other_games:get('joinGames'),skill_level:get('joinSkill'),gaming_years:get('joinYears')?Number(get('joinYears')):null,weekly_activity:get('joinActivity'),voice_chat:get('joinVoice'),why_join:get('joinWhy'),contribution:get('joinContribution'),conflict_response:get('joinConflict'),how_found_us:get('joinFound'),info_confirmed:!!document.getElementById('joinInfoConfirmed')?.checked}; }
 function kzValidateJoinForm(v){ const errors=[];if(!v.first_name)errors.push('نام را وارد کن.');if(!v.rubika_id)errors.push('آیدی روبیکا را وارد کن.');if(v.age!==null&&(!Number.isInteger(v.age)||v.age<1||v.age>100))errors.push('سن باید یک عدد معتبر باشد.');if(v.gaming_years!==null&&(!Number.isInteger(v.gaming_years)||v.gaming_years<0||v.gaming_years>80))errors.push('مدت بازی کردن معتبر نیست.');if(!v.skill_level)errors.push('سطح خودت را انتخاب کن.');if(!v.weekly_activity)errors.push('میزان فعالیت هفتگی را انتخاب کن.');if(!v.voice_chat)errors.push('وضعیت Voice Chat را انتخاب کن.');if(!v.how_found_us)errors.push('بگو چطور با KillZone آشنا شدی.');if(!v.info_confirmed)errors.push('تأیید صحت اطلاعات الزامی است.');return errors; }
 async function kzFindLatestMyRequest(){if(!currentUser)return null;const{data,error}=await sb.from('team_join_requests').select('*').eq('account_id',currentUser.id).order('created_at',{ascending:false}).limit(1);if(error){console.error(error);return null;}return data?.[0]||null;}
