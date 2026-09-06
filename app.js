@@ -199,7 +199,7 @@ function buildMemberCard(m, staff, accountsCache){
   const card = document.createElement('div');
   card.className = 'member-tile';
   card.innerHTML = `
-    ${m.photo ? `<img class="avatar" src="${escapeHtml(m.photo)}" alt="${escapeHtml(m.username)}" onerror="this.outerHTML='<div class=avatar>${initials(m.username)}</div>'">`
+    ${m.photo ? `<img class="avatar" src="${escapeHtml(m.photo)}" alt="${escapeHtml(m.username)}" loading="lazy" decoding="async" onerror="this.outerHTML='<div class=avatar>${initials(m.username)}</div>'">`
               : `<div class="avatar">${initials(m.username)}</div>`}
     <h4>${escapeHtml(m.username)}</h4>
     <div class="rank-badge ${ADMIN_RANKS.includes(m.rank) ? 'staff' : ''}"><span class="tier">${rankChevrons(m.rank)}</span> ${escapeHtml(rankLabel(m.rank))}</div>
@@ -282,7 +282,7 @@ function buildGameCheckboxes(containerId, selectedNames){
       const checked = selectedNames.includes(n) ? 'checked' : '';
       const safeId = 'gm-' + containerId + '-' + n.replace(/[^a-zA-Z0-9آ-ی]/g,'');
       return `<label style="display:flex; align-items:center; gap:8px; font-size:14px; padding:6px 0;">
-        <input type="checkbox" value="${escapeHtml(n)}" id="${safeId}" class="${containerId}-check"> ${escapeHtml(n)}
+        <input type="checkbox" value="${escapeHtml(n)}" id="${safeId}" class="${containerId}-check" ${checked}> ${escapeHtml(n)}
       </label>`;
     }).join('');
   });
@@ -421,12 +421,18 @@ async function renderHomeStats(){
   const elMembers = document.getElementById('statMembers');
   const elGames = document.getElementById('statGames');
   const elModes = document.getElementById('statModes');
-  if(elMembers){ const accounts = await fetchAccounts(); elMembers.textContent = accounts.length; }
-  if(elGames || elModes){
-    const { blocks, modes } = await fetchGameData();
-    if(elGames) elGames.textContent = blocks.length;
-    if(elModes) elModes.textContent = modes.length;
-  }
+
+  const queries = [];
+  if(elMembers) queries.push(sb.from('accounts').select('id', { count:'exact', head:true }));
+  if(elGames) queries.push(sb.from('game_blocks').select('id', { count:'exact', head:true }));
+  if(elModes) queries.push(sb.from('game_modes').select('id', { count:'exact', head:true }));
+  if(!queries.length) return;
+
+  const results = await Promise.all(queries);
+  let i = 0;
+  if(elMembers) elMembers.textContent = results[i++].count ?? 0;
+  if(elGames) elGames.textContent = results[i++].count ?? 0;
+  if(elModes) elModes.textContent = results[i++].count ?? 0;
 }
 
 /* ================= منوی موبایل ================= */
@@ -465,7 +471,7 @@ async function renderGamesPage(){
     const wrap = document.createElement('div');
     wrap.className = 'game-block';
     wrap.innerHTML = `
-      <div class="game-banner ${escapeHtml(block.theme || 'neutral')}">
+      <div class="game-banner ${escapeHtml(block.theme || 'neutral')}\">
         <div class="accent-strip"></div>
         <div class="game-banner-body">
           <h3>${escapeHtml(block.name)}</h3>
@@ -637,19 +643,21 @@ async function initPage(){
   wireGameBlockModal();
   wireGameModeModal();
 
-  // بعد کارهای مربوط به دیتابیس — اگه هرکدوم خطا بده، بقیه‌ی صفحه نباید بخوابه
-  try{
-    await ensureSeedAccounts();
-    await ensureSeedGames();
-    await initSession();
-  }catch(e){
-    console.error('اتصال به دیتابیس با مشکل مواجه شد:', e);
-  }
+  // سه بررسی مستقل را هم‌زمان انجام بده تا زمان انتظار شبکه جمع نشود
+  await Promise.allSettled([
+    ensureSeedAccounts(),
+    ensureSeedGames(),
+    initSession()
+  ]);
 
   renderUserBox();
-  if(document.getElementById('membersContainer')) renderMembersPage();
-  if(document.getElementById('statMembers') || document.getElementById('statGames') || document.getElementById('statModes')) renderHomeStats();
-  if(document.getElementById('gamesContainer')) renderGamesPage();
+
+  // رندرهای مستقل صفحه را هم‌زمان شروع کن
+  const tasks = [];
+  if(document.getElementById('membersContainer')) tasks.push(renderMembersPage());
+  if(document.getElementById('statMembers') || document.getElementById('statGames') || document.getElementById('statModes')) tasks.push(renderHomeStats());
+  if(document.getElementById('gamesContainer')) tasks.push(renderGamesPage());
+  await Promise.allSettled(tasks);
 }
 document.addEventListener('DOMContentLoaded', initPage);
 
