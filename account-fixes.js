@@ -17,7 +17,8 @@
   function removeProfileOverlay(){ if(profileOverlay){ profileOverlay.remove(); profileOverlay=null; } }
   function openProfile(){ location.href='account.html'; }
   async function saveProfile(){
-    if(profileBusy || !window.currentUser) return; profileBusy=true;
+    if(profileBusy || !window.currentUser || window.currentUser.team_status!=='approved') return;
+    profileBusy=true;
     const btn=document.getElementById('kzProfileSave'); if(btn) btn.disabled=true;
     try{
       const updates={ game:(document.getElementById('kzProfileGame')?.value||'').trim() };
