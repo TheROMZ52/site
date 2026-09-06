@@ -22,6 +22,8 @@
       .kz-danger:hover{background:#7d2d20!important;color:#fff!important}
       .kz-profile-modal{max-width:620px!important}
       .kz-profile-warning{padding:12px 14px;border:1px solid #9b3d2c;background:rgba(155,61,44,.12);line-height:1.8;margin-top:12px}
+      .kz-staff-nav{position:relative}
+      .kz-staff-nav::after{content:'STAFF';margin-right:6px;font-size:9px;opacity:.55;font-family:monospace}
     `;
     document.head.appendChild(s);
   }
@@ -42,9 +44,9 @@
         <div class="form-grid">
           <div class="field"><label>نام‌کاربری</label><input value="${esc(u.username)}" disabled></div>
           <div class="field"><label>رنک</label><input value="${esc(typeof rankLabel==='function'?rankLabel(u.rank):u.rank)}" disabled></div>
-          <div class="field"><label>بازی‌های مورد علاقه</label><input id="kzProfileGame" maxlength="200" value="${esc(u.game||'')}"></div>
+          <div class="field"><label>بازی‌های مورد علاقه</label><input id="kzProfileGame" value="${esc(u.game||'')}"></div>
           <div class="field"><label>عکس پروفایل جدید</label><input id="kzProfilePhoto" type="file" accept="image/*"></div>
-          <div class="field"><label>رمز عبور جدید (اختیاری)</label><input id="kzProfilePass" type="password" minlength="4" maxlength="60" placeholder="اگر نمی‌خوای عوضش کنی خالی بذار"></div>
+          <div class="field"><label>رمز عبور جدید (اختیاری)</label><input id="kzProfilePass" type="password" placeholder="اگر نمی‌خوای عوضش کنی خالی بذار"></div>
           <button class="btn primary" id="kzProfileSave">ذخیره تغییرات</button>
           <div id="kzProfileMsg"></div>
         </div>
@@ -73,10 +75,7 @@
         if(url) updates.photo=url;
       }
       const newPass=document.getElementById('kzProfilePass')?.value||'';
-      if(newPass){
-        if(newPass.length<4) throw new Error('رمز جدید باید حداقل ۴ کاراکتر باشه.');
-        updates.pass_hash=await hashPass(newPass);
-      }
+      if(newPass) updates.pass_hash=await hashPass(newPass);
       const {data,error}=await sb.from('accounts').update(updates).eq('id',window.currentUser.id).select('*').maybeSingle();
       if(error) throw error;
       if(!data) throw new Error('اکانت پیدا نشد یا اجازه ویرایش نداری.');
@@ -123,20 +122,18 @@
   function patchUserBox(){
     if(typeof window.renderUserBox!=='function' || window.renderUserBox.__kzAccountFix) return;
     const original=window.renderUserBox;
-    const wrapped=function(){ original(); addProfileButton(); };
+    const wrapped=function(){ original(); addProfileButton(); updateRubikaAccess(); };
     wrapped.__kzAccountFix=true;
     window.renderUserBox=wrapped;
   }
 
-  // New accounts are regular site accounts, not "new_member" team ranks.
-  // Team membership remains controlled separately through team_status.
   function patchRegistration(){
     if(typeof window.registerUser!=='function' || window.registerUser.__kzAccountFix) return;
     const original=window.registerUser;
     const wrapped=async function(username,password,game,photo){
       const res=await original(username,password,game,photo);
       if(res?.ok && res.account?.id){
-        const {data,error}=await sb.from('accounts').update({rank:'member',team_status:'none'}).eq('id',res.account.id).select('*').maybeSingle();
+        const {data,error}=await sb.from('accounts').update({rank:'guest',team_status:'none'}).eq('id',res.account.id).select('*').maybeSingle();
         if(!error && data){ res.account=data; }
       }
       return res;
@@ -145,10 +142,26 @@
     window.registerUser=wrapped;
   }
 
+  function addStaffRequestsMenu(){
+    const nav=document.querySelector('nav.main');
+    if(!nav) return;
+    const old=nav.querySelector('.kz-staff-nav');
+    const allowed=!!(window.currentUser && ['developer','co_owner','owner'].includes(window.currentUser.rank));
+    if(!allowed){ if(old) old.remove(); return; }
+    if(old) return;
+    const a=document.createElement('a');
+    a.className='kz-staff-nav';
+    a.href='join.html#requests';
+    a.textContent='درخواست‌های عضویت';
+    const reg=nav.querySelector('a[href="register.html"]');
+    if(reg) nav.insertBefore(a,reg); else nav.appendChild(a);
+  }
+
   async function syncSessionThenFixUI(){
     patchUserBox(); patchRegistration();
     if(typeof window.initSession==='function') await window.initSession();
     if(typeof window.renderUserBox==='function') window.renderUserBox();
+    addStaffRequestsMenu();
     if(location.pathname.endsWith('/join.html') || location.pathname.endsWith('join.html')){
       if(typeof window.kzRenderJoinPage==='function') window.kzRenderJoinPage();
       else if(typeof window.renderJoinPage==='function') window.renderJoinPage();
@@ -157,7 +170,6 @@
     }
   }
 
-  // Guests may not access the team Rubika group. Registered-but-unapproved users are guests too.
   function updateRubikaAccess(){
     const allowed=!!(window.currentUser && window.currentUser.team_status==='approved');
     document.querySelectorAll('.rubika-link').forEach(link=>{
@@ -173,7 +185,6 @@
     });
   }
 
-  // Remove HTML character-count limits from text fields across all KillZone forms.
   function removeTextLimits(){
     document.querySelectorAll('input, textarea').forEach(el=>{
       if(el.type==='number' || el.type==='file' || el.type==='checkbox' || el.type==='radio') return;
@@ -189,12 +200,12 @@
       await syncSessionThenFixUI();
       updateRubikaAccess();
       removeTextLimits();
-      // Keep access state correct if the user logs in/out or another script rerenders the header.
-      const observer=new MutationObserver(()=>{ updateRubikaAccess(); removeTextLimits(); });
+      const observer=new MutationObserver(()=>{ updateRubikaAccess(); removeTextLimits(); addStaffRequestsMenu(); });
       observer.observe(document.body,{childList:true,subtree:true});
     },0);
   }
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
   window.kzOpenProfile=openProfile;
+  window.kzAddStaffRequestsMenu=addStaffRequestsMenu;
 })();
