@@ -12,8 +12,16 @@
     rejected: 'درخواست رد شده'
   };
 
+  function injectButtonStyles(){
+    if(document.getElementById('kz-button-system')) return;
+    const link=document.createElement('link');
+    link.id='kz-button-system';
+    link.rel='stylesheet';
+    link.href='/buttons.css?v=2';
+    document.head.appendChild(link);
+  }
+
   function patchUnsafeSeed(){
-    // Never create a known-password owner/developer account from a public browser.
     if(typeof window.ensureSeedAccounts !== 'function' || window.ensureSeedAccounts.__kzSafeSeed) return;
     const safe = async function(){ return; };
     safe.__kzSafeSeed = true;
@@ -114,6 +122,7 @@
   }
 
   function boot(){
+    injectButtonStyles();
     patchUnsafeSeed();
     patchUploadPhoto();
     patchRegistration();
