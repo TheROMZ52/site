@@ -33,7 +33,7 @@
 
   async function heartbeat(){
     const u = await getUser();
-    if(!u) return;
+    if(!u || u.team_status!=='approved') return;
     if(lastAccountId && lastAccountId !== u.id) return;
     lastAccountId = u.id;
     const { data:old } = await sb.from('member_presence').select('status,game,status_text').eq('account_id',u.id).maybeSingle();
@@ -58,7 +58,7 @@
   window.kzPresence.refresh = heartbeat;
   window.kzPresence.setStatus = async function(status, game, statusText){
     const u=await getUser();
-    if(!u) return {ok:false,msg:'وارد اکانت نیستی.'};
+    if(!u || u.team_status!=='approved') return {ok:false,msg:'فقط اعضای تأییدشده می‌تونن وضعیت اسکواد رو تنظیم کنن.'};
     if(!STATUS_LABELS[status]) return {ok:false,msg:'وضعیت نامعتبره.'};
     const payload={account_id:u.id,status,game:(game||'').trim(),status_text:(statusText||'').trim(),last_seen:new Date().toISOString(),updated_at:new Date().toISOString()};
     const {data,error}=await sb.from('member_presence').upsert(payload,{onConflict:'account_id'}).select('*').maybeSingle();
