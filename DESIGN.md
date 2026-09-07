@@ -13,6 +13,12 @@
 - Registration, membership and account workflows use full-width surfaces while preserving readable field groupings.
 - Mobile collapses deliberately to one-column layouts with touch-sized controls.
 
+## Motion language
+- Motion is tactical and restrained: short upward reveals, subtle slide-ins, modal lift-in, hover elevation and a slow squad-presence pulse.
+- The homepage reveal is orchestrated rather than every element constantly moving; animation communicates arrival and hierarchy, not decoration.
+- Loading uses a restrained shimmer instead of fake progress.
+- `prefers-reduced-motion: reduce` disables non-essential animation and hover transforms.
+
 ## Signature
 The site is styled as a KillZone field console: broad dark surfaces, an ember/orange command accent, subtle tactical grid texture, and small machine-like labels. The homepage's stats rail is the primary composition signature; it should remain quiet while the content carries the hierarchy.
 
