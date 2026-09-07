@@ -8,7 +8,7 @@
   async function inject(){
     if(injected || !window.kzPresence || !window.currentUser) return;
     const root=document.getElementById('kzAccountApp'); if(!root) return;
-    if(!root.querySelector('.kz-presence-card')) return setTimeout(inject,250);
+    if(!root.querySelector('.account-profile-card')) return setTimeout(inject,250);
     injected=true;
     const u=window.currentUser;
     const {data}=await sb.from('member_presence').select('*').eq('account_id',u.id).maybeSingle();
@@ -31,6 +31,6 @@
     });
   }
 
-  function boot(){ setTimeout(inject,350); }
+  function boot(){setTimeout(inject,350);setInterval(()=>{if(!injected)inject();},1000);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
