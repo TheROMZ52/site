@@ -21,7 +21,7 @@
     const link=document.createElement('link');
     link.id='kz-button-system';
     link.rel='stylesheet';
-    link.href='/buttons.css?v=2';
+    link.href='/css/buttons.css?v=2';
     document.head.appendChild(link);
   }
 
