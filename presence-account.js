@@ -9,6 +9,7 @@
     if(injected || !window.kzPresence || !window.currentUser) return;
     const root=document.getElementById('kzAccountApp'); if(!root) return;
     if(!root.querySelector('.account-profile-card')) return setTimeout(inject,250);
+    if(window.currentUser.team_status!=='approved'){injected=true;return;}
     injected=true;
     const u=window.currentUser;
     const {data}=await sb.from('member_presence').select('*').eq('account_id',u.id).maybeSingle();
