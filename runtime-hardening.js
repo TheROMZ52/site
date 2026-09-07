@@ -21,6 +21,53 @@
     document.head.appendChild(link);
   }
 
+  function injectTwemoji(){
+    if(document.getElementById('kz-twemoji-api')) return;
+    const style=document.createElement('style');
+    style.id='kz-twemoji-style';
+    style.textContent='.kz-twemoji, img.emoji{display:inline-block;width:1em;height:1em;margin:0 .05em 0 .1em;vertical-align:-0.1em;line-height:1;object-fit:contain;}';
+    document.head.appendChild(style);
+
+    const script=document.createElement('script');
+    script.id='kz-twemoji-api';
+    script.src='https://cdn.jsdelivr.net/npm/@twemoji/api@17.0.3/dist/twemoji.min.js';
+    script.integrity='sha384-Y5xukbGJwykbHHkTbLJykYLcBPFxrwipTbEh0puxhkz9CZ90raTPGe2Ks4vCxsYU';
+    script.crossOrigin='anonymous';
+    script.onload=()=>startTwemoji();
+    script.onerror=()=>console.warn('KillZone Twemoji failed to load');
+    document.head.appendChild(script);
+  }
+
+  function startTwemoji(){
+    if(!window.twemoji || typeof window.twemoji.parse!=='function') return;
+    const options={
+      folder:'svg',
+      ext:'.svg',
+      base:'https://cdn.jsdelivr.net/gh/jdecked/twemoji@17.0.3/assets/',
+      className:'kz-twemoji'
+    };
+
+    const parseNode=node=>{
+      if(!node) return;
+      try{
+        if(node.nodeType===Node.ELEMENT_NODE) window.twemoji.parse(node,options);
+        else if(node.nodeType===Node.TEXT_NODE && node.parentElement) window.twemoji.parse(node.parentElement,options);
+      }catch(e){ console.warn('KillZone Twemoji parse skipped',e); }
+    };
+
+    try{ window.twemoji.parse(document.body,options); }catch(e){ console.warn('KillZone Twemoji initial parse skipped',e); }
+
+    const observer=new MutationObserver(mutations=>{
+      for(const mutation of mutations){
+        for(const node of mutation.addedNodes){
+          if(node.nodeType===Node.TEXT_NODE || node.nodeType===Node.ELEMENT_NODE) parseNode(node);
+        }
+      }
+    });
+    observer.observe(document.body,{childList:true,subtree:true});
+    window.kzTwemojiReady=true;
+  }
+
   function patchUnsafeSeed(){
     if(typeof window.ensureSeedAccounts !== 'function' || window.ensureSeedAccounts.__kzSafeSeed) return;
     const safe = async function(){ return; };
@@ -85,6 +132,15 @@
       if(['pending','reviewing','waiting_applicant','approved','rejected'].includes(status)){ window.currentUser.team_status = status; syncRenderedAccountStatus(status); if(typeof renderUserBox==='function') renderUserBox(); }
     }catch(e){ console.warn('KillZone ticket status sync failed', e); }
   }
-  function boot(){ injectButtonStyles(); patchUnsafeSeed(); patchUploadPhoto(); patchRegistration(); patchLoginUX(); patchMembersFilter(); setTimeout(syncApplicantStatusFromTicket,250); }
+  function boot(){
+    injectButtonStyles();
+    injectTwemoji();
+    patchUnsafeSeed();
+    patchUploadPhoto();
+    patchRegistration();
+    patchLoginUX();
+    patchMembersFilter();
+    setTimeout(syncApplicantStatusFromTicket,250);
+  }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', boot, {once:true}); else boot();
 })();
