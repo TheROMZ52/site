@@ -6,20 +6,14 @@
   const STAFF = ['admin','developer','co_owner','owner'];
   let wired = false;
 
-  function isStaff(){
-    return !!(window.currentUser && STAFF.includes(window.currentUser.rank));
-  }
-  function esc(value){
-    return String(value ?? '').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
-  }
+  function isStaff(){ return !!(window.currentUser && STAFF.includes(window.currentUser.rank)); }
+  function esc(value){ return String(value ?? '').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c])); }
   function initials(name){ return String(name||'?').trim().slice(0,2).toUpperCase(); }
 
   async function showGuests(){
     const container=document.getElementById('membersContainer');
     if(!container || !isStaff() || typeof sb==='undefined') return;
-    const old=container.querySelector('.kz-guest-section');
-    if(old) old.remove();
-    container.querySelector('.empty-note.kz-guest-empty')?.remove();
+    container.querySelector('.kz-guest-section')?.remove();
     const section=document.createElement('div');
     section.className='rank-section kz-guest-section';
     section.innerHTML='<div class="rank-heading"><span class="tier">▲</span><h3>مهمان‌ها</h3><div class="rule"></div></div><div class="member-grid kz-guest-grid"><div class="loading-note">در حال بارگذاری اکانت‌های مهمان...</div></div>';
@@ -32,21 +26,12 @@
     data.forEach(m=>{
       const card=document.createElement('div');
       card.className='member-tile guest-tile';
-      const status=m.team_status||'none';
-      card.innerHTML=`${m.photo?`<img class="avatar" src="${esc(m.photo)}" alt="${esc(m.username)}" loading="lazy" decoding="async">`:`<div class="avatar">${initials(m.username)}</div>`}<h4>${esc(m.username)}</h4><div class="rank-badge"><span class="tier">▲</span> مهمان</div><div class="game-tag">${esc(m.game||'—')}</div><div class="guest-status">وضعیت: ${esc(status)}</div><div class="member-actions"><button class="icon-btn guest-open" type="button">مدیریت</button></div>`;
-      card.querySelector('.guest-open').addEventListener('click',()=>{
-        // Use the existing member editor if the core exposes it through the page.
-        if(typeof window.openMemberModal==='function') window.openMemberModal(m.id,[m]);
-        else alert('ویرایشگر عضو در این نسخه در دسترس نیست.');
-      });
+      card.innerHTML=`${m.photo?`<img class="avatar" src="${esc(m.photo)}" alt="${esc(m.username)}" loading="lazy" decoding="async">`:`<div class="avatar">${initials(m.username)}</div>`}<h4>${esc(m.username)}</h4><div class="rank-badge"><span class="tier">▲</span> مهمان</div><div class="game-tag">${esc(m.game||'—')}</div><div class="guest-status">وضعیت عضویت: ${esc(m.team_status||'none')}</div>`;
       grid.appendChild(card);
     });
   }
 
-  function hideGuests(){
-    document.body.dataset.kzShowGuests='0';
-    document.querySelector('.kz-guest-section')?.remove();
-  }
+  function hideGuests(){ document.body.dataset.kzShowGuests='0'; document.querySelector('.kz-guest-section')?.remove(); }
 
   function renderButton(){
     const toolbar=document.querySelector('.members-toolbar');
@@ -67,10 +52,8 @@
         if(!isStaff()) return;
         const next=document.body.dataset.kzShowGuests!=='1';
         button.disabled=true;
-        try{
-          if(next){document.body.dataset.kzShowGuests='1';await showGuests();}
-          else hideGuests();
-        }finally{button.disabled=false;renderButton();}
+        try{ if(next){document.body.dataset.kzShowGuests='1';await showGuests();}else hideGuests(); }
+        finally{button.disabled=false;renderButton();}
       });
     }
   }
