@@ -12,6 +12,10 @@
     rejected: 'درخواست رد شده'
   };
 
+  // Custom Iran flag artwork: Lion and Sun.
+  // Only 🇮🇷 is handled here; every other emoji continues through Twemoji.
+  const LION_SUN_FLAG = 'https://upload.wikimedia.org/wikipedia/commons/f/fd/State_flag_of_Iran_%281964%E2%80%931980%29.svg';
+
   function injectButtonStyles(){
     if(document.getElementById('kz-button-system')) return;
     const link=document.createElement('link');
@@ -25,7 +29,7 @@
     if(document.getElementById('kz-twemoji-api')) return;
     const style=document.createElement('style');
     style.id='kz-twemoji-style';
-    style.textContent='.kz-twemoji, img.emoji{display:inline-block;width:1em;height:1em;margin:0 .05em 0 .1em;vertical-align:-0.1em;line-height:1;object-fit:contain;}';
+    style.textContent='.kz-twemoji, img.emoji, .kz-lion-sun{display:inline-block;width:1em;height:1em;margin:0 .05em 0 .1em;vertical-align:-0.1em;line-height:1;object-fit:contain;}';
     document.head.appendChild(style);
 
     const script=document.createElement('script');
@@ -36,6 +40,36 @@
     script.onload=()=>startTwemoji();
     script.onerror=()=>console.warn('KillZone Twemoji failed to load');
     document.head.appendChild(script);
+  }
+
+  function replaceLionSun(node){
+    if(!node) return;
+    const textNodes=[];
+    const walk=document.createTreeWalker(node,NodeFilter.SHOW_TEXT);
+    let current;
+    while((current=walk.nextNode())){
+      if(current.parentElement && current.parentElement.closest('script,style,textarea,input,[contenteditable="false"]')) continue;
+      if(current.nodeValue && current.nodeValue.includes('🇮🇷')) textNodes.push(current);
+    }
+    for(const textNode of textNodes){
+      const parts=textNode.nodeValue.split('🇮🇷');
+      const frag=document.createDocumentFragment();
+      parts.forEach((part,index)=>{
+        if(part) frag.appendChild(document.createTextNode(part));
+        if(index<parts.length-1){
+          const img=document.createElement('img');
+          img.className='kz-lion-sun';
+          img.src=LION_SUN_FLAG;
+          img.alt='پرچم شیر و خورشید ایران';
+          img.title='شیر و خورشید';
+          img.loading='lazy';
+          img.decoding='async';
+          img.draggable=false;
+          frag.appendChild(img);
+        }
+      });
+      textNode.parentNode?.replaceChild(frag,textNode);
+    }
   }
 
   function startTwemoji(){
@@ -50,12 +84,16 @@
     const parseNode=node=>{
       if(!node) return;
       try{
+        replaceLionSun(node);
         if(node.nodeType===Node.ELEMENT_NODE) window.twemoji.parse(node,options);
         else if(node.nodeType===Node.TEXT_NODE && node.parentElement) window.twemoji.parse(node.parentElement,options);
       }catch(e){ console.warn('KillZone Twemoji parse skipped',e); }
     };
 
-    try{ window.twemoji.parse(document.body,options); }catch(e){ console.warn('KillZone Twemoji initial parse skipped',e); }
+    try{
+      replaceLionSun(document.body);
+      window.twemoji.parse(document.body,options);
+    }catch(e){ console.warn('KillZone Twemoji initial parse skipped',e); }
 
     const observer=new MutationObserver(mutations=>{
       for(const mutation of mutations){
@@ -66,6 +104,7 @@
     });
     observer.observe(document.body,{childList:true,subtree:true});
     window.kzTwemojiReady=true;
+    window.kzLionSunReady=true;
   }
 
   function patchUnsafeSeed(){
