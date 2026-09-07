@@ -71,11 +71,37 @@
     form.addEventListener('submit',async e=>{e.preventDefault();if(!window.currentUser){location.reload();return;}const msg=document.getElementById('kzJoinFormMsg');const values=typeof kzRequestFormValues==='function'?kzRequestFormValues(form):{};const errors=typeof kzValidateJoinForm==='function'?kzValidateJoinForm(values):[];if(errors.length){msg.innerHTML=`<div class="form-msg err">${esc(errors.join('<br>'))}</div>`;return;}const {data:existing}=await sb.from('team_join_requests').select('id,status').eq('account_id',window.currentUser.id).in('status',ACTIVE).limit(1);if(existing?.length){await renderApplicant();return;}msg.innerHTML='<div class="form-msg ok">در حال ثبت درخواست...</div>';const payload={id:typeof kzNewId==='function'?kzNewId('req'):'req-'+Date.now(),account_id:window.currentUser.id,status:'reviewing',name:values.first_name,last_name:values.last_name,rubika_id:values.rubika_id,age:values.age,city:values.city,other_games:values.other_games,skill_level:values.skill_level,gaming_years:values.gaming_years,weekly_activity:values.weekly_activity,voice_chat:values.voice_chat,why_join:values.why_join,contribution:values.contribution,conflict_response:values.conflict_response,how_found_us:values.how_found_us,info_confirmed:values.info_confirmed};const {error}=await sb.from('team_join_requests').insert([payload]);if(error){console.error(error);msg.innerHTML='<div class="form-msg err">ثبت درخواست ناموفق بود. دوباره تلاش کن.</div>';return;}const {data:updated}=await sb.from('accounts').update({team_status:'reviewing',rank:'guest'}).eq('id',window.currentUser.id).select('*').maybeSingle();if(updated)window.currentUser=updated;await renderApplicant();});
   }
   async function boot(){
-    if(!document.getElementById('kzJoinApp'))return;
-    if(typeof initSession==='function')await initSession();
-    if(!window.currentUser)return;
-    if(isReviewer())await renderAdminPanel();else await renderApplicant();
+    const root=document.getElementById('kzJoinApp');
+    if(!root)return;
+    root.dataset.kzJoinBoot='pending';
+    try{
+      if(typeof sb==='undefined' || typeof initSession!=='function') throw new Error('Join page dependencies are not ready.');
+      await initSession();
+      if(!window.currentUser){ root.innerHTML='<div class="empty-note">برای مشاهده یا ثبت درخواست، اول وارد اکانتت شو.</div>'; return; }
+      if(isReviewer()) await renderAdminPanel(); else await renderApplicant();
+      root.dataset.kzJoinBoot='done';
+    }catch(error){
+      console.error('KillZone join boot failed',error);
+      root.dataset.kzJoinBoot='error';
+      root.innerHTML='<div class="form-msg err">مرکز درخواست‌ها نتونست بارگذاری بشه. صفحه رو یک‌بار رفرش کن.</div>';
+    }
   }
-  window.kzRenderJoinPage=async()=>{if(!document.getElementById('kzJoinApp'))return false;if(typeof initSession==='function'&&!window.currentUser)await initSession();if(!window.currentUser)return false;return isReviewer()?renderAdminPanel():renderApplicant();};
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,0),{once:true});else setTimeout(boot,0);
+  window.kzRenderJoinPage=async()=>{
+    if(!document.getElementById('kzJoinApp'))return false;
+    if(typeof sb==='undefined' || typeof initSession!=='function')return false;
+    try{
+      if(!window.currentUser)await initSession();
+      if(!window.currentUser){ document.getElementById('kzJoinApp').innerHTML='<div class="empty-note">برای مشاهده یا ثبت درخواست، اول وارد اکانتت شو.</div>'; return false; }
+      return isReviewer()?renderAdminPanel():renderApplicant();
+    }catch(error){
+      console.error('KillZone join render failed',error);
+      document.getElementById('kzJoinApp').innerHTML='<div class="form-msg err">بارگذاری درخواست‌ها ناموفق بود.</div>';
+      return false;
+    }
+  };
+  function start(){
+    if(!isJoinPage())return;
+    boot();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(start,0),{once:true});else setTimeout(start,0);
 })();
