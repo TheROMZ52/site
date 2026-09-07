@@ -52,7 +52,7 @@
     event.stopImmediatePropagation();
 
     const user = window.currentUser;
-    if(!user || user.team_status !== 'approved' || typeof window.sb === 'undefined') return;
+    if(!user || user.team_status !== 'approved' || typeof sb === 'undefined') return;
 
     const input = document.getElementById('kzAccountNickname');
     const nickname = String(input?.value || '').trim();
@@ -66,9 +66,19 @@
 
     if(button) button.disabled = true;
     try{
-      const { data, error } = await window.sb
+      const updates = { nickname, game:(document.getElementById('kzAccountGame')?.value || '').trim() };
+      const file = document.getElementById('kzAccountPhoto')?.files?.[0];
+      if(file){
+        const url = await uploadPhoto(file, (kind,text)=>{ if(msg) msg.innerHTML=`<div class="account-msg ${kind==='ok'?'ok':'err'}">${esc(text)}</div>`; });
+        if(!url) throw new Error('آپلود عکس ناموفق بود.');
+        updates.photo = url;
+      }
+      const pass = document.getElementById('kzAccountPass')?.value || '';
+      if(pass) updates.pass_hash = await hashPass(pass);
+
+      const { data, error } = await sb
         .from('accounts')
-        .update({ nickname })
+        .update(updates)
         .eq('id', user.id)
         .select('*')
         .maybeSingle();
@@ -76,14 +86,14 @@
       if(!data) throw new Error('اکانت پیدا نشد یا اجازه ویرایش نداری.');
 
       window.currentUser = data;
-      if(typeof window.saveSession === 'function') window.saveSession(data);
-      if(msg) msg.innerHTML = '<div class="account-msg ok">نیک‌نیم با موفقیت ذخیره شد ✔</div>';
+      if(typeof saveSession === 'function') saveSession(data);
+      if(msg) msg.innerHTML = '<div class="account-msg ok">تغییرات با موفقیت ذخیره شد ✔</div>';
 
       const title = document.querySelector('.profile-name h2');
       if(title) title.textContent = displayName(data);
     }catch(error){
       console.error('KillZone nickname save failed', error);
-      if(msg) msg.innerHTML = `<div class="account-msg err">${esc(error.message || 'ذخیره نیک‌نیم ناموفق بود.')}</div>`;
+      if(msg) msg.innerHTML = `<div class="account-msg err">${esc(error.message || 'ذخیره تغییرات ناموفق بود.')}</div>`;
     }finally{
       if(button) button.disabled = false;
     }
