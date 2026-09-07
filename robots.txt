@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://site-pi-topaz-41.vercel.app/sitemap.xml
