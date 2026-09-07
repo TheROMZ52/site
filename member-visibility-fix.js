@@ -1,18 +1,22 @@
-// KillZone member visibility guard — only approved team members belong on the public members page.
+// KillZone member visibility guard.
+// Guests stay hidden from the public members page, but staff can explicitly reveal them.
 (function(){
   'use strict';
+
+  function isStaff(){
+    const u = window.currentUser;
+    return !!(u && ['admin','developer','co_owner','owner'].includes(u.rank));
+  }
 
   function cleanMembersPage(){
     const container = document.getElementById('membersContainer');
     if(!container) return;
 
+    const allowGuests = isStaff() && document.body.dataset.kzShowGuests === '1';
     container.querySelectorAll('.rank-section').forEach(section => {
       const heading = section.querySelector('.rank-heading h3');
       if(!heading) return;
-
-      // Guests are account holders who have not been approved into the team.
-      // Their cards must never appear on the public members page.
-      if(heading.textContent.trim() === 'مهمان') section.remove();
+      if(heading.textContent.trim() === 'مهمان' && !allowGuests) section.remove();
     });
   }
 
