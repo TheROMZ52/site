@@ -54,3 +54,4 @@
 - حذف `app-recovery.js` و `clean-url.js` که دیگر مصرف مستقیمی نداشتند
 - حذف `field-console.css` چون styleهای کنسول در منطق فعلی توسط `hero-console` مدیریت می‌شد
 - حفظ منطق Twemoji 17.0.3 و Lion & Sun برای 🇮🇷 در `runtime-hardening.js`
+باحاله نه؟
