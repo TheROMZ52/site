@@ -1,0 +1,47 @@
+/* KillZone community layer: profiles, achievements, news */
+.kz-profile-card{position:relative;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:16px;padding:18px 20px;background:linear-gradient(145deg,rgba(35,32,25,.78),rgba(15,14,12,.58));border:1px solid rgba(89,80,62,.82);box-shadow:0 18px 44px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.04);backdrop-filter:blur(9px) saturate(110%);-webkit-backdrop-filter:blur(9px) saturate(110%);overflow:hidden;transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease;cursor:pointer;}
+.kz-profile-card:before{content:"";position:absolute;inset:0 auto 0 3px;width:2px;background:linear-gradient(180deg,var(--ember),transparent);opacity:.9;}
+.kz-profile-card:hover{transform:translateY(-3px);border-color:rgba(223,99,48,.65);box-shadow:0 22px 52px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.05);}
+.kz-profile-avatar{width:72px;height:72px;border:1px solid rgba(223,99,48,.38);object-fit:cover;background:linear-gradient(145deg,#2c291f,#15140f);display:grid;place-items:center;font-weight:800;font-size:22px;color:var(--paper);}
+.kz-profile-main{min-width:0;text-align:right;}
+.kz-profile-name{margin:0 0 6px;font-size:17px;font-weight:800;color:var(--paper);}
+.kz-profile-meta{display:flex;flex-wrap:wrap;gap:7px;align-items:center;color:var(--paper-dim);font-size:12px;}
+.kz-profile-meta span{padding:4px 8px;border:1px solid rgba(89,80,62,.55);background:rgba(12,12,10,.25);}
+.kz-profile-arrow{font:700 18px 'Press Start 2P',monospace;color:var(--ember);transition:transform .2s ease;}
+.kz-profile-card:hover .kz-profile-arrow{transform:translateX(-4px);}
+.kz-profile-bio{margin:12px 0 0;color:var(--paper-dim);font-size:13px;line-height:1.9;}
+.kz-profile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
+.kz-achievements{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:15px;}
+.kz-achievement{display:grid;grid-template-columns:42px 1fr;gap:10px;align-items:center;padding:12px;background:rgba(22,21,17,.48);border:1px solid rgba(89,80,62,.6);}
+.kz-achievement-icon{width:42px;height:42px;display:grid;place-items:center;border:1px solid rgba(223,99,48,.34);color:var(--ember);font-size:18px;background:rgba(223,99,48,.08);}
+.kz-achievement h4{margin:0 0 4px;font-size:13px;}
+.kz-achievement p{margin:0;color:var(--paper-dim);font-size:11px;line-height:1.7;}
+.kz-achievement small{display:block;margin-top:6px;color:var(--paper-dim);font-size:10px;}
+.kz-news-list{display:grid;gap:12px;}
+.kz-news-card{position:relative;padding:18px 20px 16px;background:linear-gradient(145deg,rgba(35,32,25,.76),rgba(15,14,12,.55));border:1px solid rgba(89,80,62,.75);box-shadow:0 18px 42px rgba(0,0,0,.14),inset 0 1px 0 rgba(255,255,255,.035);overflow:hidden;}
+.kz-news-card.is-pinned{border-color:rgba(223,99,48,.55);}
+.kz-news-card.is-pinned:before{content:"PINNED";position:absolute;top:12px;left:15px;font:700 8px 'Press Start 2P',monospace;letter-spacing:1px;color:rgba(223,99,48,.82);}
+.kz-news-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;}
+.kz-news-title{margin:0;font-size:17px;line-height:1.6;}
+.kz-news-badge{flex:none;padding:5px 8px;border:1px solid rgba(223,99,48,.3);color:var(--ember);font-size:10px;background:rgba(223,99,48,.07);}
+.kz-news-date{margin:8px 0 0;color:var(--paper-dim);font-size:11px;}
+.kz-news-body{margin:12px 0 0;color:#d8d0c0;font-size:13px;line-height:2;white-space:pre-line;}
+.kz-news-actions{display:flex;gap:7px;margin-top:13px;}
+.kz-news-actions .btn{min-height:34px;font-size:11px;padding:7px 11px;}
+.kz-news-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 16px;}
+.kz-news-toolbar .hint{margin:0;}
+.kz-community-empty,.kz-community-loading{padding:24px;text-align:center;color:var(--paper-dim);border:1px dashed rgba(89,80,62,.55);background:rgba(20,19,15,.3);}
+.kz-modal-panel{max-width:760px!important;width:min(760px,calc(100vw - 28px));max-height:min(86vh,800px);overflow:auto;}
+.kz-profile-hero{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;padding:4px 0 18px;border-bottom:1px solid rgba(89,80,62,.45);}
+.kz-profile-large-avatar{width:92px;height:92px;object-fit:cover;border:1px solid rgba(223,99,48,.45);background:linear-gradient(145deg,#2c291f,#15140f);display:grid;place-items:center;font-size:28px;font-weight:800;}
+.kz-profile-hero h3{margin:0 0 6px;font-size:23px;}
+.kz-profile-hero p{margin:0;color:var(--paper-dim);line-height:1.9;font-size:12px;}
+.kz-profile-section{margin-top:18px;}
+.kz-profile-section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;}
+.kz-profile-section-title h4{margin:0;font-size:14px;}
+.kz-profile-section-title span{font:700 8px 'Press Start 2P',monospace;color:rgba(244,237,220,.38);}
+.kz-social{display:inline-flex;margin-top:8px;color:var(--ember);font-size:12px;text-decoration:none;}
+.kz-social:hover{text-decoration:underline;}
+@media(max-width:760px){.kz-profile-grid{grid-template-columns:1fr;}.kz-profile-card{grid-template-columns:auto 1fr;}.kz-profile-arrow{display:none;}.kz-profile-hero{grid-template-columns:1fr;text-align:center;}.kz-profile-large-avatar{margin:auto;}.kz-profile-main{text-align:right;}}
+@media(max-width:520px){.kz-profile-card{gap:11px;padding:14px;}.kz-profile-avatar{width:58px;height:58px;font-size:17px;}.kz-profile-name{font-size:15px;}.kz-news-head{flex-direction:column;gap:8px;}.kz-news-badge{align-self:flex-start;}.kz-achievements{grid-template-columns:1fr;}}
+@media(prefers-reduced-motion:reduce){.kz-profile-card,.kz-profile-arrow{transition:none!important;}}
