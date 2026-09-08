@@ -15,6 +15,23 @@
 </head>
 <body>
   <a class="return" href="/games" aria-label="بازگشت به گیم هاب">← گیم هاب</a>
-  <iframe class="game-frame" src="counter_strike_ErrorArea.html" title="Counter-Strike KILLZONE" allow="fullscreen; gamepad; pointer-lock" allowfullscreen></iframe>
+  <iframe id="gameFrame" class="game-frame" src="counter_strike_ErrorArea.html" title="Counter-Strike KILLZONE" allow="fullscreen; gamepad; pointer-lock" allowfullscreen></iframe>
+  <script>
+    (function(){
+      const frame=document.getElementById('gameFrame');
+      frame.addEventListener('load',function(){
+        try{
+          const doc=frame.contentDocument;
+          if(!doc)return;
+          doc.title='Counter-Strike // KILLZONE';
+          doc.querySelectorAll('a').forEach(function(a){
+            const text=(a.textContent||'').toLowerCase();
+            const href=(a.getAttribute('href')||'').toLowerCase();
+            if(text.includes('errorarea')||href.includes('errorarea'))a.remove();
+          });
+        }catch(e){ console.warn('KillZone game cleanup unavailable',e); }
+      });
+    })();
+  </script>
 </body>
 </html>
