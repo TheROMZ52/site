@@ -30,10 +30,28 @@ jobs:
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5
 
+      # GitHub Pages project sites live under /site/.
+      # Keep the repository unchanged so Vercel continues to use root paths,
+      # and rewrite root-absolute HTML URLs only in the Pages artifact.
+      - name: Prepare Pages artifact
+        run: |
+          mkdir -p _pages
+          rsync -a --exclude='.git' --exclude='.github' --exclude='_pages' --exclude='dist' ./ _pages/
+
+          find _pages -type f -name '*.html' -print0 | xargs -0 sed -i \
+            -e 's#href="/#href="/site/#g' \
+            -e 's#src="/#src="/site/#g' \
+            -e 's#action="/#action="/site/#g'
+
+          find _pages -type f -name '*.css' -print0 | xargs -0 sed -i \
+            -e 's#url(/#url(/site/#g' \
+            -e "s#url('/#url('/site/#g" \
+            -e 's#url("/#url("/site/#g'
+
       - name: Upload site
         uses: actions/upload-pages-artifact@v4
         with:
-          path: .
+          path: _pages
 
       - name: Deploy
         id: deployment
