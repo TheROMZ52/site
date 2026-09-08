@@ -9,8 +9,7 @@ const RANKS = [
   { key:'co_owner', label:'کو-اونر' },
   { key:'owner', label:'اونر' }
 ];
-const ADMIN_RANKS = ['admin','developer','co_owner','owner']; // این رنک‌ها دسترسی مدیریت دارن
-const DEFAULT_ADMIN_PASSWORD = 'killzone2026';
+const ADMIN_RANKS = ['admin','developer','co_owner','owner'];
 const SESSION_KEY = 'kz_session';
 const RUBIKA_LINK = 'https://rubika.ir/joing/BBEDHCIEG0CUGHJUEJWPLKHRDAWOCCSB';
 
@@ -75,15 +74,8 @@ async function initSession(){
 
 /* ================= دیتابیس: اکانت‌ها ================= */
 async function ensureSeedAccounts(){
-  const { count, error } = await sb.from('accounts').select('*', { count:'exact', head:true });
-  if(error){ console.error(error); return; }
-  if(count === 0){
-    const hp = await hashPass(DEFAULT_ADMIN_PASSWORD);
-    await sb.from('accounts').insert([
-      { id:'seed-1', username:'1Y2U3I', pass_hash:hp, rank:'owner', game:'', photo:'', is_admin:true },
-      { id:'seed-2', username:'TheROMZ52', pass_hash:hp, rank:'developer', game:'', photo:'', is_admin:true }
-    ]);
-  }
+  // Admin accounts are provisioned outside browser code. Never ship a default admin password in client JS.
+  return;
 }
 async function fetchAccounts(){
   const { data, error } = await sb.from('accounts').select('*').order('username');
@@ -117,15 +109,15 @@ async function ensureSeedGames(){
   if(count === 0){
     await sb.from('game_blocks').insert([
       { id:'blk-mc', name:'ماینکرفت', tag:'MINECRAFT', theme:'mc', sort_order:1 },
-      { id:'blk-cod', name:'کال‌آف‌دیوتی', tag:'CALL OF DUTY', theme:'cod', sort_order:2 }
+      { id:'blk-cs', name:'کانتر استرایک', tag:'COUNTER-STRIKE', theme:'cod', sort_order:2 }
     ]);
     await sb.from('game_modes').insert([
       { id:'mode-1', block_id:'blk-mc', title:'اسکای‌بلاک', description:'بازسازی از صفر روی یه جزیره کوچیک؛ منابع، اقتصاد و پیشرفت تیمی.', maps:'Island Reset, Economy', sort_order:1 },
       { id:'mode-2', block_id:'blk-mc', title:'اسکای‌وارز', description:'نبرد سریع روی جزیره‌های معلق؛ لوت کن، آماده شو، حمله کن.', maps:'Solo, Teams', sort_order:2 },
       { id:'mode-3', block_id:'blk-mc', title:'بدوارز', description:'دفاع از تخت، خرید آپگرید، و حذف تیم‌های رقیب یکی‌یکی.', maps:'4-Team, 8-Team', sort_order:3 },
       { id:'mode-4', block_id:'blk-mc', title:'سروایول', description:'سرور اصلی تیم برای ساخت‌وساز بلندمدت روی مپ‌های محبوب جامعه.', maps:'محبوب #1, محبوب #2, محبوب #3', sort_order:4 },
-      { id:'mode-5', block_id:'blk-cod', title:'مولتی‌پلیر', description:'مچ‌های تیمی روی مپ‌های کلاسیک؛ تمرین آیم و هماهنگی اسکواد.', maps:'Team Deathmatch, Domination', sort_order:1 },
-      { id:'mode-6', block_id:'blk-cod', title:'بتل‌رویال', description:'دراپ گروهی، جمع‌کردن لوت و بقا تا حلقه آخر با اسکواد کامل.', maps:'Squad, Duo', sort_order:2 }
+      { id:'mode-5', block_id:'blk-cs', title:'Respawn Deathmatch', description:'مچ سریع؛ بعد از مرگ دوباره Spawn می‌شوی و بازی تا پایان تایمر ادامه دارد.', maps:'Respawn, Kill Feed', sort_order:1 },
+      { id:'mode-6', block_id:'blk-cs', title:'تمرینی', description:'تمرین آیم و شلیک در میدان سه‌بعدی.', maps:'Dust II 3D, Practice', sort_order:2 }
     ]);
   }
 }
@@ -172,7 +164,6 @@ function renderUserBox(){
     });
   }
 }
-
 function wireLoginModal(){
   const overlay = document.getElementById('loginOverlay');
   if(!overlay) return;
@@ -195,7 +186,7 @@ function wireLoginModal(){
   });
 }
 
-/* ================= صفحه اعضا (بخش‌بندی‌شده بر اساس رنک) ================= */
+/* ================= صفحه اعضا ================= */
 function buildMemberCard(m, staff, accountsCache){
   const card = document.createElement('div');
   card.className = 'member-tile';
@@ -212,7 +203,6 @@ function buildMemberCard(m, staff, accountsCache){
   }
   return card;
 }
-
 async function renderMembersPage(){
   const container = document.getElementById('membersContainer');
   if(!container) return;
@@ -220,7 +210,6 @@ async function renderMembersPage(){
   const accounts = await fetchAccounts();
   container.innerHTML = '';
   const staff = isStaff(currentUser);
-
   if(accounts.length === 0){
     container.innerHTML = '<div class="empty-note">هنوز عضوی ثبت‌نام نکرده.</div>';
   }else{
@@ -228,6 +217,7 @@ async function renderMembersPage(){
     orderHighToLow.forEach(rankKey=>{
       const group = accounts.filter(a=>a.rank===rankKey);
       if(group.length === 0) return;
+      if(rankKey==='guest' && !staff) return;
       const sec = document.createElement('div');
       sec.className = 'rank-section';
       sec.innerHTML = `<div class="rank-heading"><span class="tier">${rankChevrons(rankKey)}</span><h3>${escapeHtml(rankLabel(rankKey))}</h3><div class="rule"></div></div>`;
@@ -337,13 +327,18 @@ async function renderGamesPage(){
   container.innerHTML='<div class="loading-note">در حال بارگذاری بازی‌ها...</div>';
   const data=await fetchGameData();window.__kzGameCache=data;container.innerHTML='';
   const staff=isStaff(currentUser);
+  if(!staff){
+    container.innerHTML='<div class="empty-note">مدیریت مودها فقط برای اعضای تیم مدیریت قابل مشاهده است.</div>';
+    document.getElementById('addGameBtn')?.style.setProperty('display','none');
+    return;
+  }
   if(!data.blocks.length){container.innerHTML='<div class="empty-note">هنوز بازی‌ای اضافه نشده.</div>';return;}
   data.blocks.forEach(block=>container.appendChild(gameCard(block,data.modes,staff)));
-  document.getElementById('addGameBtn')?.style.setProperty('display',staff?'inline-flex':'none');
+  document.getElementById('addGameBtn')?.style.setProperty('display','inline-flex');
   wireGameModals();
 }
 function openBlockModal(id,blocks){
-  if(!isStaff(currentUser))return;editingBlockId=id||null;const b=(blocks||[]).find(x=>x.id===id);document.getElementById('blockModalTitle').textContent=id?'ویرایش بازی':'افزودن بازی جدید';document.getElementById('bName').value=b?.name||'';document.getElementById('bTag').value=b?.tag||'';document.getElementById('bTheme').value=b?.theme||'neutral';document.getElementById('blockMsg').innerHTML='';document.getElementById('gameBlockOverlay').classList.add('show');
+  if(!isStaff(currentUser))return;editingBlockId=id||null;const b=(blocks||[]).find(x=>x.id===id);document.getElementById('blockModalTitle').textContent=id?'ویرایش بازی':'افزودن بازی';document.getElementById('bName').value=b?.name||'';document.getElementById('bTag').value=b?.tag||'';document.getElementById('bTheme').value=b?.theme||'neutral';document.getElementById('blockMsg').innerHTML='';document.getElementById('gameBlockOverlay').classList.add('show');
 }
 function openModeModal(id,blockId,modes){
   if(!isStaff(currentUser))return;editingModeId=id||null;editingModeBlockId=blockId||null;const m=(modes||[]).find(x=>x.id===id);if(id)editingModeBlockId=m?.block_id||null;document.getElementById('modeModalTitle').textContent=id?'ویرایش مود':'افزودن مود جدید';document.getElementById('moTitle').value=m?.title||'';document.getElementById('moDesc').value=m?.description||'';document.getElementById('moMaps').value=m?.maps||'';document.getElementById('modeMsg').innerHTML='';document.getElementById('gameModeOverlay').classList.add('show');
