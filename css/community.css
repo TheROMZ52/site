@@ -17,6 +17,12 @@
 .kz-achievement h4{margin:0 0 4px;font-size:13px;}
 .kz-achievement p{margin:0;color:var(--paper-dim);font-size:11px;line-height:1.7;}
 .kz-achievement small{display:block;margin-top:6px;color:var(--paper-dim);font-size:10px;}
+.kz-achievement-actions{display:flex;gap:6px;margin-top:8px;}
+.kz-achievement-actions .btn{min-height:28px;font-size:10px;padding:5px 9px;}
+.kz-profile-section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;}
+.kz-profile-section-title h4{margin:0;font-size:14px;}
+.kz-profile-section-title span{font:700 8px 'Press Start 2P',monospace;color:rgba(244,237,220,.38);}
+.kz-profile-section-title + .btn{margin-bottom:2px;}
 .kz-news-home{margin-bottom:44px;}
 .kz-news-list{display:grid;gap:12px;}
 .kz-news-card{position:relative;padding:18px 20px 16px;background:linear-gradient(145deg,rgba(35,32,25,.76),rgba(15,14,12,.55));border:1px solid rgba(89,80,62,.75);box-shadow:0 18px 42px rgba(0,0,0,.14),inset 0 1px 0 rgba(255,255,255,.035);overflow:hidden;}
@@ -32,17 +38,16 @@
 .kz-news-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 16px;}
 .kz-news-toolbar .hint{margin:0;}
 .kz-community-empty,.kz-community-loading{padding:24px;text-align:center;color:var(--paper-dim);border:1px dashed rgba(89,80,62,.55);background:rgba(20,19,15,.3);}
+.kz-community-overlay{z-index:650!important;}
+.kz-community-overlay .modal{z-index:651!important;}
 .kz-modal-panel{max-width:760px!important;width:min(760px,calc(100vw - 28px));max-height:min(86vh,800px);overflow:auto;}
 .kz-profile-hero{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;padding:4px 0 18px;border-bottom:1px solid rgba(89,80,62,.45);}
 .kz-profile-large-avatar{width:92px;height:92px;object-fit:cover;border:1px solid rgba(223,99,48,.45);background:linear-gradient(145deg,#2c291f,#15140f);display:grid;place-items:center;font-size:28px;font-weight:800;}
 .kz-profile-hero h3{margin:0 0 6px;font-size:23px;}
 .kz-profile-hero p{margin:0;color:var(--paper-dim);line-height:1.9;font-size:12px;}
-.kz-profile-section{margin-top:18px;}
-.kz-profile-section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;}
-.kz-profile-section-title h4{margin:0;font-size:14px;}
-.kz-profile-section-title span{font:700 8px 'Press Start 2P',monospace;color:rgba(244,237,220,.38);}
 .kz-social{display:inline-flex;margin-top:8px;color:var(--ember);font-size:12px;text-decoration:none;}
 .kz-social:hover{text-decoration:underline;}
+.kz-achievement-editor{max-width:560px!important;}
 @media(max-width:760px){.kz-profile-grid{grid-template-columns:1fr;}.kz-profile-card{grid-template-columns:auto 1fr;}.kz-profile-arrow{display:none;}.kz-profile-hero{grid-template-columns:1fr;text-align:center;}.kz-profile-large-avatar{margin:auto;}.kz-profile-main{text-align:right;}}
-@media(max-width:520px){.kz-profile-card{gap:11px;padding:14px;}.kz-profile-avatar{width:58px;height:58px;font-size:17px;}.kz-profile-name{font-size:15px;}.kz-news-head{flex-direction:column;gap:8px;}.kz-news-badge{align-self:flex-start;}.kz-achievements{grid-template-columns:1fr;}}
+@media(max-width:520px){.kz-profile-card{gap:11px;padding:14px;}.kz-profile-avatar{width:58px;height:58px;font-size:17px;}.kz-profile-name{font-size:15px;}.kz-news-head{flex-direction:column;gap:8px;}.kz-news-badge{align-self:flex-start;}.kz-achievements{grid-template-columns:1fr;}.kz-news-toolbar{align-items:stretch;flex-direction:column;}.kz-news-toolbar .btn{width:100%;}.kz-achievement-actions{flex-wrap:wrap;}}
 @media(prefers-reduced-motion:reduce){.kz-profile-card,.kz-profile-arrow{transition:none!important;}}
