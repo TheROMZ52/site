@@ -6,8 +6,7 @@
   const waitForSb=async()=>{for(let i=0;i<80&&!window.sb;i++)await new Promise(r=>setTimeout(r,125));return !!window.sb;};
   const container=()=>document.getElementById('membersCommunityContainer');
 
-  // community.js currently has an inline image fallback whose nested quotes can be parsed as stray text.
-  // Intercept image errors before the inline handler and render a safe fallback node instead.
+  // Keep avatar fallback safe and free from broken inline onerror markup.
   document.addEventListener('error',e=>{
     const img=e.target;
     if(!(img instanceof HTMLImageElement)||!img.classList.contains('kz-profile-avatar'))return;
@@ -18,33 +17,43 @@
     img.replaceWith(fallback);
   },true);
 
-  function normalizeMemberCards(){
-    const root=container();if(!root)return;
+  async function normalizeMemberCards(){
+    const root=container();if(!root||!window.sb)return;
     const grid=root.querySelector('.kz-profile-grid');if(!grid)return;
 
-    // Public member cards are not ranked. Keep a stable alphabetical order instead.
+    // Public members are ordered by rank: highest rank first, then username.
+    const rankOrder={owner:0,co_owner:1,developer:2,admin:3,member:4,new_member:5,guest:6};
+    const {data}=await sb.from('accounts').select('username,rank').eq('team_status','approved');
+    const ranks=new Map((data||[]).map(a=>[String(a.username||'').trim().toLowerCase(),String(a.rank||'new_member')]));
+
     [...grid.querySelectorAll('.kz-profile-card')]
-      .sort((a,b)=>(a.querySelector('.kz-profile-name')?.textContent||'').localeCompare(b.querySelector('.kz-profile-name')?.textContent||'','fa',{sensitivity:'base'}))
+      .sort((a,b)=>{
+        const an=(a.querySelector('.kz-profile-name')?.textContent||'').trim();
+        const bn=(b.querySelector('.kz-profile-name')?.textContent||'').trim();
+        const ar=rankOrder[ranks.get(an.toLowerCase())]??99;
+        const br=rankOrder[ranks.get(bn.toLowerCase())]??99;
+        return ar-br||an.localeCompare(bn,'fa',{sensitivity:'base'});
+      })
       .forEach(card=>grid.appendChild(card));
 
     // Staff status is an admin concern, not a public profile badge.
     grid.querySelectorAll('.kz-staff-mark').forEach(mark=>mark.remove());
   }
 
-  function sanitizeMemberCards(){
+  async function sanitizeMemberCards(){
     const root=container();if(!root)return;
     root.querySelectorAll('.kz-profile-card').forEach(card=>{
       [...card.childNodes].forEach(node=>{
         if(node.nodeType===Node.TEXT_NODE&&node.textContent.trim())node.remove();
       });
     });
-    normalizeMemberCards();
+    await normalizeMemberCards();
   }
 
   async function paintPresence(){
     if(!container()||!window.sb)return;
+    await sanitizeMemberCards();
     const cards=[...container().querySelectorAll('.kz-profile-card')];if(!cards.length)return;
-    sanitizeMemberCards();
     const {data:rows,error}=await sb.from('member_presence').select('account_id,status,game,status_text,last_seen');
     if(error)return;
     const {data:accounts}=await sb.from('accounts').select('id,username').eq('team_status','approved');
@@ -79,7 +88,7 @@
   function wire(){
     const guest=document.getElementById('guestAccountsBtn');if(guest&&!guest.dataset.kzBound){guest.dataset.kzBound='1';guest.addEventListener('click',async()=>{const shown=guest.dataset.shown==='1';if(shown){container()?.querySelector('.kz-guest-section')?.remove();guest.dataset.shown='0';guest.textContent='👥 مشاهده اکانت‌های مهمان';}else{guest.disabled=true;await renderGuests();guest.disabled=false;guest.dataset.shown='1';guest.textContent='👁 مخفی‌کردن مهمان‌ها';}});}
   }
-  async function boot(){if(!await waitForSb())return;wire();paintPresence();setInterval(()=>{wire();sanitizeMemberCards();paintPresence();},10000);}
+  async function boot(){if(!await waitForSb())return;wire();paintPresence();setInterval(()=>{wire();paintPresence();},10000);}
   window.addEventListener('kz:community-refresh',()=>location.reload());
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
