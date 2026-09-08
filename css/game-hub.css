@@ -30,6 +30,7 @@
 .kz-hub-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}
 .kz-hub-chip{padding:5px 8px;border:1px solid var(--kz-stroke);background:rgba(255,255,255,.025);color:var(--kz-muted);font-size:10px}
 .kz-hub-mode-footer{display:flex;justify-content:flex-start;margin-top:16px}
+.kz-hub-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
 .kz-hub-action{width:100%;justify-content:space-between!important}
 .kz-hub-action:disabled{opacity:.48;cursor:not-allowed}
 .kz-hub-note{margin-top:18px;border-inline-start:3px solid var(--kz-orange);background:rgba(223,99,48,.045);padding:15px 18px;display:flex;align-items:flex-start;gap:15px}
@@ -38,5 +39,5 @@
 .hub-admin-zone{margin-top:58px}
 .hub-admin-zone .section-title{margin-top:0}
 @media(max-width:980px){.game-hub-intro{grid-template-columns:1fr}.kz-hub-grid{grid-template-columns:1fr}}
-@media(max-width:700px){.kz-hub-modes{grid-template-columns:1fr}.kz-hub-game{padding:19px}.kz-hub-game-head{gap:12px}.kz-hub-game-mark{width:54px;height:54px;flex-basis:54px}.kz-hub-game-title h3{font-size:23px}.game-hub-intro{margin-top:38px}}
-@media(max-width:430px){.kz-hub-game-head{align-items:center}.kz-hub-mode{min-height:0}}
+@media(max-width:700px){.kz-hub-modes{grid-template-columns:1fr}.kz-hub-game{padding:19px}.kz-hub-game-head{gap:12px}.kz-hub-game-mark{width:54px;height:54px;flex-basis:54px}.kz-hub-game-title h3{font-size:23px}.game-hub-intro{margin-top:38px}.kz-hub-actions{grid-template-columns:1fr 1fr}}
+@media(max-width:430px){.kz-hub-game-head{align-items:center}.kz-hub-mode{min-height:0}.kz-hub-actions{grid-template-columns:1fr}.kz-hub-actions .kz-hub-action{min-height:46px}}
