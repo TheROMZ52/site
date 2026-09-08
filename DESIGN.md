@@ -22,6 +22,13 @@
 ## Signature
 The site is styled as a KillZone field console: broad dark surfaces, an ember/orange command accent, subtle tactical grid texture, and small machine-like labels. The homepage's stats rail is the primary composition signature; it should remain quiet while the content carries the hierarchy.
 
+## Community features
+- Public member cards are **profiles, not ranks**. Rank remains an internal account property and is never rendered on the public profile surface.
+- Clicking a member opens a focused profile view with avatar, games, join date, optional bio/social link, and that member's achievements.
+- Achievements are stored per member and shown newest-first inside the profile view.
+- News and announcements are first-class content with `news`, `announcement`, and `event` categories plus optional pinning.
+- The homepage surfaces the latest three news items; the dedicated `/news` page is the full archive and exposes publishing controls to staff.
+
 ## Join workflow
 The account-creation page is separate from team membership. Team membership is requested through a dedicated `join.html` page. A submitted application becomes a ticket with a two-way conversation. Developers, co-owners, and owners can review all applications; applicants can see and reply to only their own ticket.
 
