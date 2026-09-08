@@ -1,2 +1,131 @@
 <!-- Designed & developed by TheROMZ52 for KillZone Team — 2026 -->
-<!DOCTYPE html><html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="بازی‌ها و مودهای فعال تیم KillZone؛ Minecraft، Call of Duty و بازی‌های رقابتی تیم."><link rel="canonical" href="https://site-pi-topaz-41.vercel.app/games"><meta property="og:type" content="website"><meta property="og:title" content="KILLZONE // بازی‌ها"><meta property="og:description" content="بازی‌ها و مودهای فعال تیم KillZone."><meta property="og:url" content="https://site-pi-topaz-41.vercel.app/games"><meta property="og:site_name" content="KillZone Team"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="KILLZONE // بازی‌ها"><meta name="twitter:description" content="بازی‌ها و مودهای فعال تیم KillZone."><title>KILLZONE // بازی‌ها</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet"><link rel="stylesheet" href="/css/style.css?v=4"><link rel="stylesheet" href="/css/revamp.css?v=3"></head><body><header><div class="brand"><div class="mark"></div><div class="name">KILL<em>ZONE</em></div></div><nav class="main"><a href="/">خانه</a><a href="/games" class="active">بازی‌ها</a><a href="/members">اعضا</a><a href="/join">عضویت در تیم</a></nav><div class="user-box" id="userBox"></div><button class="menu-toggle" id="menuToggle">☰</button></header><main><div class="section-title top"><h2>بازی‌ها و سرورها</h2><p>دو بازی، دو حال‌وهوای کاملاً متفاوت.</p></div><div id="gamesContainer"></div><div style="margin-top:34px;"><button class="btn primary small" id="addGameBtn" style="display:none;">+ افزودن بازی جدید</button></div></main><footer><div>© 2026 KillZone Team</div><div class="credit-badges"><span>رهبر گروه: <b class="ltr">1Y2U3I</b></span><span>طراح سایت: <b class="ltr">TheROMZ52</b></span><a class="rubika-link" href="#">گروه روبیکا</a></div></footer><div class="overlay" id="loginOverlay"><div class="modal"><button class="close" id="loginClose">✕</button><h3>ورود به اکانت</h3><div class="form-grid"><div class="field"><label>نام‌کاربری</label><input type="text" id="loginUser"></div><div class="field"><label>رمز عبور</label><input type="password" id="loginPass"></div><button class="btn primary" id="loginSubmit">ورود</button><div id="loginMsg"></div><div class="hint">عضو نیستی؟ <a href="/register">ورود مهمان</a></div></div></div></div><div class="overlay" id="gameBlockOverlay"><div class="modal"><button class="close" id="blockClose">✕</button><h3 id="blockModalTitle">افزودن بازی جدید</h3><div class="form-grid"><div class="field"><label>اسم بازی</label><input type="text" id="bName" maxlength="40" placeholder="مثلا: والورانت"></div><div class="field"><label>برچسب لاتین (اختیاری)</label><input type="text" id="bTag" maxlength="30" placeholder="مثلا: VALORANT"></div><div class="field"><label>تم رنگ</label><select id="bTheme"><option value="mc">سبز (مثل ماینکرفت)</option><option value="cod">نارنجی زاویه‌دار (مثل کالاف)</option><option value="neutral">خنثی</option></select></div><button class="btn primary" id="blockSave">ذخیره</button><div id="blockMsg"></div></div></div></div><div class="overlay" id="gameModeOverlay"><div class="modal"><button class="close" id="modeClose">✕</button><h3 id="modeModalTitle">افزودن مود جدید</h3><div class="form-grid"><div class="field"><label>اسم مود</label><input type="text" id="moTitle" maxlength="40" placeholder="مثلا: رنکد"></div><div class="field"><label>توضیحات</label><textarea id="moDesc" maxlength="200" placeholder="یه توضیح کوتاه درباره این مود"></textarea></div><div class="field"><label>مپ‌ها / برچسب‌ها (با ویرگول جدا کن)</label><input type="text" id="moMaps" placeholder="مثلا: نقشه یک, نقشه دو, Solo"></div><button class="btn primary" id="modeSave">ذخیره</button><div id="modeMsg"></div></div></div></div><script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="/js/config.js?v=4"></script><script defer src="/js/app.js?v=6"></script><script defer src="/js/account.js?v=1"></script><script defer src="/js/ui.js?v=1"></script><script defer src="/js/runtime-hardening.js?v=4"></script><script defer src="/js/presence.js?v=3"></script></body></html>
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="گیم هاب KillZone؛ بازی‌های تک‌نفره و حالت‌های Multiplayer تیم برای Minecraft و Counter-Strike.">
+  <link rel="canonical" href="https://site-pi-topaz-41.vercel.app/games">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="KILLZONE // گیم هاب">
+  <meta property="og:description" content="گیم هاب KillZone برای بازی‌های Singleplayer و Multiplayer.">
+  <meta property="og:url" content="https://site-pi-topaz-41.vercel.app/games">
+  <meta property="og:site_name" content="KillZone Team">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="KILLZONE // گیم هاب">
+  <meta name="twitter:description" content="گیم هاب KillZone برای بازی‌های Singleplayer و Multiplayer.">
+  <title>KILLZONE // گیم هاب</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css?v=4">
+  <link rel="stylesheet" href="/css/revamp.css?v=3">
+  <link rel="stylesheet" href="/css/game-hub.css?v=1">
+</head>
+<body>
+  <header>
+    <div class="brand"><div class="mark"></div><div class="name">KILL<em>ZONE</em></div></div>
+    <nav class="main">
+      <a href="/">خانه</a>
+      <a href="/games" class="active">گیم هاب</a>
+      <a href="/members">اعضا</a>
+      <a href="/join">عضویت در تیم</a>
+    </nav>
+    <div class="user-box" id="userBox"></div>
+    <button class="menu-toggle" id="menuToggle" type="button" aria-label="باز کردن منو">☰</button>
+  </header>
+
+  <main>
+    <section class="game-hub-intro">
+      <div>
+        <div class="kz-hub-kicker">KZ // GAME HUB</div>
+        <h1>گیم هاب</h1>
+        <p>بازی‌های KillZone اینجا جمع می‌شن؛ هر عنوان دو مسیر داره: بازی تکی برای همین الان، و Multiplayer برای مچ‌ها و دنیاهای مشترکی که داریم آماده می‌کنیم.</p>
+      </div>
+      <aside class="kz-hub-aside" aria-label="وضعیت گیم هاب">
+        <strong>2 ACTIVE TITLES</strong>
+        <span>Singleplayer قابل اجراست. زیرساخت Multiplayer در حال ساخته‌شدنه.</span>
+      </aside>
+    </section>
+
+    <section aria-labelledby="gameHubTitle">
+      <div class="section-title" style="margin-top:18px;">
+        <h2 id="gameHubTitle">بازی‌ها</h2>
+        <p>انتخاب کن و وارد عملیات شو.</p>
+      </div>
+      <div id="gameHubContainer"></div>
+    </section>
+
+    <section class="hub-admin-zone" aria-labelledby="teamModesTitle">
+      <div class="section-title">
+        <h2 id="teamModesTitle">مودهای تیم</h2>
+        <p>مودهای رسمی و جزئیات فعلی بازی‌ها.</p>
+      </div>
+      <div id="gamesContainer"></div>
+      <div style="margin-top:28px;">
+        <button class="btn primary small" id="addGameBtn" style="display:none;">+ افزودن بازی جدید</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>© 2026 KillZone Team</div>
+    <div class="credit-badges">
+      <span>رهبر گروه: <b class="ltr">1Y2U3I</b></span>
+      <span>طراح سایت: <b class="ltr">TheROMZ52</b></span>
+      <a class="rubika-link" href="#">گروه روبیکا</a>
+    </div>
+  </footer>
+
+  <div class="overlay" id="loginOverlay">
+    <div class="modal">
+      <button class="close" id="loginClose" type="button" aria-label="بستن">✕</button>
+      <h3>ورود به اکانت</h3>
+      <div class="form-grid">
+        <div class="field"><label for="loginUser">نام‌کاربری</label><input type="text" id="loginUser" autocomplete="username"></div>
+        <div class="field"><label for="loginPass">رمز عبور</label><input type="password" id="loginPass" autocomplete="current-password"></div>
+        <button class="btn primary" id="loginSubmit" type="button">ورود</button>
+        <div id="loginMsg"></div>
+        <div class="hint">عضو نیستی؟ <a href="/register">ورود مهمان</a></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="gameBlockOverlay">
+    <div class="modal">
+      <button class="close" id="blockClose" type="button" aria-label="بستن">✕</button>
+      <h3 id="blockModalTitle">افزودن بازی جدید</h3>
+      <div class="form-grid">
+        <div class="field"><label for="bName">اسم بازی</label><input type="text" id="bName" maxlength="40" placeholder="مثلا: والورانت"></div>
+        <div class="field"><label for="bTag">برچسب لاتین (اختیاری)</label><input type="text" id="bTag" maxlength="30" placeholder="مثلا: VALORANT"></div>
+        <div class="field"><label for="bTheme">تم رنگ</label><select id="bTheme"><option value="mc">سبز (مثل ماینکرفت)</option><option value="cod">نارنجی زاویه‌دار (مثل کالاف)</option><option value="neutral">خنثی</option></select></div>
+        <button class="btn primary" id="blockSave" type="button">ذخیره</button>
+        <div id="blockMsg"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="gameModeOverlay">
+    <div class="modal">
+      <button class="close" id="modeClose" type="button" aria-label="بستن">✕</button>
+      <h3 id="modeModalTitle">افزودن مود جدید</h3>
+      <div class="form-grid">
+        <div class="field"><label for="moTitle">اسم مود</label><input type="text" id="moTitle" maxlength="40" placeholder="مثلا: رنکد"></div>
+        <div class="field"><label for="moDesc">توضیحات</label><textarea id="moDesc" maxlength="200" placeholder="یه توضیح کوتاه درباره این مود"></textarea></div>
+        <div class="field"><label for="moMaps">مپ‌ها / برچسب‌ها (با ویرگول جدا کن)</label><input type="text" id="moMaps" placeholder="مثلا: نقشه یک, نقشه دو, Solo"></div>
+        <button class="btn primary" id="modeSave" type="button">ذخیره</button>
+        <div id="modeMsg"></div>
+      </div>
+    </div>
+  </div>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="/js/config.js?v=4"></script>
+  <script defer src="/js/app.js?v=6"></script>
+  <script defer src="/js/account.js?v=1"></script>
+  <script defer src="/js/ui.js?v=1"></script>
+  <script defer src="/js/runtime-hardening.js?v=4"></script>
+  <script defer src="/js/presence.js?v=3"></script>
+  <script defer src="/js/game-hub.js?v=1"></script>
+</body>
+</html>
