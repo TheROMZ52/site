@@ -18,6 +18,19 @@
     img.replaceWith(fallback);
   },true);
 
+  function normalizeMemberCards(){
+    const root=container();if(!root)return;
+    const grid=root.querySelector('.kz-profile-grid');if(!grid)return;
+
+    // Public member cards are not ranked. Keep a stable alphabetical order instead.
+    [...grid.querySelectorAll('.kz-profile-card')]
+      .sort((a,b)=>(a.querySelector('.kz-profile-name')?.textContent||'').localeCompare(b.querySelector('.kz-profile-name')?.textContent||'','fa',{sensitivity:'base'}))
+      .forEach(card=>grid.appendChild(card));
+
+    // Staff status is an admin concern, not a public profile badge.
+    grid.querySelectorAll('.kz-staff-mark').forEach(mark=>mark.remove());
+  }
+
   function sanitizeMemberCards(){
     const root=container();if(!root)return;
     root.querySelectorAll('.kz-profile-card').forEach(card=>{
@@ -25,6 +38,7 @@
         if(node.nodeType===Node.TEXT_NODE&&node.textContent.trim())node.remove();
       });
     });
+    normalizeMemberCards();
   }
 
   async function paintPresence(){
