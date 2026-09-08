@@ -1,0 +1,48 @@
+<!-- Designed & developed by TheROMZ52 for KillZone Team — 2026 -->
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta http-equiv="refresh" content="1;url=https://site-pi-topaz-41.vercel.app/">
+  <title>KILLZONE // InfinityFree</title>
+  <style>
+    :root{--ink:#10100e;--surface:#191812;--surface2:#211f18;--line:#3b362a;--ember:#df6330;--text:#f4eddc;--muted:#a59b86}
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:var(--ink);color:var(--text);font-family:Arial,"Vazirmatn",sans-serif}
+    body{display:grid;place-items:center;overflow:hidden}
+    body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.16;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:36px 36px}
+    .console{width:min(560px,calc(100% - 32px));padding:28px;background:linear-gradient(145deg,var(--surface),var(--surface2));border:1px solid var(--line);position:relative;box-shadow:0 24px 70px #0008;animation:rise .45s ease both}
+    .console:before{content:"";position:absolute;top:0;right:0;width:42%;height:3px;background:var(--ember)}
+    .top{display:flex;justify-content:space-between;gap:16px;color:var(--muted);font-size:11px;letter-spacing:1.4px;font-weight:700}
+    .rule{height:1px;background:var(--line);margin:18px 0}
+    .mark{display:inline-flex;align-items:center;gap:9px;color:var(--ember);font-size:12px;font-weight:800}
+    .dot{width:8px;height:8px;background:var(--ember);display:inline-block;box-shadow:0 0 0 5px #df633018;animation:pulse 1.4s ease-in-out infinite}
+    h1{margin:18px 0 8px;font-size:clamp(32px,9vw,58px);line-height:.95;letter-spacing:-2px;font-weight:900}
+    h1 em{color:var(--ember);font-style:normal}
+    p{margin:0;color:var(--muted);line-height:1.9;font-size:14px}
+    .status{margin-top:22px;padding:13px 15px;background:#10100e;border:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:12px}
+    .status strong{color:var(--text);font-size:11px;letter-spacing:1px}
+    .bar{height:3px;background:var(--line);margin-top:12px;overflow:hidden}.bar i{display:block;height:100%;width:72%;background:var(--ember);animation:load 1s ease both}
+    .fallback{margin-top:16px;text-align:center;font-size:11px}.fallback a{color:var(--ember);text-decoration:none}
+    @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+    @keyframes pulse{50%{opacity:.35;transform:scale(.8)}}
+    @keyframes load{from{width:0}to{width:72%}}
+    @media(prefers-reduced-motion:reduce){*{animation:none!important}}
+  </style>
+</head>
+<body>
+  <main class="console" aria-label="KillZone redirect">
+    <div class="top"><span>KZ // FIELD CONSOLE</span><span>IF-26</span></div>
+    <div class="rule"></div>
+    <div class="mark"><span class="dot"></span> اتصال به شبکه اصلی</div>
+    <h1>KILL<em>ZONE</em></h1>
+    <p>در حال انتقال به وب‌سایت اصلی تیم KillZone...</p>
+    <div class="status"><span>REDIRECT STATUS</span><strong>ROUTING TO MAIN SITE</strong></div>
+    <div class="bar"><i></i></div>
+    <p class="fallback">اگر انتقال انجام نشد، <a href="https://site-pi-topaz-41.vercel.app/">اینجا کلیک کن</a>.</p>
+  </main>
+  <script>setTimeout(function(){location.replace('https://site-pi-topaz-41.vercel.app/');},700);</script>
+</body>
+</html>
