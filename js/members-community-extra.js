@@ -6,9 +6,31 @@
   const waitForSb=async()=>{for(let i=0;i<80&&!window.sb;i++)await new Promise(r=>setTimeout(r,125));return !!window.sb;};
   const container=()=>document.getElementById('membersCommunityContainer');
 
+  // community.js currently has an inline image fallback whose nested quotes can be parsed as stray text.
+  // Intercept image errors before the inline handler and render a safe fallback node instead.
+  document.addEventListener('error',e=>{
+    const img=e.target;
+    if(!(img instanceof HTMLImageElement)||!img.classList.contains('kz-profile-avatar'))return;
+    e.stopImmediatePropagation();
+    const fallback=document.createElement('div');
+    fallback.className='kz-profile-avatar';
+    fallback.textContent=(img.alt||'?').trim().slice(0,2).toUpperCase()||'?';
+    img.replaceWith(fallback);
+  },true);
+
+  function sanitizeMemberCards(){
+    const root=container();if(!root)return;
+    root.querySelectorAll('.kz-profile-card').forEach(card=>{
+      [...card.childNodes].forEach(node=>{
+        if(node.nodeType===Node.TEXT_NODE&&node.textContent.trim())node.remove();
+      });
+    });
+  }
+
   async function paintPresence(){
     if(!container()||!window.sb)return;
     const cards=[...container().querySelectorAll('.kz-profile-card')];if(!cards.length)return;
+    sanitizeMemberCards();
     const {data:rows,error}=await sb.from('member_presence').select('account_id,status,game,status_text,last_seen');
     if(error)return;
     const {data:accounts}=await sb.from('accounts').select('id,username').eq('team_status','approved');
@@ -43,7 +65,7 @@
   function wire(){
     const guest=document.getElementById('guestAccountsBtn');if(guest&&!guest.dataset.kzBound){guest.dataset.kzBound='1';guest.addEventListener('click',async()=>{const shown=guest.dataset.shown==='1';if(shown){container()?.querySelector('.kz-guest-section')?.remove();guest.dataset.shown='0';guest.textContent='👥 مشاهده اکانت‌های مهمان';}else{guest.disabled=true;await renderGuests();guest.disabled=false;guest.dataset.shown='1';guest.textContent='👁 مخفی‌کردن مهمان‌ها';}});}
   }
-  async function boot(){if(!await waitForSb())return;wire();paintPresence();setInterval(paintPresence,10000);setInterval(wire,1000);}
+  async function boot(){if(!await waitForSb())return;wire();paintPresence();setInterval(()=>{wire();sanitizeMemberCards();paintPresence();},10000);}
   window.addEventListener('kz:community-refresh',()=>location.reload());
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
