@@ -1,7 +1,8 @@
-// KillZone members/community bridge — keep the legacy account members renderer from competing with the community renderer.
+// KillZone members/community bridge — legacy refresh requests now refresh the community page safely.
 (function(){
   'use strict';
   window.KZ_COMMUNITY_MEMBERS_PAGE = true;
-  // app.js exposes renderMembersPage globally; community.js owns the members view now.
-  window.renderMembersPage = async function(){ return; };
+  window.renderMembersPage = async function(){
+    window.dispatchEvent(new CustomEvent('kz:community-refresh'));
+  };
 })();
