@@ -62,6 +62,10 @@ html[dir="rtl"] .btn::before,html[dir="rtl"] .link-btn::before,html[dir="rtl"] .
 .menu-toggle{min-width:46px;min-height:44px;padding:9px 12px;font-size:19px;border-color:rgba(255,255,255,.10);background:rgba(255,255,255,.03);}
 .menu-toggle:hover{color:var(--kz-orange,var(--ember));border-color:rgba(223,99,48,.45);background:rgba(223,99,48,.07);}
 
+/* RTL pages naturally flow right-to-left, so the main action cluster is centered deliberately. */
+.hero .cta,.kz-gate-actions,.kz-submit-row{justify-content:center;}
+.hero .cta .btn,.kz-gate-actions .btn{margin-inline:0;}
+
 button:disabled,.btn:disabled,.link-btn:disabled,.admin-btn:disabled,.icon-btn:disabled{opacity:.42;transform:none!important;cursor:not-allowed;box-shadow:none;}
 button:disabled::before,.btn:disabled::before,.link-btn:disabled::before,.admin-btn:disabled::before,.icon-btn:disabled::before{display:none;}
 button[aria-busy="true"]{cursor:wait;}
