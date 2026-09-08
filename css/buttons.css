@@ -1,28 +1,81 @@
-/* KillZone button system — tactile, sharp, responsive */
-.btn,.link-btn,.admin-btn,.icon-btn,.menu-toggle,.guest-accounts-btn,.credit-badges a{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:11px 18px;border:1px solid var(--kz-stroke, var(--line));border-radius:7px;background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.012));color:var(--kz-text,var(--paper));font:700 14px/1 'Vazirmatn',sans-serif;letter-spacing:.05px;cursor:pointer;overflow:hidden;isolation:isolate;transition:transform .18s cubic-bezier(.22,1,.36,1),border-color .18s ease,background .18s ease,box-shadow .18s ease,color .18s ease;box-shadow:0 2px 0 rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.035)}
-.btn::before,.link-btn::before,.admin-btn::before,.icon-btn::before,.menu-toggle::before,.guest-accounts-btn::before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 25%,rgba(255,255,255,.09) 47%,transparent 69%);transform:translateX(-120%);transition:transform .55s cubic-bezier(.22,1,.36,1);z-index:-1}
-.btn:hover::before,.link-btn:hover::before,.admin-btn:hover::before,.icon-btn:hover::before,.menu-toggle:hover::before,.guest-accounts-btn:hover::before{transform:translateX(120%)}
-.btn:hover,.link-btn:hover,.admin-btn:hover,.icon-btn:hover,.menu-toggle:hover,.guest-accounts-btn:hover{transform:translateY(-2px);border-color:var(--kz-stroke-strong,var(--line));box-shadow:0 10px 24px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.045)}
-.btn:active,.link-btn:active,.admin-btn:active,.icon-btn:active,.menu-toggle:active,.guest-accounts-btn:active{transform:translateY(1px);box-shadow:0 2px 7px rgba(0,0,0,.2),inset 0 2px 5px rgba(0,0,0,.16)}
-.btn.primary{background:linear-gradient(180deg,#f07a42,#d95c28);border-color:#f08a59;color:#1d120c;box-shadow:0 7px 22px rgba(223,99,48,.18),inset 0 1px 0 rgba(255,255,255,.18)}
-.btn.primary:hover{background:linear-gradient(180deg,#ff8850,#e3632e);border-color:#ff9a69;box-shadow:0 12px 30px rgba(223,99,48,.26),inset 0 1px 0 rgba(255,255,255,.2)}
-.btn.primary:active{background:linear-gradient(180deg,#d85c2b,#c64e21)}
-.btn.ghost,.guest-accounts-btn{background:rgba(255,255,255,.022);border-color:rgba(255,255,255,.10)}
-.btn.ghost:hover,.guest-accounts-btn:hover{background:rgba(223,99,48,.08);border-color:rgba(223,99,48,.38);color:var(--kz-text,var(--paper))}
-.btn.danger{background:linear-gradient(180deg,#b84e2f,#913b24);border-color:#d26645;color:#fff}
-.btn.small,.icon-btn{min-height:38px;padding:9px 13px;font-size:12px}
-.icon-btn{border-radius:6px;font-weight:700}
-.icon-btn.del,.btn.danger{--danger:#c34f2b}
-.icon-btn.del:hover{border-color:#c85b3b;color:#ffab8e;background:rgba(195,79,43,.09)}
-.link-btn,.admin-btn{min-height:40px;padding:10px 15px;font-size:13px}
-.link-btn:hover{border-color:var(--kz-stroke-strong,var(--line));color:var(--kz-text,var(--paper))}
-.admin-btn.on{border-color:rgba(114,139,75,.7);background:linear-gradient(180deg,rgba(114,139,75,.18),rgba(114,139,75,.08));color:#b8d58e;box-shadow:0 6px 18px rgba(114,139,75,.08)}
-.menu-toggle{min-width:46px;min-height:44px;padding:9px 12px;font-size:19px;border-color:rgba(255,255,255,.10);background:rgba(255,255,255,.035)}
-.menu-toggle:hover{color:var(--kz-orange,var(--ember));border-color:rgba(223,99,48,.45);background:rgba(223,99,48,.08)}
-button:disabled,.btn:disabled,.link-btn:disabled,.admin-btn:disabled,.icon-btn:disabled{opacity:.42;transform:none!important;cursor:not-allowed;box-shadow:none}
-button[aria-busy="true"]{cursor:wait}
-button[aria-busy="true"]::after{content:"";width:14px;height:14px;border:2px solid currentColor;border-inline-end-color:transparent;border-radius:50%;animation:kzButtonSpin .7s linear infinite}
-:focus-visible{outline:2px solid var(--kz-orange,var(--ember));outline-offset:3px;box-shadow:0 0 0 5px rgba(223,99,48,.12)}
-@keyframes kzButtonSpin{to{transform:rotate(360deg)}}
-@media(max-width:760px){.btn,.link-btn,.admin-btn,.guest-accounts-btn{min-height:46px;padding:11px 15px}.hero .cta .btn{flex:1 1 150px}.members-toolbar .btn{width:100%}}
-@media(prefers-reduced-motion:reduce){.btn,.link-btn,.admin-btn,.icon-btn,.menu-toggle,.guest-accounts-btn{transition:none}.btn::before,.link-btn::before,.admin-btn::before,.icon-btn::before,.menu-toggle::before,.guest-accounts-btn::before{display:none}}
+/* KillZone command controls — tactile, editorial, and deliberately non-generic */
+:root{
+  --kz-btn-bg:rgba(25,24,18,.76);
+  --kz-btn-bg-hover:rgba(34,31,23,.92);
+  --kz-btn-border:rgba(89,80,62,.82);
+  --kz-btn-border-hover:rgba(223,99,48,.62);
+  --kz-btn-text:var(--kz-text,var(--paper));
+  --kz-btn-orange:var(--kz-orange,var(--ember));
+}
+
+.btn,.link-btn,.admin-btn,.icon-btn,.menu-toggle,.guest-accounts-btn,.credit-badges a{
+  position:relative;display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  min-height:44px;padding:11px 18px;border:1px solid var(--kz-btn-border);border-radius:4px;
+  background:var(--kz-btn-bg);color:var(--kz-btn-text);
+  font:700 14px/1 'Vazirmatn',sans-serif;letter-spacing:.05px;cursor:pointer;
+  overflow:hidden;isolation:isolate;
+  transition:transform .16s ease,border-color .16s ease,background .16s ease,box-shadow .16s ease,color .16s ease;
+  box-shadow:0 2px 0 rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.035);
+}
+
+/* A quiet tactical edge replaces the generic glossy shine. */
+.btn::before,.link-btn::before,.admin-btn::before,.icon-btn::before,.menu-toggle::before,.guest-accounts-btn::before{
+  content:"";position:absolute;inset:auto 0 0 0;height:2px;
+  background:var(--kz-btn-orange);transform:scaleX(0);transform-origin:var(--kz-edge-origin,left);
+  transition:transform .18s ease;z-index:-1;
+}
+html[dir="rtl"] .btn::before,html[dir="rtl"] .link-btn::before,html[dir="rtl"] .admin-btn::before,html[dir="rtl"] .icon-btn::before,html[dir="rtl"] .menu-toggle::before,html[dir="rtl"] .guest-accounts-btn::before{transform-origin:right;}
+
+.btn:hover,.link-btn:hover,.admin-btn:hover,.icon-btn:hover,.menu-toggle:hover,.guest-accounts-btn:hover{
+  transform:translateY(-1px);border-color:var(--kz-btn-border-hover);background:var(--kz-btn-bg-hover);
+  box-shadow:0 7px 18px rgba(0,0,0,.20),inset 0 1px 0 rgba(255,255,255,.05);
+}
+.btn:hover::before,.link-btn:hover::before,.admin-btn:hover::before,.icon-btn:hover::before,.menu-toggle:hover::before,.guest-accounts-btn:hover::before{transform:scaleX(1);}
+.btn:active,.link-btn:active,.admin-btn:active,.icon-btn:active,.menu-toggle:active,.guest-accounts-btn:active{
+  transform:translateY(1px);box-shadow:0 1px 4px rgba(0,0,0,.28),inset 0 2px 5px rgba(0,0,0,.18);
+}
+
+/* Primary = command, not candy. */
+.btn.primary{
+  background:var(--kz-btn-orange);border-color:#ef8051;color:#1b120d;
+  box-shadow:0 5px 18px rgba(223,99,48,.16),inset 0 1px 0 rgba(255,255,255,.16);
+}
+.btn.primary::before{background:rgba(255,255,255,.28);height:1px;}
+.btn.primary:hover{background:#e96d39;border-color:#ff9a69;box-shadow:0 8px 23px rgba(223,99,48,.22),inset 0 1px 0 rgba(255,255,255,.20);}
+.btn.primary:active{background:#ca5123;}
+
+.btn.ghost,.guest-accounts-btn{background:rgba(255,255,255,.018);border-color:rgba(255,255,255,.11);}
+.btn.ghost:hover,.guest-accounts-btn:hover{background:rgba(223,99,48,.065);border-color:rgba(223,99,48,.42);color:var(--kz-btn-text);}
+
+.btn.danger{background:#713421;border-color:#a44a30;color:#fff;}
+.btn.danger:hover{background:#873d27;border-color:#cf6748;}
+
+.btn.small,.icon-btn{min-height:38px;padding:9px 13px;font-size:12px;}
+.icon-btn{border-radius:3px;font-weight:700;}
+.icon-btn.del,.btn.danger{--danger:#c34f2b;}
+.icon-btn.del:hover{border-color:#c85b3b;color:#ffab8e;background:rgba(195,79,43,.09);}
+.link-btn,.admin-btn{min-height:40px;padding:10px 15px;font-size:13px;}
+.link-btn:hover{color:var(--kz-btn-text);}
+.admin-btn.on{border-color:rgba(114,139,75,.72);background:rgba(114,139,75,.13);color:#b8d58e;box-shadow:0 5px 16px rgba(114,139,75,.08);}
+.admin-btn.on::before{background:var(--kz-green);}
+
+.menu-toggle{min-width:46px;min-height:44px;padding:9px 12px;font-size:19px;border-color:rgba(255,255,255,.10);background:rgba(255,255,255,.03);}
+.menu-toggle:hover{color:var(--kz-orange,var(--ember));border-color:rgba(223,99,48,.45);background:rgba(223,99,48,.07);}
+
+button:disabled,.btn:disabled,.link-btn:disabled,.admin-btn:disabled,.icon-btn:disabled{opacity:.42;transform:none!important;cursor:not-allowed;box-shadow:none;}
+button:disabled::before,.btn:disabled::before,.link-btn:disabled::before,.admin-btn:disabled::before,.icon-btn:disabled::before{display:none;}
+button[aria-busy="true"]{cursor:wait;}
+button[aria-busy="true"]::after{content:"";width:14px;height:14px;border:2px solid currentColor;border-inline-end-color:transparent;border-radius:50%;animation:kzButtonSpin .7s linear infinite;}
+
+:focus-visible{outline:2px solid var(--kz-orange,var(--ember));outline-offset:3px;box-shadow:0 0 0 5px rgba(223,99,48,.12);}
+@keyframes kzButtonSpin{to{transform:rotate(360deg);}}
+
+@media(max-width:760px){
+  .btn,.link-btn,.admin-btn,.guest-accounts-btn{min-height:46px;padding:11px 15px;}
+  .hero .cta .btn{flex:1 1 150px;}
+  .members-toolbar .btn{width:100%;}
+}
+@media(prefers-reduced-motion:reduce){
+  .btn,.link-btn,.admin-btn,.icon-btn,.menu-toggle,.guest-accounts-btn{transition:none;}
+  .btn::before,.link-btn::before,.admin-btn::before,.icon-btn::before,.menu-toggle::before,.guest-accounts-btn::before{transition:none;}
+}
