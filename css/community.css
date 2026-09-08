@@ -17,6 +17,7 @@
 .kz-achievement h4{margin:0 0 4px;font-size:13px;}
 .kz-achievement p{margin:0;color:var(--paper-dim);font-size:11px;line-height:1.7;}
 .kz-achievement small{display:block;margin-top:6px;color:var(--paper-dim);font-size:10px;}
+.kz-news-home{margin-bottom:44px;}
 .kz-news-list{display:grid;gap:12px;}
 .kz-news-card{position:relative;padding:18px 20px 16px;background:linear-gradient(145deg,rgba(35,32,25,.76),rgba(15,14,12,.55));border:1px solid rgba(89,80,62,.75);box-shadow:0 18px 42px rgba(0,0,0,.14),inset 0 1px 0 rgba(255,255,255,.035);overflow:hidden;}
 .kz-news-card.is-pinned{border-color:rgba(223,99,48,.55);}
