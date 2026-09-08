@@ -16,7 +16,36 @@
     const {data,error}=await sb.from('achievements').select('id,title,description,icon,awarded_at').eq('account_id',accountId).order('awarded_at',{ascending:false});
     if(error){console.error('achievements',error);return [];} return data||[];
   }
-  function avatar(m,large){const cls=large?'kz-profile-large-avatar':'kz-profile-avatar';return m.photo?`<img class="${cls}" src="${esc(m.photo)}" alt="${esc(m.username)}" loading="lazy" decoding="async" onerror="this.outerHTML='<div class=\"${cls}\">${esc(initials(m.username))}</div>'">`:`<div class="${cls}">${esc(initials(m.username))}</div>`;}
+
+  // Keep avatar fallback as a real DOM node instead of nested HTML inside onerror.
+  // Broken image URLs now leave clean initials in place and can never leak stray markup.
+  function avatar(m,large){
+    const cls=large?'kz-profile-large-avatar':'kz-profile-avatar';
+    const fallback=esc(initials(m.username));
+    return m.photo
+      ? `<div class="${cls} kz-avatar-media" data-avatar-url="${esc(m.photo)}" role="img" aria-label="${esc(m.username)}">${fallback}</div>`
+      : `<div class="${cls}">${fallback}</div>`;
+  }
+
+  function hydrateAvatars(root){
+    if(!root)return;
+    root.querySelectorAll('.kz-avatar-media[data-avatar-url]').forEach(el=>{
+      if(el.dataset.kzAvatarReady)return;
+      el.dataset.kzAvatarReady='1';
+      const url=el.getAttribute('data-avatar-url');
+      if(!url)return;
+      const probe=new Image();
+      probe.onload=()=>{
+        el.style.backgroundImage=`url("${url.replace(/(["\\])/g,'\\$1')}")`;
+        el.style.backgroundSize='cover';
+        el.style.backgroundPosition='center';
+        el.style.backgroundRepeat='no-repeat';
+        el.textContent='';
+      };
+      probe.onerror=()=>{};
+      probe.src=url;
+    });
+  }
 
   async function renderMembers(){
     const container=document.getElementById('membersCommunityContainer'); if(!container)return;
@@ -47,6 +76,7 @@
       grid.appendChild(card);
     });
     container.replaceChildren(grid);
+    hydrateAvatars(container);
   }
 
   async function ensureProfileModal(){
@@ -58,6 +88,7 @@
   async function openProfile(m){
     const o=await ensureProfileModal();const c=o.querySelector('#kzProfileContent');const social=safeUrl(m.social);
     c.innerHTML=`<div class="kz-profile-hero">${avatar(m,true)}<div class="kz-profile-hero-copy"><span class="kz-eyebrow">KZ // MEMBER PROFILE</span><h3 id="kzProfileTitle">${esc(m.username)}</h3><p>${esc(m.bio||'این عضو هنوز معرفی کوتاهی ثبت نکرده.')}</p>${social?`<a class="kz-social" href="${esc(social)}" target="_blank" rel="noopener noreferrer">لینک پروفایل ↗</a>`:''}</div></div><section class="kz-profile-section"><div class="kz-profile-section-title"><h4>درباره عضو</h4><span>PROFILE</span></div><div class="kz-profile-meta kz-profile-meta-large"><span>${esc(String(m.game||'بازی ثبت نشده').replaceAll('،',' · '))}</span>${m.joined_at?`<span>عضویت از ${esc(dateFa(m.joined_at))}</span>`:''}</div></section><section class="kz-profile-section"><div class="kz-profile-section-title"><h4>دستاوردها</h4><span>ACHIEVEMENTS</span></div>${staff()?'<button class="btn primary small" id="kzAchievementAdd">+ افزودن دستاورد</button>':''}<div id="kzProfileAchievements" class="kz-achievements"><div class="kz-community-loading">در حال بارگذاری دستاوردها…</div></div></section>`;
+    hydrateAvatars(c);
     o.classList.add('show');o.querySelector('#kzAchievementAdd')?.addEventListener('click',()=>openAchievementEditor(m,null));await refreshProfileAchievements(m);
   }
 
