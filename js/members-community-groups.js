@@ -1,5 +1,5 @@
 // KillZone members community grouping layer.
-// Restores the classic rank-separated member layout without exposing staff badges.
+// Keeps the classic rank-separated member layout and reads the real rank from accounts.
 (function(){
   'use strict';
 
@@ -15,7 +15,6 @@
 
   const rankLabel = new Map(RANKS);
   const root = () => document.getElementById('membersCommunityContainer');
-  const staff = () => !!(window.currentUser && ['admin','developer','co_owner','owner'].includes(window.currentUser.rank));
   let grouping = false;
   let queued = false;
 
@@ -37,19 +36,20 @@
     document.head.appendChild(style);
   }
 
-  async function getRankMap(){
-    if(typeof window.fetchAccounts==='function'){
-      try{
-        const rows=await window.fetchAccounts();
-        if(Array.isArray(rows)&&rows.length){
-          return new Map(rows.map(row=>[String(row.username||'').trim().toLowerCase(),String(row.rank||'member').trim().toLowerCase()]));
-        }
-      }catch(err){console.warn('KillZone fetchAccounts rank grouping:',err);}
-    }
+  async function getApprovedRanks(){
     if(!window.sb) return new Map();
-    const {data,error}=await sb.from('accounts').select('id,username,rank').eq('team_status','approved');
-    if(error){console.warn('KillZone rank grouping:',error);return new Map();}
-    return new Map((data||[]).map(row=>[String(row.username||'').trim().toLowerCase(),String(row.rank||'member').trim().toLowerCase()]));
+    const {data,error}=await window.sb
+      .from('accounts')
+      .select('username,rank')
+      .eq('team_status','approved');
+    if(error){
+      console.warn('KillZone rank grouping:',error);
+      return new Map();
+    }
+    return new Map((data||[]).map(row=>[
+      String(row.username||'').trim().toLowerCase(),
+      String(row.rank||'').trim().toLowerCase()
+    ]));
   }
 
   function stripStaffMarks(container){
@@ -69,23 +69,25 @@
     const container=root();
     if(!container)return;
 
-    const source=container.querySelector(':scope > .kz-profile-grid');
+    const source=container.querySelector('.kz-profile-grid');
     if(!source)return;
-    const cards=[...source.querySelectorAll(':scope > .kz-profile-card')];
+    const cards=[...source.querySelectorAll('.kz-profile-card')];
     if(!cards.length)return;
 
     grouping=true;
     try{
       injectStyles();
       stripStaffMarks(container);
-      const ranks=await getRankMap();
-      if(!ranks.size)return;
+
+      // Prefer rank already attached by the rank bridge, then refresh from DB.
+      const ranks=await getApprovedRanks();
       const groups=new Map(RANKS.map(([rank])=>[rank,[]]));
 
       cards.forEach(card=>{
         const username=(card.querySelector('.kz-profile-name')?.textContent||'').trim().toLowerCase();
-        const rank=ranks.get(username);
+        const rank=String(card.dataset.rank||ranks.get(username)||'').trim().toLowerCase();
         if(!rank || !groups.has(rank))return;
+        card.dataset.rank=rank;
         groups.get(rank).push(card);
       });
 
@@ -138,6 +140,7 @@
     setInterval(()=>{sanitizePresence();schedule();},5000);
     window.addEventListener('kz:session-changed',schedule);
     window.addEventListener('kz:community-refresh',schedule);
+    window.addEventListener('kz:ranks-ready',schedule);
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
