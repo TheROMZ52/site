@@ -1,6 +1,8 @@
-// KillZone community rank data bridge
+// KillZone community rank data bridge.
+// Keeps rank data authoritative: unmatched cards are never silently turned into `member`.
 (function(){
   'use strict';
+
   const root=()=>document.getElementById('membersCommunityContainer');
   const normalize=v=>String(v||'').trim().toLowerCase();
 
@@ -10,18 +12,24 @@
     const cards=[...r.querySelectorAll('.kz-profile-card')];
     if(!cards.length)return false;
 
-    const {data,error}=await sb.from('accounts')
+    const {data,error}=await window.sb
+      .from('accounts')
       .select('id,username,rank')
       .eq('team_status','approved');
     if(error){console.error('KillZone rank data:',error);return false;}
 
-    const byName=new Map((data||[]).map(a=>[normalize(a.username),normalize(a.rank||'member')]));
+    const byName=new Map((data||[]).map(a=>[
+      normalize(a.username),
+      normalize(a.rank||'')
+    ]));
+
     cards.forEach(card=>{
       const name=normalize(card.querySelector('.kz-profile-name')?.textContent);
-      const rank=byName.get(name)||'member';
-      card.dataset.rank=rank;
-      card.setAttribute('data-rank',rank);
+      const rank=byName.get(name)||'';
+      if(rank) card.dataset.rank=rank;
+      else delete card.dataset.rank;
     });
+
     r.dataset.kzRanksReady='1';
     window.dispatchEvent(new CustomEvent('kz:ranks-ready'));
     return true;
