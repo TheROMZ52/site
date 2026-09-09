@@ -1,5 +1,5 @@
 // KillZone members community grouping layer.
-// Keeps the classic rank-separated member layout and reads the real rank from accounts.
+// Keeps the classic rank-separated member layout and reads the real rank directly from accounts.
 (function(){
   'use strict';
 
@@ -69,9 +69,11 @@
     const container=root();
     if(!container)return;
 
-    const source=container.querySelector('.kz-profile-grid');
+    // Only regroup the original top-level community grid. Never consume a grid
+    // that has already been moved inside a rank section.
+    const source=container.querySelector(':scope > .kz-profile-grid');
     if(!source)return;
-    const cards=[...source.querySelectorAll('.kz-profile-card')];
+    const cards=[...source.querySelectorAll(':scope > .kz-profile-card')];
     if(!cards.length)return;
 
     grouping=true;
@@ -79,14 +81,19 @@
       injectStyles();
       stripStaffMarks(container);
 
-      // Prefer rank already attached by the rank bridge, then refresh from DB.
+      // The database is authoritative. Never trust a stale data-rank value and
+      // never fall back to member when a lookup fails.
       const ranks=await getApprovedRanks();
       const groups=new Map(RANKS.map(([rank])=>[rank,[]]));
+      const unmapped=[];
 
       cards.forEach(card=>{
         const username=(card.querySelector('.kz-profile-name')?.textContent||'').trim().toLowerCase();
-        const rank=String(card.dataset.rank||ranks.get(username)||'').trim().toLowerCase();
-        if(!rank || !groups.has(rank))return;
+        const rank=ranks.get(username)||'';
+        if(!rank || !groups.has(rank)){
+          unmapped.push(card);
+          return;
+        }
         card.dataset.rank=rank;
         groups.get(rank).push(card);
       });
@@ -106,6 +113,15 @@
         list.forEach(card=>grid.appendChild(card));
         fragment.appendChild(section);
       });
+
+      if(unmapped.length){
+        const section=makeSection('unmapped');
+        section.querySelector('h2').textContent='سایر';
+        section.dataset.rank='unmapped';
+        const grid=section.querySelector('.kz-member-rank-grid');
+        unmapped.forEach(card=>grid.appendChild(card));
+        fragment.appendChild(section);
+      }
 
       container.replaceChildren(fragment);
     }finally{
