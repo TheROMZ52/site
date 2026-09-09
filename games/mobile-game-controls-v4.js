@@ -1,92 +1,78 @@
-/* KillZone mobile controls v4 — native-input-compatible bootstrap for the existing full games. */
+/* KillZone mobile bootstrap: start layer + pointer-lock compatibility + v3 touch controls. */
 (function(){
   'use strict';
   const frame=document.getElementById('gameFrame');
   if(!frame)return;
   const mode=document.body.dataset.mobileGame||'minecraft';
-  let started=false;
-  let oldRequest=null;
+  let controlsLoaded=false;
+  let startLayer=null;
+  let watchTimer=null;
 
-  function installGamePointerLockShim(){
-    const d=frame.contentDocument;
-    const w=frame.contentWindow;
-    if(!d||!w)return false;
-    const target=mode==='minecraft'?d.body:d.getElementById('game-canvas')||d.querySelector('canvas');
-    if(!target)return false;
+  function childDoc(){try{return frame.contentDocument||null}catch(_){return null}}
+  function childWin(){try{return frame.contentWindow||null}catch(_){return null}}
+  function gameCanvas(){const d=childDoc();return d&&(d.getElementById('game-canvas')||d.querySelector('canvas'));}
 
-    try{
-      Object.defineProperty(d,'pointerLockElement',{
-        configurable:true,
-        get:function(){return target;}
-      });
-    }catch(_){ }
-
-    try{
-      if(!target.__kzOriginalRequestPointerLock){
-        target.__kzOriginalRequestPointerLock=target.requestPointerLock;
-      }
-      target.requestPointerLock=function(){
-        try{d.dispatchEvent(new Event('pointerlockchange',{bubbles:true}));}catch(_){ }
-        return Promise.resolve();
-      };
-    }catch(_){ }
-    return true;
+  function installPointerLockShim(){
+    const d=childDoc(),canvas=gameCanvas();
+    if(!d||!canvas)return;
+    try{Object.defineProperty(d,'pointerLockElement',{configurable:true,get:()=>canvas});}catch(_){ }
+    try{canvas.requestPointerLock=()=>{try{d.dispatchEvent(new Event('pointerlockchange'));}catch(_){ }return Promise.resolve();};}catch(_){ }
+    const w=childWin();
+    if(w)w.__KZ_MOBILE_LOOK=true;
   }
 
-  function triggerStart(){
-    if(started)return;
-    const d=frame.contentDocument;
+  function isMenuVisible(){
+    const d=childDoc();
+    const menu=d?.getElementById('main-menu');
+    if(!menu)return false;
+    const style=d.defaultView?.getComputedStyle(menu);
+    return !(menu.classList.contains('hidden')||style?.display==='none'||style?.visibility==='hidden');
+  }
+
+  function startGame(){
+    const d=childDoc();
     if(!d)return;
-    installGamePointerLockShim();
+    installPointerLockShim();
     const btn=d.getElementById('start-btn')||d.getElementById('start-game-btn');
-    if(!btn)return;
-    started=true;
-    try{btn.click();}catch(_){
-      try{btn.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}));}catch(__){ }
+    if(btn){try{btn.click();}catch(_){try{btn.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,view:d.defaultView}));}catch(__){}}}
+    setTimeout(()=>{installPointerLockShim();syncStartLayer();},0);
+  }
+
+  function syncStartLayer(){
+    if(!window.matchMedia('(pointer: coarse)').matches)return;
+    const visible=isMenuVisible();
+    if(visible&&!startLayer){
+      startLayer=document.createElement('button');
+      startLayer.type='button';
+      startLayer.className='kz-mobile-start';
+      startLayer.textContent='شروع بازی';
+      startLayer.setAttribute('aria-label','شروع بازی');
+      startLayer.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();startGame();},{passive:false});
+      document.body.appendChild(startLayer);
+    }else if(!visible&&startLayer){
+      startLayer.remove();startLayer=null;
+      loadControls();
     }
   }
 
-  function boot(){
-    installGamePointerLockShim();
-    frame.addEventListener('load',function(){installGamePointerLockShim();setTimeout(installGamePointerLockShim,100);});
-    const observer=new MutationObserver(function(){
-      const d=frame.contentDocument;
-      if(!d)return;
-      installGamePointerLockShim();
-      const menu=d.getElementById('main-menu');
-      if(menu&&menu.classList.contains('hidden'))return;
-      if(window.matchMedia('(pointer: coarse)').matches) return;
-    });
-    try{observer.observe(frame.contentDocument.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style']});}catch(_){ }
-
-    /* Re-expose a direct full-game touch surface only after the user starts the game. */
-    const tapTarget=document.createElement('div');
-    tapTarget.setAttribute('aria-hidden','true');
-    Object.assign(tapTarget.style,{position:'fixed',inset:'0',zIndex:'9998',pointerEvents:'none',touchAction:'none'});
-    document.body.appendChild(tapTarget);
-
-    const startWatcher=setInterval(function(){
-      const d=frame.contentDocument;
-      if(!d){return;}
-      installGamePointerLockShim();
-      const menu=d.getElementById('main-menu');
-      if(menu&&menu.classList.contains('hidden')){
-        clearInterval(startWatcher);
-        return;
-      }
-      if(window.matchMedia('(pointer: coarse)').matches){
-        const btn=d.getElementById('start-btn')||d.getElementById('start-game-btn');
-        if(btn){
-          btn.addEventListener('pointerup',function(){setTimeout(installGamePointerLockShim,0);},{once:true});
-        }
-      }
-    },250);
-
-    /* Load v3 only after the pointer-lock shim is in place. */
+  function loadControls(){
+    if(controlsLoaded)return;
+    controlsLoaded=true;
     const s=document.createElement('script');
-    s.src='mobile-game-controls-v3.js?v=4';
+    s.src='mobile-game-controls-v3.js?v=5';
     s.async=false;
+    s.onload=()=>syncStartLayer();
+    s.onerror=()=>{controlsLoaded=false;console.warn('KillZone mobile controls could not load.');};
     document.head.appendChild(s);
+  }
+
+  function boot(){
+    const style=document.createElement('style');
+    style.textContent='.kz-mobile-start{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));z-index:12000;padding:15px 24px;border:1px solid #df6330;border-radius:12px;background:rgba(16,16,14,.96);color:#f4eddc;font:800 16px Vazirmatn,Arial,sans-serif;box-shadow:0 12px 34px rgba(0,0,0,.48);touch-action:manipulation}.kz-mobile-start:active{transform:scale(.97);background:rgba(223,99,48,.22)}';
+    document.head.appendChild(style);
+    frame.addEventListener('load',()=>{installPointerLockShim();syncStartLayer();});
+    watchTimer=setInterval(()=>{installPointerLockShim();syncStartLayer();},300);
+    window.addEventListener('pagehide',()=>{if(watchTimer)clearInterval(watchTimer);});
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
