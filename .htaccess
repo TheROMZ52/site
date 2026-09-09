@@ -15,6 +15,9 @@
   RewriteCond %{THE_REQUEST} \s/+join\.html(?:[?\s]) [NC]
   RewriteRule ^join\.html$ /join [R=301,L,NE]
 
+  RewriteCond %{THE_REQUEST} \s/+news\.html(?:[?\s]) [NC]
+  RewriteRule ^news\.html$ /news [R=301,L,NE]
+
   RewriteCond %{THE_REQUEST} \s/+register\.html(?:[?\s]) [NC]
   RewriteRule ^register\.html$ /register [R=301,L,NE]
 
@@ -25,6 +28,7 @@
   RewriteRule ^games/?$ games.html [L]
   RewriteRule ^members/?$ members.html [L]
   RewriteRule ^join/?$ join.html [L]
+  RewriteRule ^news/?$ news.html [L]
   RewriteRule ^register/?$ register.html [L]
   RewriteRule ^account/?$ account.html [L]
 </IfModule>
