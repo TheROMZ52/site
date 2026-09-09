@@ -4,6 +4,7 @@
     { "source": "/games", "destination": "/games.html" },
     { "source": "/members", "destination": "/members.html" },
     { "source": "/join", "destination": "/join.html" },
+    { "source": "/news", "destination": "/news.html" },
     { "source": "/register", "destination": "/register.html" },
     { "source": "/account", "destination": "/account.html" }
   ],
@@ -11,6 +12,7 @@
     { "source": "/games.html", "destination": "/games", "permanent": true },
     { "source": "/members.html", "destination": "/members", "permanent": true },
     { "source": "/join.html", "destination": "/join", "permanent": true },
+    { "source": "/news.html", "destination": "/news", "permanent": true },
     { "source": "/register.html", "destination": "/register", "permanent": true },
     { "source": "/account.html", "destination": "/account", "permanent": true }
   ]
