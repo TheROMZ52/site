@@ -1,8 +1,8 @@
 /* KillZone background treatment + responsive RTL layout */
-:root{--kz-bg-image:url('https://fjzhkprnxznijwmjrlka.supabase.co/storage/v1/object/public/imageframe/mtskdtwm-zvk5o-IMG_20260908_143422_756.webp');--z-content:1;--z-nav:450;--z-modal:650;}
+:root{--kz-bg-image:url('https://fjzhkprnxznijwmjrlka.supabase.co/storage/v1/object/public/imageframe/mtskdtwm-zvk5o-IMG_20260908_143422_756.webp');--z-content:1;--z-nav:450;--kz-bg-blur:6px;}
 html{min-height:100%;background:var(--kz-bg-image) center center/cover fixed no-repeat!important;position:relative;}
-body{min-height:100vh;background-color:transparent!important;background-image:linear-gradient(180deg,rgba(16,16,14,.08),rgba(16,16,14,.18) 48%,rgba(16,16,14,.34)),var(--kz-bg-image)!important;background-position:center center!important;background-size:cover!important;background-attachment:fixed!important;background-repeat:no-repeat!important;position:relative;isolation:isolate;}
-body:before{display:block!important;opacity:.055!important;z-index:0!important;}
+body{min-height:100vh;background-color:transparent!important;background-image:linear-gradient(180deg,rgba(16,16,14,.12),rgba(16,16,14,.25) 48%,rgba(16,16,14,.42)),var(--kz-bg-image)!important;background-position:center center!important;background-size:cover!important;background-attachment:fixed!important;background-repeat:no-repeat!important;position:relative;isolation:isolate;}
+body:before{content:"";display:block!important;position:fixed!important;inset:-14px!important;z-index:0!important;opacity:1!important;background:rgba(10,10,8,.10)!important;backdrop-filter:blur(var(--kz-bg-blur)) saturate(82%) brightness(.78)!important;-webkit-backdrop-filter:blur(var(--kz-bg-blur)) saturate(82%) brightness(.78)!important;pointer-events:none!important;}
 body>*{position:relative;z-index:var(--z-content);}
 header{position:sticky!important;top:0;z-index:var(--z-nav)!important;isolation:isolate;background:rgba(12,12,10,.70)!important;border-bottom-color:rgba(255,255,255,.12)!important;box-shadow:0 16px 45px rgba(0,0,0,.20)!important;backdrop-filter:blur(14px) saturate(115%)!important;-webkit-backdrop-filter:blur(14px) saturate(115%)!important;}
 header nav,header .user-box,header .menu-toggle{position:relative;z-index:calc(var(--z-nav) + 1)!important;}
@@ -23,20 +23,5 @@ header nav,header .user-box,header .menu-toggle{position:relative;z-index:calc(v
 footer{background:rgba(10,10,8,.78)!important;backdrop-filter:blur(12px)!important;-webkit-backdrop-filter:blur(12px)!important;}
 .hero h1,.section-title h2,.account-title-row h1,.game-hub-intro h1{text-shadow:0 5px 28px rgba(0,0,0,.52)!important;}
 .hero .sub,.section-title p,.account-hero p{text-shadow:0 2px 16px rgba(0,0,0,.45);}
-@media(max-width:980px){
-  .hero{direction:rtl!important;}
-  .hero-copy{direction:rtl!important;text-align:right!important;padding:22px 22px 24px!important;width:100%!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important;}
-  .hero-copy h1{direction:ltr!important;text-align:left!important;align-self:flex-start!important;width:100%!important;margin:0 0 24px!important;}
-  .hero-copy .kicker,.hero-copy .sub{width:100%;text-align:right!important;}
-  .hero-copy .cta{width:100%;justify-content:center!important;}
-}
-@media(max-width:700px){
-  html{background-attachment:fixed!important;background-position:center center!important;}
-  body{background-position:center center!important;background-size:cover!important;background-attachment:fixed!important;}
-  body:before{display:none!important;}
-  nav.main{z-index:calc(var(--z-nav) + 2)!important;}
-  nav.main.is-open,nav.main.open,nav.main.show,header.nav-open nav.main{z-index:calc(var(--z-nav) + 3)!important;}
-  .menu-toggle{z-index:calc(var(--z-nav) + 4)!important;}
-  .panel,.kz-form-section,.account-card,.kz-admin-panel,.kz-ticket-panel,.kz-list-panel,.game-banner,.member-tile,.field-console{backdrop-filter:blur(6px)!important;-webkit-backdrop-filter:blur(6px)!important;}
-  .hero-copy h1{font-size:clamp(42px,15vw,68px)!important;letter-spacing:-2px!important;}
-}
+@media(max-width:980px){.hero{direction:rtl!important;}.hero-copy{direction:rtl!important;text-align:right!important;padding:22px 22px 24px!important;width:100%!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important;}.hero-copy h1{direction:ltr!important;text-align:left!important;align-self:flex-start!important;width:100%!important;margin:0 0 24px!important;}.hero-copy .kicker,.hero-copy .sub{width:100%;text-align:right!important;}.hero-copy .cta{width:100%;justify-content:center!important;}}
+@media(max-width:700px){html{background-attachment:fixed!important;background-position:center center!important;}body{background-position:center center!important;background-size:cover!important;background-attachment:fixed!important;}nav.main{z-index:calc(var(--z-nav) + 2)!important;}nav.main.is-open,nav.main.open,nav.main.show,header.nav-open nav.main{z-index:calc(var(--z-nav) + 3)!important;}.menu-toggle{z-index:calc(var(--z-nav) + 4)!important;}.panel,.kz-form-section,.account-card,.kz-admin-panel,.kz-ticket-panel,.kz-list-panel,.game-banner,.member-tile,.field-console{backdrop-filter:blur(6px)!important;-webkit-backdrop-filter:blur(6px)!important;}.hero-copy h1{font-size:clamp(42px,15vw,68px)!important;letter-spacing:-2px!important;}}
