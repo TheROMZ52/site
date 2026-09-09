@@ -18,9 +18,9 @@
 
   async function regroup(){
     const root=document.getElementById('membersCommunityContainer');
-    if(!root)return;
+    if(!root || root.querySelector('.kz-community-rank-section'))return;
     const source=root.querySelector('.kz-profile-grid');
-    if(!source||source.dataset.kzGrouped==='1')return;
+    if(!source)return;
     const cards=[...source.querySelectorAll('.kz-profile-card')];
     if(!cards.length)return;
     const ranks=await getRanks();
@@ -45,24 +45,24 @@
       list.forEach(card=>grid.appendChild(card));
       section.appendChild(grid);fragment.appendChild(section);
     });
-    source.dataset.kzGrouped='1';
     root.replaceChildren(fragment);
   }
 
   async function boot(){
     for(let i=0;i<80;i++){
-      if(document.getElementById('membersCommunityContainer') && window.sb){
+      const root=document.getElementById('membersCommunityContainer');
+      if(root&&window.sb){
         await regroup();
-        if(document.querySelectorAll('#membersCommunityContainer .kz-community-rank-section').length)break;
+        if(root.querySelector('.kz-community-rank-section'))break;
       }
       await wait(250);
     }
     const root=document.getElementById('membersCommunityContainer');
     if(root){
-      const observer=new MutationObserver(()=>{ regroup(); });
+      const observer=new MutationObserver(()=>{ if(!root.querySelector('.kz-community-rank-section'))regroup(); });
       observer.observe(root,{childList:true});
     }
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-  window.addEventListener('kz:session-changed',regroup);
+  window.addEventListener('kz:session-changed',()=>{regroup();});
 })();
