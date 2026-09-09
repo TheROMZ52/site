@@ -1,3 +1,5 @@
+@import url('/css/background-fix.css?v=6');
+
 /* Designed & developed by TheROMZ52 for KillZone Team — 2026 */
 
 /* ===== Tokens ===== */
@@ -164,124 +166,22 @@ main{ max-width:1140px; margin:0 auto; padding:0 24px 90px; }
 .kz-gate-actions{ display:flex; gap:10px; flex-wrap:wrap; }
 .kz-gate-actions .btn{ display:inline-block; }
 .kz-ticket{ background:var(--panel); border:1px solid var(--line); border-inline-start:3px solid var(--ember); }
-.kz-ticket-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:18px; padding:24px; border-bottom:1px solid var(--line); }
-.kz-ticket-head h2{ margin:0 0 6px; font-size:22px; }
-.kz-ticket-head p{ color:var(--paper-dim); font-size:12.5px; margin:0; }
-.kz-status{ flex-shrink:0; border:1px solid var(--line); padding:7px 11px; font-size:12px; white-space:nowrap; }
-.kz-status.review{ color:#e5c789; border-color:#806b3e; background:rgba(128,107,62,.12); }
-.kz-status.waiting{ color:#79a7c9; border-color:#456b84; background:rgba(69,107,132,.12); }
-.kz-status.approved{ color:#a8cf8a; border-color:var(--grass); background:rgba(92,125,60,.12); }
-.kz-status.rejected{ color:#ffab84; border-color:var(--ember); background:rgba(226,103,44,.12); }
-.kz-status.closed{ color:var(--paper-dim); }
-.kz-dossier{ margin:20px 24px 0; border:1px solid var(--line); background:rgba(0,0,0,.08); }
-.kz-dossier-title{ padding:12px 14px; border-bottom:1px solid var(--line); color:var(--paper); font-weight:800; font-size:14px; }
-.kz-dossier-row{ display:grid; grid-template-columns:160px 1fr; gap:18px; padding:12px 14px; border-bottom:1px solid rgba(74,64,48,.55); }
-.kz-dossier-row:last-child{ border-bottom:0; }
-.kz-dossier-row span{ color:var(--paper-dim); font-size:12.5px; }
-.kz-dossier-row strong{ font-size:13.5px; line-height:1.85; font-weight:600; white-space:pre-wrap; overflow-wrap:anywhere; }
-.kz-thread{ margin:24px; border-top:1px solid var(--line); padding-top:20px; }
-.kz-thread-title{ display:flex; justify-content:space-between; gap:10px; align-items:center; margin-bottom:14px; font-size:14px; font-weight:800; }
-.kz-thread-title small{ color:var(--paper-dim); font-size:11px; font-weight:500; }
-.kz-message{ max-width:82%; padding:14px 16px; margin:10px 0; border:1px solid var(--line); background:var(--panel-2); }
-.kz-message.applicant{ margin-inline-start:auto; border-inline-end:3px solid var(--steel); }
-.kz-message.staff{ margin-inline-end:auto; border-inline-start:3px solid var(--ember); }
-.kz-message-meta{ display:flex; justify-content:space-between; gap:12px; align-items:center; margin-bottom:8px; }
-.kz-message-meta strong{ font-size:12.5px; }
-.kz-message-meta time{ color:var(--paper-dim); font-size:10.5px; white-space:nowrap; }
-.kz-message-body{ color:var(--paper); line-height:1.95; font-size:14px; overflow-wrap:anywhere; }
-.kz-empty-thread{ color:var(--paper-dim); padding:20px 0; font-size:13px; }
-.kz-reply{ margin:0 24px 24px; border-top:1px dashed var(--line); padding-top:20px; }
-.kz-reply > label{ display:block; color:var(--paper-dim); font-size:12.5px; margin-bottom:7px; }
-.kz-reply textarea{ width:100%; background:var(--ink); border:1px solid var(--line); color:var(--paper); padding:12px 14px; font:14px/1.9 'Vazirmatn',sans-serif; resize:vertical; min-height:90px; }
-.kz-reply textarea:focus{ border-color:var(--ember); }
-.kz-reply-footer{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:10px; }
-.kz-reply-footer span{ color:var(--paper-dim); font-size:11px; }
-.kz-admin-actions{ display:flex; gap:10px; flex-wrap:wrap; margin:0 24px 4px; }
-.kz-new-request-wrap{ margin-top:18px; }
 
-/* ===== پنل مدیریت درخواست‌ها ===== */
-.kz-admin-layout{ display:grid; grid-template-columns:minmax(270px,320px) minmax(0,1fr); gap:18px; align-items:start; }
-.kz-ticket-list{ background:var(--panel); border:1px solid var(--line); }
-.kz-ticket-list-head{ display:flex; justify-content:space-between; gap:12px; align-items:flex-start; padding:18px; border-bottom:1px solid var(--line); }
-.kz-ticket-list-head h3{ margin:0; font-size:18px; }
-.kz-list-count{ font-family:'Press Start 2P',monospace; font-size:14px; color:var(--ember); }
-.kz-list-items{ max-height:760px; overflow:auto; }
-.kz-ticket-list-item{ width:100%; border:0; border-bottom:1px solid rgba(74,64,48,.65); background:transparent; color:var(--paper); padding:14px; display:grid; grid-template-columns:1fr auto; gap:10px; text-align:right; align-items:start; }
-.kz-ticket-list-item:hover,.kz-ticket-list-item.active{ background:var(--panel-2); }
-.kz-ticket-list-item > span:first-child{ display:grid; gap:4px; min-width:0; }
-.kz-ticket-list-item > span:first-child strong{ font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.kz-ticket-list-item > span:first-child small{ color:var(--paper-dim); font-size:10.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.kz-ticket-list-item .kz-status{ align-self:center; }
-.kz-list-status{ width:8px; height:8px; margin-top:6px; background:var(--paper-dim); }
-.kz-list-status.review{ background:#c5a85e; }
-.kz-list-status.waiting{ background:#6799bd; }
-.kz-list-status.approved{ background:var(--grass); }
-.kz-list-status.rejected{ background:var(--ember); }
-.kz-list-copy{ display:grid; gap:4px; min-width:0; }
-.kz-list-copy strong{ font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.kz-list-copy small{ color:var(--paper-dim); font-size:10.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.kz-ticket-list-item time{ color:var(--paper-dim); font-size:9.5px; white-space:nowrap; }
-.kz-list-empty,.kz-admin-placeholder{ color:var(--paper-dim); font-size:13px; padding:28px 18px; }
-.kz-admin-detail{ min-width:0; }
+/* ===== Footer ===== */
+footer{ margin-top:auto; padding:28px 24px; display:flex; justify-content:space-between; align-items:center; gap:20px; flex-wrap:wrap; background:var(--panel); border-top:1px solid var(--line); color:var(--paper-dim); font-size:12px; }
+.credit-badges{ display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+.rubika-link{ color:var(--ember); }
 
-/* ===== فوتر ===== */
-footer{ border-top:1px solid var(--line); margin-top:40px; padding:34px 24px; display:flex; flex-wrap:wrap; gap:16px; justify-content:space-between; align-items:center; max-width:1140px; margin-inline:auto; color:var(--paper-dim); font-size:13px; }
-.credit-badges{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-.credit-badges span{ font-size:12px; border:1px solid var(--line); padding:6px 12px; color:var(--paper-dim); }
-.credit-badges b{ color:var(--paper); font-weight:700; }
-.rubika-link{ color:#5aa0d6; }
-.rubika-link:hover{ color:#7fb8e6; }
-
-/* ===== اسکرول‌بار ===== */
-*{ scrollbar-width:thin; scrollbar-color:var(--line) var(--ink); }
-*::-webkit-scrollbar{ width:10px; height:10px; }
-*::-webkit-scrollbar-track{ background:var(--ink); }
-*::-webkit-scrollbar-thumb{ background:var(--line); border:2px solid var(--ink); }
-*::-webkit-scrollbar-thumb:hover{ background:var(--paper-dim); }
-
-/* ===== موبایل ===== */
-@media (max-width:760px){
-  header{ padding:12px 16px; position:relative; }
-  .menu-toggle{ display:block; order:3; }
-  .brand{ order:1; }
-  .user-box{ order:2; margin-inline-start:auto; flex-wrap:wrap; justify-content:flex-end; }
-  nav.main{ display:none; position:absolute; top:100%; right:0; left:0; flex-direction:column; align-items:stretch; gap:0; background:var(--panel); border-bottom:1px solid var(--line); padding:8px; z-index:39; }
-  nav.main.open{ display:flex; }
-  nav.main a{ padding:12px 14px; }
-  nav.main a.active{ background:var(--panel-2); border-bottom:none; border-inline-start:3px solid var(--ember); }
-  main{ padding:0 16px 60px; }
-  .hero{ padding:52px 0 36px; }
-  .hero h1{ font-size:34px; }
-  .hero .sub{ font-size:15px; }
-  .hero .cta .btn{ width:100%; text-align:center; }
-  .hero .cta{ flex-direction:column; }
-  .stats{ gap:24px; }
-  .section-title{ margin:44px 0 20px; }
-  .section-title.top{ margin-top:32px; }
-  .game-banner.cod{ clip-path:none; }
-  .game-banner.cod .game-banner-body{ padding-inline-start:24px; }
-  .game-banner-body{ padding:16px 18px; }
-  .members-toolbar{ flex-direction:column; align-items:stretch; }
-  .members-toolbar button{ width:100%; }
-  .modal{ padding:22px; max-width:100%; }
-  .form-grid{ max-width:100%; }
-  .form-grid .btn,#memberSave,#blockSave,#modeSave,#loginSubmit{ width:100%; }
-  footer{ flex-direction:column; align-items:flex-start; text-align:right; }
-  .credit-badges{ width:100%; }
-  .member-tile{ width:calc(50% - 8px); }
-  .kz-form-section{ padding:18px; }
-  .kz-form-grid{ grid-template-columns:1fr; }
-  .kz-ticket-head{ padding:18px; flex-direction:column; }
-  .kz-ticket-head h2{ font-size:19px; }
-  .kz-dossier{ margin:16px 18px 0; }
-  .kz-dossier-row{ grid-template-columns:1fr; gap:4px; padding:10px 12px; }
-  .kz-thread{ margin:18px; }
-  .kz-message{ max-width:94%; }
-  .kz-reply{ margin:0 18px 18px; }
-  .kz-reply-footer{ align-items:stretch; flex-direction:column; }
-  .kz-reply-footer .btn{ width:100%; }
-  .kz-admin-actions{ margin-inline:18px; }
-  .kz-admin-actions .btn{ width:100%; }
-  .kz-admin-layout{ grid-template-columns:1fr; }
-  .kz-list-items{ max-height:360px; }
+@media(max-width:760px){
+  header{padding:12px 16px;}
+  nav.main{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;background:rgba(28,26,22,.98);border-bottom:1px solid var(--line);padding:8px;}
+  nav.main.is-open{display:flex;}
+  nav.main a{padding:12px 14px;}
+  .menu-toggle{display:block;}
+  .user-box{margin-inline-start:auto;}
+  main{padding-inline:16px;}
+  .hero{padding-top:48px;}
+  .hero .cta .btn{width:100%;}
+  .kz-form-grid{grid-template-columns:1fr;}
+  footer{flex-direction:column;align-items:flex-start;}
 }
