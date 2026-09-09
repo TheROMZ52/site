@@ -38,10 +38,18 @@
   }
 
   async function getRankMap(){
+    if(typeof window.fetchAccounts==='function'){
+      try{
+        const rows=await window.fetchAccounts();
+        if(Array.isArray(rows)&&rows.length){
+          return new Map(rows.map(row=>[String(row.username||'').trim().toLowerCase(),String(row.rank||'member').trim().toLowerCase()]));
+        }
+      }catch(err){console.warn('KillZone fetchAccounts rank grouping:',err);}
+    }
     if(!window.sb) return new Map();
     const {data,error}=await sb.from('accounts').select('id,username,rank').eq('team_status','approved');
-    if(error){ console.warn('KillZone rank grouping:',error); return new Map(); }
-    return new Map((data||[]).map(row=>[String(row.username||'').trim().toLowerCase(), row.rank||'member']));
+    if(error){console.warn('KillZone rank grouping:',error);return new Map();}
+    return new Map((data||[]).map(row=>[String(row.username||'').trim().toLowerCase(),String(row.rank||'member').trim().toLowerCase()]));
   }
 
   function stripStaffMarks(container){
@@ -71,12 +79,13 @@
       injectStyles();
       stripStaffMarks(container);
       const ranks=await getRankMap();
+      if(!ranks.size)return;
       const groups=new Map(RANKS.map(([rank])=>[rank,[]]));
 
       cards.forEach(card=>{
         const username=(card.querySelector('.kz-profile-name')?.textContent||'').trim().toLowerCase();
-        const rank=ranks.get(username)||'member';
-        if(!groups.has(rank))groups.set(rank,[]);
+        const rank=ranks.get(username);
+        if(!rank || !groups.has(rank))return;
         groups.get(rank).push(card);
       });
 
@@ -122,23 +131,11 @@
 
   function boot(){
     const container=root();
-    if(!container){
-      setTimeout(boot,250);
-      return;
-    }
-
-    const observer=new MutationObserver(()=>{
-      sanitizePresence();
-      schedule();
-    });
+    if(!container){setTimeout(boot,250);return;}
+    const observer=new MutationObserver(()=>{sanitizePresence();schedule();});
     observer.observe(container,{childList:true,subtree:true});
-
     schedule();
-    setInterval(()=>{
-      sanitizePresence();
-      schedule();
-    },5000);
-
+    setInterval(()=>{sanitizePresence();schedule();},5000);
     window.addEventListener('kz:session-changed',schedule);
     window.addEventListener('kz:community-refresh',schedule);
   }
