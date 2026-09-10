@@ -1,26 +1,2 @@
-/* Separate membership ticket center */
-.kz-ticket-center{display:block}
-.kz-ticket-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:18px 0 14px;padding:14px 16px;background:var(--panel);border:1px solid var(--line)}
-.kz-ticket-toolbar>div{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
-.kz-ticket-toolbar strong{font-size:18px;color:var(--paper)}
-.kz-ticket-toolbar span{font-size:12px;color:var(--paper-dim)}
-.kz-ticket-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.kz-ticket-card{width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;text-align:right;background:var(--panel);border:1px solid var(--line);color:var(--paper);padding:18px;transition:.18s ease;min-height:100px}
-.kz-ticket-card:hover{border-color:var(--ember);transform:translateY(-2px);background:var(--panel-2)}
-.kz-ticket-card-main{display:grid;gap:5px;min-width:0}
-.kz-ticket-card-main strong{font-size:16px}
-.kz-ticket-card-main small{color:var(--paper-dim);font-size:12px}
-.kz-ticket-card-side{display:grid;justify-items:end;gap:10px;flex-shrink:0}
-.kz-ticket-card-side b{font-size:11px;color:var(--ember)}
-.kz-ticket-overlay{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(8,7,5,.82);backdrop-filter:blur(5px)}
-.kz-ticket-modal{position:relative;width:min(980px,100%);max-height:92vh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-inline-start:3px solid var(--ember);padding:24px;box-shadow:0 24px 80px rgba(0,0,0,.45)}
-.kz-ticket-close{position:absolute;top:12px;left:12px;width:38px;height:38px;border:1px solid var(--line);background:var(--panel-2);color:var(--paper-dim);font-size:18px}
-.kz-ticket-close:hover{border-color:var(--ember);color:var(--paper)}
-.kz-ticket-modal .kz-ticket-head{padding-inline-end:48px}
-@media(max-width:760px){
-  .kz-ticket-grid{grid-template-columns:1fr}
-  .kz-ticket-card{padding:15px}
-  .kz-ticket-modal{padding:18px}
-  .kz-ticket-modal .kz-ticket-head{display:block}
-  .kz-ticket-modal .kz-ticket-head>.kz-status{display:inline-flex;margin-top:12px}
-}
+/* KillZone membership tickets */
+.kz-ticket{overflow:hidden;border:1px solid var(--kz-line);border-radius:var(--kz-radius-md);background:linear-gradient(145deg,rgba(255,255,255,.04),rgba(255,255,255,.01));box-shadow:var(--kz-shadow-soft)}.kz-ticket-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:22px;border-bottom:1px solid var(--kz-line)}.kz-ticket-head h2{margin:0 0 5px;font-size:21px}.kz-ticket-head p{margin:0;color:var(--kz-muted);font-size:11px}.kz-status{padding:6px 10px;border:1px solid currentColor;border-radius:999px;font-size:10px;white-space:nowrap;font-weight:700}.kz-status.review{color:var(--kz-yellow);background:rgba(231,193,106,.07)}.kz-status.waiting{color:var(--kz-blue);background:rgba(110,184,255,.07)}.kz-status.approved{color:var(--kz-green);background:rgba(130,184,90,.07)}.kz-status.rejected{color:#ff9b83;background:rgba(240,82,82,.07)}.kz-game-check{display:flex;align-items:center;gap:8px;padding:7px 0;font-size:13px;cursor:pointer}.kz-game-check input{accent-color:var(--kz-orange)}@media(max-width:620px){.kz-ticket-head{flex-direction:column}}
