@@ -9,7 +9,8 @@
     { key: 'developer', label: 'دولوپر' },
     { key: 'admin', label: 'ادمین' },
     { key: 'member', label: 'ممبر' },
-    { key: 'new_member', label: 'نیو ممبر' }
+    { key: 'new_member', label: 'نیو ممبر' },
+    { key: 'guest', label: 'مهمان' }
   ];
   const STAFF = new Set(['admin', 'developer', 'co_owner', 'owner']);
   const ONLINE_MS = 300000;
@@ -17,6 +18,7 @@
   let presence = [];
   let busy = false;
   let bound = false;
+  let retryTimer = null;
 
   const root = () => document.getElementById(ROOT);
   const current = () => {
@@ -46,12 +48,10 @@
   async function load() {
     if (!window.sb) return false;
     const [a, p] = await Promise.all([
-      sb.from('accounts')
+      window.sb.from('accounts')
         .select('id,username,photo,game,bio,social,joined_at,rank,team_status')
-        .eq('team_status', 'approved')
-        .neq('rank', 'guest')
         .order('username'),
-      sb.from('member_presence').select('account_id,status,game,status_text,last_seen')
+      window.sb.from('member_presence').select('account_id,status,game,status_text,last_seen')
     ]);
     if (a.error) {
       console.error('KillZone members/accounts', a.error);
@@ -177,10 +177,10 @@
       if (!confirm(`اکانت «${account.username}» و اطلاعات مرتبط باهاش حذف بشه؟`)) return;
       try {
         for (const [table, column] of [['team_join_messages','account_id'], ['team_join_requests','account_id'], ['member_presence','account_id'], ['achievements','account_id']]) {
-          const { error } = await sb.from(table).delete().eq(column, account.id);
+          const { error } = await window.sb.from(table).delete().eq(column, account.id);
           if (error) throw error;
         }
-        const { error } = await sb.from('accounts').delete().eq('id', account.id);
+        const { error } = await window.sb.from('accounts').delete().eq('id', account.id);
         if (error) throw error;
         await refresh();
       } catch (error) {
@@ -275,7 +275,7 @@
     content.innerHTML = `<div class="kz-profile-hero">${avatarHtml(account, true)}<div class="kz-profile-hero-copy"><span class="kz-eyebrow">KZ // MEMBER PROFILE</span><h3>${esc(account.username)}</h3><p>${esc(account.bio || 'این عضو هنوز معرفی کوتاهی ثبت نکرده.')}</p></div></div><section class="kz-profile-section"><div class="kz-profile-section-title"><h4>اطلاعات عضو</h4><span>${esc(rankMeta(account.rank).label)}</span></div><div class="kz-profile-meta kz-profile-meta-large"><span>${esc(games || 'بازی ثبت نشده')}</span>${account.joined_at ? `<span>عضویت از ${esc(new Intl.DateTimeFormat('fa-IR', {year:'numeric',month:'long',day:'numeric'}).format(new Date(account.joined_at)))}</span>` : ''}</div></section><section class="kz-profile-section"><div class="kz-profile-section-title"><h4>دستاوردها</h4><span>ACHIEVEMENTS</span></div><div class="kz-fallback-achievements"><div class="kz-community-loading">در حال بارگذاری دستاوردها…</div></div></section>`;
     hydrateAvatars(content);
     overlay.classList.add('show');
-    sb.from('achievements').select('title,description,icon,awarded_at').eq('account_id',account.id).order('awarded_at',{ascending:false}).then(({data}) => {
+    window.sb.from('achievements').select('title,description,icon,awarded_at').eq('account_id',account.id).order('awarded_at',{ascending:false}).then(({data}) => {
       const box = content.querySelector('.kz-fallback-achievements');
       if (!box) return;
       box.innerHTML = data?.length
@@ -291,12 +291,14 @@
       const container = root();
       if (!container) return;
       if (!window.sb) {
-        container.innerHTML = '<div class="kz-community-empty"><strong>اتصال دیتابیس آماده نیست</strong><span>صفحه را دوباره باز کن.</span></div>';
+        container.innerHTML = '<div class="kz-community-empty"><strong>در حال آماده‌سازی اتصال دیتابیس…</strong><span>اتصال هنوز آماده نشده؛ چند لحظه صبر کن.</span></div>';
+        clearTimeout(retryTimer);
+        retryTimer = setTimeout(refresh, 800);
         return;
       }
       container.innerHTML = '<div class="kz-community-loading">در حال دریافت اعضای تیم…</div>';
       if (!await load()) {
-        container.innerHTML = '<div class="kz-community-empty"><strong>بارگذاری اعضا ناموفق بود</strong><span>اتصال دیتابیس را بررسی کن و دوباره تلاش کن.</span></div>';
+        container.innerHTML = '<div class="kz-community-empty"><strong>بارگذاری اعضا ناموفق بود</strong><span>اتصال دیتابیس یا دسترسی جدول اعضا را بررسی کن و دوباره تلاش کن.</span></div>';
         return;
       }
       stats();
@@ -363,7 +365,7 @@
     const box = overlay.querySelector('#kzGuestList');
     box.innerHTML = '<div class="kz-community-loading">در حال دریافت مهمان‌ها…</div>';
     overlay.classList.add('show');
-    const { data, error } = await sb.from('accounts').select('id,username,game,rank,team_status').eq('rank','guest').order('username');
+    const { data, error } = await window.sb.from('accounts').select('id,username,game,rank,team_status').eq('rank','guest').order('username');
     if (error) {
       console.error('KillZone guest accounts', error);
       box.innerHTML = '<div class="kz-community-empty">دریافت مهمان‌ها ناموفق بود.</div>';
@@ -377,7 +379,7 @@
     box.querySelectorAll('.kz-runtime-guest-card').forEach(card => {
       const id = card.dataset.id;
       card.querySelector('[data-action="approve"]')?.addEventListener('click', async () => {
-        const { error: updateError } = await sb.from('accounts').update({ rank: 'member', team_status: 'approved' }).eq('id', id).eq('rank', 'guest');
+        const { error: updateError } = await window.sb.from('accounts').update({ rank: 'member', team_status: 'approved' }).eq('id', id).eq('rank', 'guest');
         if (updateError) { console.error(updateError); alert('تأیید مهمان انجام نشد.'); return; }
         overlay.classList.remove('show');
         await refresh();
@@ -389,7 +391,7 @@
           setTimeout(() => { if (b.dataset.confirm === '1') { b.dataset.confirm = '0'; b.textContent = 'حذف'; } }, 3500);
           return;
         }
-        const { error: deleteError } = await sb.from('accounts').delete().eq('id', id).eq('rank','guest');
+        const { error: deleteError } = await window.sb.from('accounts').delete().eq('id', id).eq('rank','guest');
         if (deleteError) { console.error(deleteError); alert('حذف مهمان انجام نشد.'); return; }
         overlay.classList.remove('show'); await refresh();
       });
@@ -402,6 +404,7 @@
     refresh();
     window.kzMembersRefresh = refresh;
     window.addEventListener('kz:session-changed', () => { wire(); refresh(); });
+    window.addEventListener('kz:supabase-ready', () => refresh());
     window.setInterval(refresh, 30000);
   }
 
