@@ -18,22 +18,6 @@
 
   const LION_SUN_FLAG =
     "https://upload.wikimedia.org/wikipedia/commons/f/fd/State_flag_of_Iran_%281964%E2%80%931980%29.svg";
-  const KZ_BG_IMAGE =
-    "https://fjzhkprnxznijwmjrlka.supabase.co/storage/v1/object/public/imageframe/mtskdtwm-zvk5o-IMG_20260908_143422_756.webp";
-
-  function injectMobileBackground() {
-    if (document.getElementById("kz-mobile-bg")) return;
-    const layer = document.createElement("div");
-    layer.id = "kz-mobile-bg";
-    layer.setAttribute("aria-hidden", "true");
-    const image = document.createElement("img");
-    image.src = KZ_BG_IMAGE;
-    image.alt = "";
-    image.decoding = "async";
-    image.draggable = false;
-    layer.appendChild(image);
-    document.body.prepend(layer);
-  }
 
   function injectButtonStyles() {
     if (document.getElementById("kz-button-system")) return;
@@ -267,42 +251,30 @@
     if (meta[2]) meta[2].textContent = label;
   }
   async function syncApplicantStatusFromTicket() {
-    if (
-      (!document.getElementById("kzJoinApp") &&
-        !document.getElementById("kzAccountApp")) ||
-      !window.currentUser ||
-      typeof sb === "undefined"
-    )
-      return;
     try {
+      if (!window.currentUser || typeof sb === "undefined") return;
+      const u = window.currentUser;
       const { data, error } = await sb
         .from("team_join_requests")
-        .select("status,created_at")
-        .eq("account_id", window.currentUser.id)
+        .select("status")
+        .eq("account_id", u.id)
         .order("created_at", { ascending: false })
-        .limit(1);
-      if (error || !data?.[0]) return;
-      const status = data[0].status;
-      if (
-        [
-          "pending",
-          "reviewing",
-          "waiting_applicant",
-          "approved",
-          "rejected",
-        ].includes(status)
-      ) {
-        window.currentUser.team_status = status;
-        syncRenderedAccountStatus(status);
-        if (typeof renderUserBox === "function") renderUserBox();
-      }
+        .limit(1)
+        .maybeSingle();
+      if (error || !data?.status) return;
+      if (data.status === u.team_status) return;
+      u.team_status = data.status;
+      try {
+        localStorage.setItem("kz_session", JSON.stringify(u));
+      } catch {}
+      syncRenderedAccountStatus(data.status);
+      if (typeof renderUserBox === "function") renderUserBox();
     } catch (e) {
       console.warn("KillZone ticket status sync failed", e);
     }
   }
   function boot() {
     injectButtonStyles();
-    injectMobileBackground();
     injectTwemoji();
     patchUnsafeSeed();
     patchUploadPhoto();
