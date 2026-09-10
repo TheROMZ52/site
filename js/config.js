@@ -3,6 +3,8 @@
 const SUPABASE_URL = 'https://fjzhkprnxznijwmjrlka.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_OeU6Z8Yn_rPuxfKRsMApqw__kcMQIKA';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+window.sb = sb;
+window.dispatchEvent(new CustomEvent('kz:supabase-ready'));
 
 // Shared client-side lifecycle and form guards. They do not change existing game/site logic.
 (function(){
