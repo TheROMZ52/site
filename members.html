@@ -6,22 +6,58 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="پروفایل اعضای تأییدشده تیم KillZone و دستاوردهای آن‌ها.">
   <link rel="canonical" href="https://site-pi-topaz-41.vercel.app/members">
-  <meta property="og:type" content="website"><meta property="og:title" content="KILLZONE // اعضا"><meta property="og:description" content="پروفایل اعضای تأییدشده KillZone، وضعیت آنلاین و دستاوردهای تیم."><meta property="og:url" content="https://site-pi-topaz-41.vercel.app/members"><meta property="og:site_name" content="KillZone Team">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="KILLZONE // اعضا">
+  <meta property="og:description" content="پروفایل اعضای تأییدشده KillZone، وضعیت آنلاین و دستاوردهای تیم.">
+  <meta property="og:url" content="https://site-pi-topaz-41.vercel.app/members">
+  <meta property="og:site_name" content="KillZone Team">
   <title>KILLZONE // اعضای تیم</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css?v=6"><link rel="stylesheet" href="/css/revamp.css?v=4"><link rel="stylesheet" href="/css/background-fix.css?v=6"><link rel="stylesheet" href="/css/community.css?v=5"><link rel="stylesheet" href="/css/members-community.css?v=4">
+  <link rel="stylesheet" href="/css/style.css?v=7">
+  <link rel="stylesheet" href="/css/revamp.css?v=5">
+  <link rel="stylesheet" href="/css/background-fix.css?v=7">
+  <link rel="stylesheet" href="/css/members-community.css?v=5">
 </head>
 <body data-page="members-community">
-<header><div class="brand"><div class="mark"></div><div class="name">KILL<em>ZONE</em></div></div><nav class="main"><a href="/">خانه</a><a href="/games">گیم هاب</a><a href="/members" class="active">اعضا</a><a href="/news">اخبار</a><a href="/join">عضویت در تیم</a></nav><div class="user-box" id="userBox"></div><button class="menu-toggle" id="menuToggle" aria-label="باز کردن منو">☰</button></header>
+<header>
+  <div class="brand"><div class="mark"></div><div class="name">KILL<em>ZONE</em></div></div>
+  <nav class="main">
+    <a href="/">خانه</a><a href="/games">گیم هاب</a><a href="/members" class="active">اعضا</a><a href="/join">عضویت در تیم</a>
+  </nav>
+  <div class="user-box" id="userBox"></div>
+  <button class="menu-toggle" id="menuToggle" type="button" aria-label="باز کردن منو">☰</button>
+</header>
 <main class="kz-members-page">
-  <section class="kz-members-hero"><div class="kz-members-hero-copy"><span class="kz-eyebrow">KZ // SQUAD DIRECTORY</span><h1>اعضای KillZone</h1><p>پروفایل اعضای تأییدشده، وضعیت حضور، بازی‌های مورد علاقه و دستاوردهای تیم؛ همه در یک نمای سریع.</p></div><div class="kz-members-hero-stats" aria-label="آمار اعضا"><div><strong id="membersTotal">—</strong><span>اعضای تأییدشده</span></div><div><strong id="membersOnline">—</strong><span>آنلاین</span></div><div><strong id="membersGames">—</strong><span>بازی فعال</span></div></div></section>
-  <section class="kz-members-control" aria-label="جستجو و فیلتر اعضا"><div class="kz-members-search-wrap"><label for="memberSearch">جستجوی عضو</label><div class="kz-members-search"><input id="memberSearch" type="search" placeholder="اسم، بازی یا معرفی عضو…" autocomplete="off"><button class="kz-members-search-clear" id="memberSearchClear" type="button" aria-label="پاک کردن جستجو" hidden>×</button></div></div><div class="kz-members-filter"><label for="memberGameFilter">بازی</label><select id="memberGameFilter"><option value="all">همه بازی‌ها</option></select></div><div class="kz-members-filter"><label for="memberStatusFilter">وضعیت</label><select id="memberStatusFilter"><option value="all">همه</option><option value="online">آنلاین</option><option value="offline">آفلاین</option></select></div><div class="kz-members-filter"><label for="memberSort">مرتب‌سازی</label><select id="memberSort"><option value="name">نام</option><option value="recent">جدیدترین عضویت</option><option value="online">آنلاین‌ها اول</option></select></div><div class="kz-members-admin-actions"><button class="btn ghost small" id="guestAccountsBtn" type="button" style="display:none;">👥 مهمان‌ها</button><button class="btn primary small" id="addMemberBtn" type="button" style="display:none;">+ افزودن عضو</button></div></section>
-  <div class="kz-members-resultbar"><span id="membersResultCount">در حال آماده‌سازی…</span><button id="memberResetFilters" type="button" class="kz-text-action">پاک کردن فیلترها</button></div>
-  <section id="membersCommunityContainer" aria-live="polite"><div class="kz-community-loading">در حال آماده‌سازی پروفایل‌های تیم…</div></section>
+  <section class="kz-members-hero">
+    <div class="kz-members-hero-copy"><span class="kz-eyebrow">KZ // SQUAD DIRECTORY</span><h1>اعضای KillZone</h1><p>پروفایل اعضای تأییدشده، وضعیت حضور، بازی‌های مورد علاقه و دستاوردهای تیم؛ همه در یک نمای سریع.</p></div>
+    <div class="kz-members-hero-stats" aria-label="آمار اعضا">
+      <div><strong id="membersTotal">—</strong><span>اعضای تأییدشده</span></div>
+      <div><strong id="membersOnline">—</strong><span>آنلاین</span></div>
+      <div><strong id="membersGames">—</strong><span>بازی فعال</span></div>
+    </div>
+  </section>
+  <section class="kz-members-control" aria-label="جستجو و فیلتر اعضا">
+    <div class="kz-members-search-wrap"><label for="memberSearch">جستجوی عضو</label><div class="kz-members-search"><input id="memberSearch" type="search" placeholder="اسم، بازی یا معرفی عضو…" autocomplete="off"><button class="kz-members-search-clear" id="memberSearchClear" type="button" aria-label="پاک کردن جستجو" hidden>×</button></div></div>
+    <div class="kz-members-filter"><label for="memberGameFilter">بازی</label><select id="memberGameFilter"><option value="all">همه بازی‌ها</option></select></div>
+    <div class="kz-members-filter"><label for="memberStatusFilter">وضعیت</label><select id="memberStatusFilter"><option value="all">همه</option><option value="online">آنلاین</option><option value="offline">آفلاین</option></select></div>
+    <div class="kz-members-filter"><label for="memberSort">مرتب‌سازی</label><select id="memberSort"><option value="name">نام</option><option value="recent">جدیدترین عضویت</option><option value="online">آنلاین‌ها اول</option></select></div>
+    <div class="kz-members-admin-actions"><button class="btn ghost small" id="guestAccountsBtn" type="button" style="display:none;">👥 مهمان‌ها</button><button class="btn primary small" id="addMemberBtn" type="button" style="display:none;">+ افزودن عضو</button></div>
+  </section>
+  <div class="kz-members-resultbar"><span id="membersResultCount">در حال دریافت اعضای تیم…</span><button id="memberResetFilters" type="button" class="kz-text-action">پاک کردن فیلترها</button></div>
+  <section id="membersCommunityContainer" aria-live="polite"><div class="kz-community-loading">در حال دریافت اعضای تیم…</div></section>
 </main>
 <footer><div>© 2026 KillZone Team</div><div class="credit-badges"><span>رهبر گروه: <b class="ltr">1Y2U3I</b></span><span>طراح سایت: <b class="ltr">TheROMZ52</b></span><a class="rubika-link" href="#">گروه روبیکا</a></div></footer>
 <div class="overlay" id="loginOverlay"><div class="modal"><button class="close" id="loginClose" aria-label="بستن">✕</button><h3>ورود به اکانت</h3><div class="form-grid"><div class="field"><label for="loginUser">نام‌کاربری</label><input type="text" id="loginUser" autocomplete="username"></div><div class="field"><label for="loginPass">رمز عبور</label><input type="password" id="loginPass" autocomplete="current-password"></div><button class="btn primary" id="loginSubmit" type="button">ورود</button><div id="loginMsg"></div><div class="hint">عضو نیستی؟ <a href="/register">ورود مهمان</a></div></div></div></div>
 <div class="overlay" id="memberOverlay"><div class="modal kz-member-editor" role="dialog" aria-modal="true" aria-labelledby="memberModalTitle"><button class="close" id="memberClose" aria-label="بستن">✕</button><h3 id="memberModalTitle">ویرایش عضو</h3><div class="form-grid"><div class="field"><label for="mName">نام / یوزرنیم</label><input type="text" id="mName" maxlength="24"></div><div class="field"><label for="mPhotoFile">عکس پروفایل</label><input type="file" id="mPhotoFile" accept="image/*"></div><div class="field"><label for="mPhoto">یا لینک عکس</label><input type="text" id="mPhoto" placeholder="https://..."></div><div class="field"><label for="mRank">رنک داخلی</label><select id="mRank"><option value="new_member">نیو ممبر</option><option value="member">ممبر</option><option value="admin">ادمین</option><option value="developer">دولوپر</option><option value="co_owner">کو-اونر</option><option value="owner">اونر</option></select></div><div class="field"><label>بازی‌های مورد علاقه</label><div id="mGamesBox"></div></div><div class="field"><label for="mNewPass">رمز عبور جدید (اختیاری)</label><input type="password" id="mNewPass" autocomplete="new-password"></div><button class="btn primary" id="memberSave" type="button">ذخیره</button><div id="memberMsg" aria-live="polite"></div></div></div></div>
-<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="/js/config.js?v=6"></script><script defer src="/js/app.js?v=10"></script><script defer src="/js/account.js?v=2"></script><script defer src="/js/ui.js?v=3"></script><script defer src="/js/runtime-hardening.js?v=5"></script><script defer src="/js/presence.js?v=5"></script><script defer src="/js/nickname.js?v=3"></script><script defer src="/js/community.js?v=10"></script><script defer src="/js/members-page-v2.js?v=1"></script>
-</body></html>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="/js/config.js?v=7"></script>
+<script defer src="/js/app.js?v=11"></script>
+<script defer src="/js/account.js?v=3"></script>
+<script defer src="/js/ui.js?v=4"></script>
+<script defer src="/js/runtime-hardening.js?v=6"></script>
+<script defer src="/js/presence.js?v=6"></script>
+<script defer src="/js/members-page-v2.js?v=2"></script>
+</body>
+</html>
