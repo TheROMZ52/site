@@ -16,6 +16,7 @@
   let accounts = [];
   let presence = [];
   let busy = false;
+  let bound = false;
 
   const root = () => document.getElementById(ROOT);
   const current = () => {
@@ -246,26 +247,16 @@
 
     const result = document.getElementById('membersResultCount');
     if (result) result.textContent = `نمایش ${visibleAccounts.length} از ${accounts.length} عضو · ${groupCount} گروه رنک`;
-    document.getElementById('memberSearchClear')?.toggleAttribute('hidden', !query);
+    const clear = document.getElementById('memberSearchClear');
+    if (clear) clear.hidden = !query;
     hydrateAvatars(container);
 
-    container.querySelector('.kz-filter-empty')?.remove();
     if (accounts.length && !visibleAccounts.length) {
       const empty = document.createElement('div');
       empty.className = 'kz-filter-empty';
       empty.innerHTML = '<strong>عضوی پیدا نشد</strong><span>عبارت جستجو یا فیلترها رو تغییر بده.</span>';
       container.appendChild(empty);
     }
-  }
-
-  async function openFallbackAchievements(account, content) {
-    if (!window.sb) return;
-    const { data } = await sb.from('achievements').select('title,description,icon,awarded_at').eq('account_id', account.id).order('awarded_at', { ascending:false });
-    const list = data || [];
-    const achievements = list.length
-      ? list.map(a => `<article class="kz-fallback-achievement"><strong>${esc(a.icon || '🏆')} ${esc(a.title)}</strong><p>${esc(a.description || '')}</p></article>`).join('')
-      : '<div class="kz-community-empty">هنوز دستاوردی ثبت نشده.</div>';
-    content.querySelector('.kz-fallback-achievements').innerHTML = achievements;
   }
 
   function fallbackProfile(account) {
@@ -284,10 +275,49 @@
     content.innerHTML = `<div class="kz-profile-hero">${avatarHtml(account, true)}<div class="kz-profile-hero-copy"><span class="kz-eyebrow">KZ // MEMBER PROFILE</span><h3>${esc(account.username)}</h3><p>${esc(account.bio || 'این عضو هنوز معرفی کوتاهی ثبت نکرده.')}</p></div></div><section class="kz-profile-section"><div class="kz-profile-section-title"><h4>اطلاعات عضو</h4><span>${esc(rankMeta(account.rank).label)}</span></div><div class="kz-profile-meta kz-profile-meta-large"><span>${esc(games || 'بازی ثبت نشده')}</span>${account.joined_at ? `<span>عضویت از ${esc(new Intl.DateTimeFormat('fa-IR', {year:'numeric',month:'long',day:'numeric'}).format(new Date(account.joined_at)))}</span>` : ''}</div></section><section class="kz-profile-section"><div class="kz-profile-section-title"><h4>دستاوردها</h4><span>ACHIEVEMENTS</span></div><div class="kz-fallback-achievements"><div class="kz-community-loading">در حال بارگذاری دستاوردها…</div></div></section>`;
     hydrateAvatars(content);
     overlay.classList.add('show');
-    openFallbackAchievements(account, content);
+    sb.from('achievements').select('title,description,icon,awarded_at').eq('account_id',account.id).order('awarded_at',{ascending:false}).then(({data}) => {
+      const box = content.querySelector('.kz-fallback-achievements');
+      if (!box) return;
+      box.innerHTML = data?.length
+        ? data.map(a => `<article class="kz-fallback-achievement"><strong>${esc(a.icon || '🏆')} ${esc(a.title)}</strong><p>${esc(a.description || '')}</p></article>`).join('')
+        : '<div class="kz-community-empty">هنوز دستاوردی ثبت نشده.</div>';
+    });
+  }
+
+  async function refresh() {
+    if (busy) return;
+    busy = true;
+    try {
+      const container = root();
+      if (!container) return;
+      if (!window.sb) {
+        container.innerHTML = '<div class="kz-community-empty"><strong>اتصال دیتابیس آماده نیست</strong><span>صفحه را دوباره باز کن.</span></div>';
+        return;
+      }
+      container.innerHTML = '<div class="kz-community-loading">در حال دریافت اعضای تیم…</div>';
+      if (!await load()) {
+        container.innerHTML = '<div class="kz-community-empty"><strong>بارگذاری اعضا ناموفق بود</strong><span>اتصال دیتابیس را بررسی کن و دوباره تلاش کن.</span></div>';
+        return;
+      }
+      stats();
+      populateGames();
+      wire();
+      renderGroups();
+    } finally {
+      busy = false;
+    }
   }
 
   function wire() {
+    if (bound) {
+      const add = document.getElementById('addMemberBtn');
+      if (add) add.style.display = isStaff() ? 'inline-flex' : 'none';
+      const guests = document.getElementById('guestAccountsBtn');
+      if (guests) guests.style.display = isStaff() ? 'inline-flex' : 'none';
+      return;
+    }
+    bound = true;
+
     const search = document.getElementById('memberSearch');
     const clear = document.getElementById('memberSearchClear');
     const game = document.getElementById('memberGameFilter');
@@ -314,10 +344,7 @@
     const guests = document.getElementById('guestAccountsBtn');
     if (guests) {
       guests.style.display = isStaff() ? 'inline-flex' : 'none';
-      if (!guests.dataset.kzBound) {
-        guests.dataset.kzBound = '1';
-        guests.addEventListener('click', guestManager);
-      }
+      guests.addEventListener('click', guestManager);
     }
   }
 
@@ -367,30 +394,6 @@
         overlay.classList.remove('show'); await refresh();
       });
     });
-  }
-
-  async function refresh() {
-    if (busy) return;
-    busy = true;
-    try {
-      const container = root();
-      if (!container) return;
-      if (!window.sb) {
-        container.innerHTML = '<div class="kz-community-empty"><strong>اتصال دیتابیس آماده نیست</strong><span>صفحه را دوباره باز کن.</span></div>';
-        return;
-      }
-      container.innerHTML = '<div class="kz-community-loading">در حال دریافت اعضای تیم…</div>';
-      if (!await load()) {
-        container.innerHTML = '<div class="kz-community-empty"><strong>بارگذاری اعضا ناموفق بود</strong><span>اتصال دیتابیس را بررسی کن و دوباره تلاش کن.</span></div>';
-        return;
-      }
-      stats();
-      populateGames();
-      wire();
-      renderGroups();
-    } finally {
-      busy = false;
-    }
   }
 
   function boot() {
