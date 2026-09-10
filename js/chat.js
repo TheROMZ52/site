@@ -1,99 +1,391 @@
 // KillZone team chat
-(function () {
+(() => {
   "use strict";
+
   const TABLE = "chat_messages";
   const MAX = 2000;
   const REACTIONS = ["👍", "❤️", "😂", "🔥"];
-  let messages = [];
-  let replyTo = null;
-  let editingId = null;
-  let channel = null;
-  let previewMode = false;
-  const $ = (s, r = document) => r.querySelector(s);
-  const esc = (v) => String(v ?? "").replace(/[&<>\"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
-  const initials = (v) => (String(v || "?").trim().slice(0, 2) || "?").toUpperCase();
-  const user = () => typeof currentUser !== "undefined" ? currentUser : window.currentUser || null;
-  const fmt = (v) => { try { return new Intl.DateTimeFormat("fa-IR", {hour:"2-digit", minute:"2-digit", day:"2-digit", month:"2-digit"}).format(new Date(v)); } catch { return ""; } };
-  const cls = (v) => String(v || "").replace(/[^\w\u0600-\u06ff-]/g, "");
-  function md(src) {
-    let s = esc(src).replace(/\r\n?/g, "\n");
-    const stash = [];
-    const save = (html) => { const i = stash.push(html) - 1; return `\u0000${i}\u0000`; };
-    s = s.replace(/```(?:[\w-]+)?\n?([\s\S]*?)```/g, (_, c) => save(`<pre><code>${c}</code></pre>`));
-    s = s.replace(/`([^`\n]+)`/g, (_, c) => save(`<code>${c}</code>`));
-    s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, (_, t, u) => save(`<a href="${u}" target="_blank" rel="noopener noreferrer">${t}</a>`));
-    const lines = s.split("\n"), out = [], list = [];
-    const flush = () => { if (list.length) { out.push(`<ul>${list.join("")}</ul>`); list.length = 0; } };
-    for (const line of lines) {
-      if (/^\s*[-*]\s+/.test(line)) { list.push(`<li>${line.replace(/^\s*[-*]\s+/, "")}</li>`); continue; }
-      flush();
-      if (!line.trim()) { out.push(""); continue; }
-      if (/^\s*&gt;/.test(line)) { out.push(`<blockquote>${line.replace(/^\s*&gt;\s?/, "")}</blockquote>`); continue; }
-      out.push(line);
+
+  const state = {
+    messages: [],
+    replyTo: null,
+    editingId: null,
+    channel: null,
+    previewMode: false,
+    loading: false,
+  };
+
+  const $ = (selector, root = document) => root.querySelector(selector);
+  const client = () => window.sb || window.supabaseClient || null;
+  const current = () => (typeof currentUser !== "undefined" ? currentUser : window.currentUser || null);
+
+  const esc = (value) => String(value ?? "").replace(/[&<>\"']/g, (char) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "\"": "&quot;",
+    "'": "&#39;",
+  })[char]);
+
+  const initials = (value) => (String(value || "?").trim().slice(0, 2) || "?").toUpperCase();
+
+  const formatTime = (value) => {
+    try {
+      return new Intl.DateTimeFormat("fa-IR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        day: "2-digit",
+        month: "2-digit",
+      }).format(new Date(value));
+    } catch {
+      return "";
     }
-    flush();
-    s = out.join("\n");
-    s = s.replace(/\*\*([^*\n]+)\*\*/g, "<strong>$1</strong>").replace(/__([^_\n]+)__/g, "<strong>$1</strong>").replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, "$1<em>$2</em>").replace(/(^|[^_])_([^_\n]+)_(?!_)/g, "$1<em>$2</em>");
-    s = s.split(/\n\n+/).map(x => /^<(?:ul|blockquote|pre)/.test(x) ? x : `<p>${x.replace(/\n/g, "<br>")}</p>`).join("");
-    s = s.replace(/\u0000(\d+)\u0000/g, (_, i) => stash[Number(i)] || "");
-    return s;
+  };
+
+  function markdown(source) {
+    let text = esc(source).replace(/\r\n?/g, "\n");
+    const stash = [];
+    const save = (html) => {
+      const index = stash.push(html) - 1;
+      return `\u0000${index}\u0000`;
+    };
+
+    text = text.replace(/```(?:[\w-]+)?\n?([\s\S]*?)```/g, (_, code) => save(`<pre><code>${code}</code></pre>`));
+    text = text.replace(/`([^`\n]+)`/g, (_, code) => save(`<code>${code}</code>`));
+    text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, (_, label, url) => save(`<a href="${url}" target="_blank" rel="noopener noreferrer">${label}</a>`));
+
+    const output = [];
+    const list = [];
+    const flushList = () => {
+      if (!list.length) return;
+      output.push(`<ul>${list.join("")}</ul>`);
+      list.length = 0;
+    };
+
+    for (const line of text.split("\n")) {
+      if (/^\s*[-*]\s+/.test(line)) {
+        list.push(`<li>${line.replace(/^\s*[-*]\s+/, "")}</li>`);
+        continue;
+      }
+      flushList();
+      if (!line.trim()) {
+        output.push("");
+      } else if (/^\s*&gt;/.test(line)) {
+        output.push(`<blockquote>${line.replace(/^\s*&gt;\s?/, "")}</blockquote>`);
+      } else {
+        output.push(line);
+      }
+    }
+    flushList();
+
+    text = output.join("\n")
+      .replace(/\*\*([^*\n]+)\*\*/g, "<strong>$1</strong>")
+      .replace(/__([^_\n]+)__/g, "<strong>$1</strong>")
+      .replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, "$1<em>$2</em>")
+      .replace(/(^|[^_])_([^_\n]+)_(?!_)/g, "$1<em>$2</em>");
+
+    text = text.split(/\n\n+/).map((part) => {
+      if (/^<(?:ul|blockquote|pre)/.test(part)) return part;
+      return `<p>${part.replace(/\n/g, "<br>")}</p>`;
+    }).join("");
+
+    return text.replace(/\u0000(\d+)\u0000/g, (_, index) => stash[Number(index)] || "");
   }
-  function showToast(text) { const old = $(".kz-chat-toast"); old?.remove(); const t = document.createElement("div"); t.className = "kz-chat-toast"; t.textContent = text; document.body.appendChild(t); setTimeout(() => t.remove(), 2400); }
-  function setComposerState() { const bar = $("#chatReplyBar"), input = $("#chatInput"), send = $("#chatSend"); if (!bar || !input || !send) return; if (editingId) { bar.hidden = false; bar.innerHTML = `<span>در حال ویرایش <strong>پیام خودت</strong></span><button type="button" id="chatCancelAction">لغو</button>`; send.querySelector("span").textContent = "ذخیره"; } else if (replyTo) { bar.hidden = false; bar.innerHTML = `<span>پاسخ به <strong>${esc(replyTo.author_name)}</strong></span><button type="button" id="chatCancelAction">لغو</button>`; send.querySelector("span").textContent = "ارسال"; } else { bar.hidden = true; bar.innerHTML = ""; send.querySelector("span").textContent = "ارسال"; } }
-  function scrollBottom(smooth = false) { const box = $("#chatMessages"); if (box) box.scrollTo({top: box.scrollHeight, behavior: smooth ? "smooth" : "auto"}); }
+
+  function toast(message) {
+    document.querySelector(".kz-chat-toast")?.remove();
+    const element = document.createElement("div");
+    element.className = "kz-chat-toast";
+    element.textContent = message;
+    document.body.appendChild(element);
+    window.setTimeout(() => element.remove(), 2400);
+  }
+
+  function setStatus(message, error = false) {
+    const element = $("#chatStatus");
+    if (!element) return;
+    element.textContent = message;
+    element.classList.toggle("is-error", error);
+  }
+
+  async function waitForClient(timeout = 10000) {
+    const started = Date.now();
+    while (!client() && Date.now() - started < timeout) {
+      await new Promise((resolve) => window.setTimeout(resolve, 100));
+    }
+    return client();
+  }
+
   function render() {
-    const box = $("#chatMessages"), count = $("#chatMessageCount"), q = ($("#chatSearch")?.value || "").trim().toLowerCase();
+    const box = $("#chatMessages");
+    const count = $("#chatMessageCount");
+    const query = ($( "#chatSearch")?.value || "").trim().toLowerCase();
     if (!box) return;
-    const list = messages.filter(m => !q || `${m.author_name} ${m.body}`.toLowerCase().includes(q));
-    if (count) count.textContent = String(messages.length);
-    if (!list.length) { box.innerHTML = `<div class="kz-chat-empty">${q ? "چیزی با این جستجو پیدا نشد." : "هنوز پیامی نیست؛ اولین پیام رو تو بفرست."}</div>`; return; }
-    box.innerHTML = list.map(m => {
-      const mine = user()?.id === m.author_id;
-      const r = m.reply_to ? messages.find(x => x.id === m.reply_to) : null;
-      const counts = m.reactions && typeof m.reactions === "object" ? m.reactions : {};
-      const reactions = REACTIONS.map(x => `<button type="button" class="${Array.isArray(counts[x]) && counts[x].includes(user()?.id) ? "active" : ""}" data-react="${x}" data-id="${m.id}">${x}${Array.isArray(counts[x]) && counts[x].length ? ` ${counts[x].length}` : ""}</button>`).join("");
-      return `<article class="kz-chat-msg ${mine ? "mine" : ""}" data-id="${m.id}"><div class="kz-chat-avatar">${initials(m.author_name)}</div><div class="kz-chat-bubble">${r ? `<div class="kz-chat-reply"><strong>${esc(r.author_name)}</strong> · ${esc(r.body.slice(0, 110))}${r.body.length > 110 ? "…" : ""}</div>` : ""}<div class="kz-chat-head"><span class="kz-chat-author">${esc(m.author_name)}</span><span class="kz-chat-time">${fmt(m.created_at)}</span>${m.edited_at ? `<span class="kz-chat-edited">ویرایش‌شده</span>` : ""}</div><div class="kz-chat-body">${md(m.body)}</div><div class="kz-chat-actions"><button type="button" data-reply="${m.id}">↩ پاسخ</button><div class="kz-chat-reactions">${reactions}</div>${mine ? `<button type="button" data-edit="${m.id}">ویرایش</button><button type="button" data-delete="${m.id}">حذف</button>` : ""}</div></div></article>`;
+
+    const visible = state.messages.filter((message) => !query || `${message.author_name} ${message.body}`.toLowerCase().includes(query));
+    if (count) count.textContent = String(state.messages.length);
+
+    if (!visible.length) {
+      box.innerHTML = `<div class="kz-chat-empty">${query ? "چیزی با این جستجو پیدا نشد." : "هنوز پیامی نیست؛ اولین پیام رو تو بفرست."}</div>`;
+      return;
+    }
+
+    const me = current();
+    box.innerHTML = visible.map((message) => {
+      const mine = String(me?.id) === String(message.author_id);
+      const reply = message.reply_to ? state.messages.find((item) => String(item.id) === String(message.reply_to)) : null;
+      const reactions = message.reactions && typeof message.reactions === "object" ? message.reactions : {};
+      const reactionButtons = REACTIONS.map((emoji) => {
+        const users = Array.isArray(reactions[emoji]) ? reactions[emoji] : [];
+        return `<button type="button" class="${users.includes(me?.id) ? "active" : ""}" data-react="${esc(emoji)}" data-id="${esc(message.id)}">${emoji}${users.length ? ` ${users.length}` : ""}</button>`;
+      }).join("");
+
+      return `<article class="kz-chat-msg ${mine ? "mine" : ""}" data-id="${esc(message.id)}">
+        <div class="kz-chat-avatar">${initials(message.author_name)}</div>
+        <div class="kz-chat-bubble">
+          ${reply ? `<div class="kz-chat-reply"><strong>${esc(reply.author_name)}</strong> · ${esc(reply.body.slice(0, 110))}${reply.body.length > 110 ? "…" : ""}</div>` : ""}
+          <div class="kz-chat-head"><span class="kz-chat-author">${esc(message.author_name)}</span><span class="kz-chat-time">${formatTime(message.created_at)}</span>${message.edited_at ? `<span class="kz-chat-edited">ویرایش‌شده</span>` : ""}</div>
+          <div class="kz-chat-body">${markdown(message.body)}</div>
+          <div class="kz-chat-actions">
+            <button type="button" data-reply="${esc(message.id)}">↩ پاسخ</button>
+            <div class="kz-chat-reactions">${reactionButtons}</div>
+            ${mine ? `<button type="button" data-edit="${esc(message.id)}">ویرایش</button><button type="button" data-delete="${esc(message.id)}">حذف</button>` : ""}
+          </div>
+        </div>
+      </article>`;
     }).join("");
   }
-  async function load() {
+
+  function scrollBottom(smooth = false) {
     const box = $("#chatMessages");
+    if (box) box.scrollTo({ top: box.scrollHeight, behavior: smooth ? "smooth" : "auto" });
+  }
+
+  async function load() {
+    const api = client();
+    const box = $("#chatMessages");
+    if (!api) throw new Error("Supabase client is not ready");
     if (box) box.innerHTML = `<div class="kz-chat-loading">در حال دریافت پیام‌ها…</div>`;
-    const { data, error } = await sb.from(TABLE).select("id,author_id,author_name,body,reply_to,reactions,created_at,edited_at").order("created_at", {ascending:false}).limit(80);
-    if (error) { console.error(error); if (box) box.innerHTML = `<div class="kz-chat-empty">اتصال به چت برقرار نشد. دوباره صفحه رو باز کن.</div>`; return; }
-    messages = (data || []).reverse(); render(); scrollBottom();
+
+    const { data, error } = await api.from(TABLE)
+      .select("id,author_id,author_name,body,reply_to,reactions,created_at,edited_at")
+      .order("created_at", { ascending: false })
+      .limit(80);
+
+    if (error) throw error;
+    state.messages = (data || []).reverse();
+    render();
+    scrollBottom();
   }
+
+  function subscribe(api) {
+    state.channel?.unsubscribe();
+    state.channel = api.channel("killzone-chat");
+    state.channel.on("postgres_changes", { event: "*", schema: "public", table: TABLE }, (payload) => {
+      if (payload.eventType === "INSERT" && !state.messages.some((item) => String(item.id) === String(payload.new.id))) state.messages.push(payload.new);
+      if (payload.eventType === "UPDATE") state.messages = state.messages.map((item) => String(item.id) === String(payload.new.id) ? payload.new : item);
+      if (payload.eventType === "DELETE") state.messages = state.messages.filter((item) => String(item.id) !== String(payload.old.id));
+      render();
+    }).subscribe();
+  }
+
+  function setComposerState() {
+    const bar = $("#chatReplyBar");
+    const send = $("#chatSend");
+    if (!bar || !send) return;
+
+    if (state.editingId) {
+      bar.hidden = false;
+      bar.innerHTML = `<span>در حال ویرایش <strong>پیام خودت</strong></span><button type="button" id="chatCancelAction">لغو</button>`;
+      send.querySelector("span")?.replaceChildren(document.createTextNode("ذخیره"));
+    } else if (state.replyTo) {
+      bar.hidden = false;
+      bar.innerHTML = `<span>پاسخ به <strong>${esc(state.replyTo.author_name)}</strong></span><button type="button" id="chatCancelAction">لغو</button>`;
+      send.querySelector("span")?.replaceChildren(document.createTextNode("ارسال"));
+    } else {
+      bar.hidden = true;
+      bar.innerHTML = "";
+      send.querySelector("span")?.replaceChildren(document.createTextNode("ارسال"));
+    }
+  }
+
   async function send() {
-    const me = user();
-    const input = $("#chatInput"), btn = $("#chatSend");
-    if (!me) { showToast("برای استفاده از چت اول وارد اکانت شو."); return; }
+    const api = client();
+    const me = current();
+    const input = $("#chatInput");
+    const button = $("#chatSend");
     const body = String(input?.value || "").trim();
-    if (!body || body.length > MAX) return;
-    btn.disabled = true;
+
+    if (!me) return toast("برای استفاده از چت اول وارد اکانت شو.");
+    if (!api || !body || body.length > MAX) return;
+
+    button.disabled = true;
     try {
-      if (editingId) {
-        const { data, error } = await sb.from(TABLE).update({body, edited_at:new Date().toISOString()}).eq("id", editingId).eq("author_id", me.id).select("*").maybeSingle();
-        if (error || !data) throw error || new Error("ویرایش انجام نشد");
-        editingId = null; showToast("پیام ویرایش شد.");
+      if (state.editingId) {
+        const { error } = await api.from(TABLE).update({ body, edited_at: new Date().toISOString() }).eq("id", state.editingId).eq("author_id", me.id);
+        if (error) throw error;
+        toast("پیام ویرایش شد.");
       } else {
-        const row = {author_id:String(me.id), author_name:String(me.username).slice(0,24), body, reply_to:replyTo?.id || null};
-        const { data, error } = await sb.from(TABLE).insert(row).select("*").single();
-        if (error || !data) throw error || new Error("ارسال انجام نشد");
-        replyTo = null;
+        const { error } = await api.from(TABLE).insert({ author_id: String(me.id), author_name: String(me.username || "عضو تیم").slice(0, 24), body, reply_to: state.replyTo?.id || null });
+        if (error) throw error;
+        toast("پیام ارسال شد.");
       }
-      input.value = ""; input.focus(); updateCount(); setComposerState(); await load();
-    } catch (e) { console.error(e); showToast("پیام ارسال نشد؛ دوباره امتحان کن."); }
-    finally { btn.disabled = false; }
+      state.editingId = null;
+      state.replyTo = null;
+      input.value = "";
+      updateCount();
+      setComposerState();
+      await load();
+    } catch (error) {
+      console.error("[KillZone Chat] send", error);
+      toast("پیام ارسال نشد؛ دوباره امتحان کن.");
+    } finally {
+      button.disabled = false;
+    }
   }
-  async function del(id) { const me = user(); if (!me) return; if (!window.confirm("این پیام حذف بشه؟")) return; const { error } = await sb.from(TABLE).delete().eq("id", id).eq("author_id", me.id); if (error) showToast("حذف انجام نشد."); else { showToast("پیام حذف شد."); await load(); } }
-  async function react(id, emoji) { const me = user(); if (!me) { showToast("برای ری‌اکشن باید وارد اکانت باشی."); return; } const m = messages.find(x => x.id === id); if (!m) return; const r = m.reactions && typeof m.reactions === "object" ? structuredClone(m.reactions) : {}; for (const key of REACTIONS) r[key] = Array.isArray(r[key]) ? r[key].filter(x => x !== me.id) : []; const previous = Array.isArray((m.reactions || {})[emoji]) ? (m.reactions || {})[emoji] : []; const active = previous.includes(me.id); if (!active) r[emoji].push(me.id); const { error } = await sb.from(TABLE).update({reactions:r}).eq("id", id); if (error) showToast("ری‌اکشن ثبت نشد."); else { m.reactions = r; render(); } }
-  function updateCount() { const input = $("#chatInput"), out = $("#chatCharCount"); if (input && out) out.textContent = `${input.value.length} / ${MAX}`; }
-  function insertMd(kind) { const input = $("#chatInput"); if (!input) return; const a=input.selectionStart,b=input.selectionEnd,v=input.value,sel=v.slice(a,b)||"متن"; const map={bold:[`**${sel}**`,`**`,`**`],italic:[`*${sel}*`,`*`,`*`],code:[`\`${sel}\``,`\`` ,`\``],quote:[`> ${sel}`,"> ",""],list:[`- ${sel}`,"- ","],link:[`[${sel}](https://)`,`[`,`"]("`][0]}; const item=map[kind] || map.bold; let replacement=item[0]; if (kind === "link") replacement=`[${sel}](https://)`; input.focus(); input.setRangeText(replacement,a,b,"end"); updateCount(); }
-  function bindTools() { document.querySelectorAll("[data-md]").forEach(b => b.addEventListener("click", () => insertMd(b.dataset.md))); $("#chatPreviewToggle")?.addEventListener("click", () => { previewMode = !previewMode; const p=$("#chatMarkdownPreview"), i=$("#chatInput"); p.hidden=!previewMode; i.hidden=previewMode; if (previewMode) p.innerHTML=md(i.value || "پیش‌نمایش اینجا میاد…"); $("#chatPreviewToggle").textContent=previewMode ? "بازگشت به نوشتن" : "پیش‌نمایش"; }); $("#chatInput")?.addEventListener("input", () => { updateCount(); const p=$("#chatMarkdownPreview"), i=$("#chatInput"); if (previewMode) p.innerHTML=md(i.value || "پیش‌نمایش اینجا میاد…"); }); $("#chatInput")?.addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); send(); } }); $("#chatSend")?.addEventListener("click", send); $("#chatSearch")?.addEventListener("input", render); $("#chatSearchClear")?.addEventListener("click", () => { $("#chatSearch").value=""; $("#chatSearch").dispatchEvent(new Event("input")); $("#chatSearch").focus(); }); $("#chatInput")?.addEventListener("input", () => { const c=$("#chatSearchClear"); if(c) c.classList.toggle("show", !!$("#chatSearch")?.value); }); }
-  function bindMessages() { $("#chatMessages")?.addEventListener("click", e => { const b=e.target.closest("button"); if(!b) return; if(b.dataset.reply){ const m=messages.find(x=>x.id===Number(b.dataset.reply)); if(m){ replyTo=m; editingId=null; $("#chatInput").focus(); setComposerState(); } } if(b.dataset.edit){ const m=messages.find(x=>x.id===Number(b.dataset.edit)); if(m && user()?.id===m.author_id){ editingId=m.id; replyTo=null; $("#chatInput").value=m.body; updateCount(); setComposerState(); $("#chatInput").focus(); } } if(b.dataset.delete) del(Number(b.dataset.delete)); if(b.dataset.react) react(Number(b.dataset.id), b.dataset.react); }); $(document).addEventListener("click", e => { if(e.target.id === "chatCancelAction"){ editingId=null; replyTo=null; $("#chatInput").value=""; updateCount(); setComposerState(); } }); }
-  function setupPreview() { const root=$("#kzChatPreview"); if(!root) return; root.innerHTML=`<div class="section-title"><h2>چت تیم</h2><p>آخرین حرف‌های اسکـواد همین‌جا.</p></div><div class="kz-chat-home"><div class="kz-chat-home-head"><div><h2>ارتباطات تیم</h2><p>یه سر بزن، شاید یکی دنبال هم‌تیمی باشه.</p></div><a class="btn ghost small" href="/chat">ورود به چت ←</a></div><div id="kzChatHomeCard" class="kz-chat-preview-card"><div class="kz-chat-home-empty">در حال دریافت پیام‌ها…</div></div></div>`; loadPreview(); }
-  async function loadPreview() { const root=$("#kzChatHomeCard"); if(!root) return; const {data,error}=await sb.from(TABLE).select("id,author_name,body,created_at").order("created_at",{ascending:false}).limit(4); if(error || !data?.length){root.innerHTML=`<div class="kz-chat-home-empty">هنوز کسی چیزی نگفته. اولین پیام رو تو شروع کن.</div>`;return;} root.innerHTML=`<div class="kz-chat-preview-list">${data.reverse().map(m=>`<a class="kz-chat-preview-item" href="/chat"><div class="kz-chat-preview-avatar">${initials(m.author_name)}</div><div><div class="kz-chat-preview-meta"><strong>${esc(m.author_name)}</strong><small>${fmt(m.created_at)}</small></div><div class="kz-chat-preview-text">${esc(m.body)}</div></div></a>`).join("")}</div>`; }
-  function realtime() { if(!window.sb?.channel) return; channel=sb.channel("kz-team-chat").on("postgres_changes",{event:"*",schema:"public",table:TABLE},() => load()).subscribe(); }
-  function presence() { const count=$("#chatOnlineCount"); if(!count || !window.sb?.channel) return; const p=sb.channel("kz-team-chat-presence",{config:{presence:{key:String(user()?.id || crypto.randomUUID())}}}); p.on("presence",{event:"sync"},()=>{ const state=p.presenceState(); count.textContent=String(Object.keys(state).length); }).subscribe(async s=>{ if(s==="SUBSCRIBED") await p.track({username:user()?.username || "guest"}); }); }
-  function boot() { bindTools(); bindMessages(); updateCount(); setComposerState(); if($("#chatMessages")){ load(); realtime(); presence(); } setupPreview(); }
-  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",boot,{once:true}); else boot();
+
+  async function removeMessage(id) {
+    const api = client();
+    const me = current();
+    if (!api || !me || !window.confirm("این پیام حذف بشه؟")) return;
+    const { error } = await api.from(TABLE).delete().eq("id", id).eq("author_id", me.id);
+    if (error) toast("حذف انجام نشد.");
+    else await load();
+  }
+
+  async function react(id, emoji) {
+    const api = client();
+    const me = current();
+    const message = state.messages.find((item) => String(item.id) === String(id));
+    if (!api || !me || !message) return toast("برای ری‌اکشن باید وارد اکانت باشی.");
+
+    const reactions = message.reactions && typeof message.reactions === "object" ? structuredClone(message.reactions) : {};
+    for (const key of REACTIONS) reactions[key] = Array.isArray(reactions[key]) ? reactions[key].filter((idValue) => String(idValue) !== String(me.id)) : [];
+    const previous = Array.isArray(message.reactions?.[emoji]) ? message.reactions[emoji] : [];
+    if (!previous.some((idValue) => String(idValue) === String(me.id))) reactions[emoji].push(me.id);
+
+    const { error } = await api.from(TABLE).update({ reactions }).eq("id", id);
+    if (error) toast("ری‌اکشن ثبت نشد.");
+    else {
+      message.reactions = reactions;
+      render();
+    }
+  }
+
+  function updateCount() {
+    const input = $("#chatInput");
+    const output = $("#chatCharCount");
+    if (input && output) output.textContent = `${input.value.length} / ${MAX}`;
+  }
+
+  function insertMarkdown(type) {
+    const input = $("#chatInput");
+    if (!input) return;
+    const start = input.selectionStart;
+    const end = input.selectionEnd;
+    const selected = input.value.slice(start, end) || "متن";
+    const snippets = {
+      bold: `**${selected}**`,
+      italic: `*${selected}*`,
+      code: `\`${selected}\``,
+      quote: `> ${selected}`,
+      list: `- ${selected}`,
+      link: `[${selected}](https://)`,
+    };
+    input.focus();
+    input.setRangeText(snippets[type] || selected, start, end, "end");
+    updateCount();
+  }
+
+  function bindTools() {
+    document.querySelectorAll("[data-md]").forEach((button) => button.addEventListener("click", () => insertMarkdown(button.dataset.md)));
+    $("#chatSend")?.addEventListener("click", send);
+    $("#chatSearch")?.addEventListener("input", render);
+    $("#chatInput")?.addEventListener("input", updateCount);
+    $("#chatInput")?.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
+        event.preventDefault();
+        send();
+      }
+    });
+    $("#chatPreviewToggle")?.addEventListener("click", () => {
+      state.previewMode = !state.previewMode;
+      const input = $("#chatInput");
+      const preview = $("#chatMarkdownPreview");
+      if (!input || !preview) return;
+      input.hidden = state.previewMode;
+      preview.hidden = !state.previewMode;
+      preview.innerHTML = state.previewMode ? markdown(input.value || "پیش‌نمایش اینجا میاد…") : "";
+      $("#chatPreviewToggle").textContent = state.previewMode ? "بازگشت به نوشتن" : "پیش‌نمایش";
+    });
+  }
+
+  function bindMessages() {
+    $("#chatMessages")?.addEventListener("click", (event) => {
+      const button = event.target.closest("button");
+      if (!button) return;
+      const id = button.dataset.id || button.dataset.reply || button.dataset.edit || button.dataset.delete;
+      const message = state.messages.find((item) => String(item.id) === String(id));
+
+      if (button.dataset.reply && message) {
+        state.replyTo = message;
+        state.editingId = null;
+        setComposerState();
+        $("#chatInput")?.focus();
+      } else if (button.dataset.edit && message && String(current()?.id) === String(message.author_id)) {
+        state.editingId = message.id;
+        state.replyTo = null;
+        $("#chatInput").value = message.body;
+        updateCount();
+        setComposerState();
+        $("#chatInput").focus();
+      } else if (button.dataset.delete) {
+        removeMessage(id);
+      } else if (button.dataset.react) {
+        react(button.dataset.id, button.dataset.react);
+      }
+    });
+
+    document.addEventListener("click", (event) => {
+      if (event.target.id !== "chatCancelAction") return;
+      state.editingId = null;
+      state.replyTo = null;
+      $("#chatInput").value = "";
+      updateCount();
+      setComposerState();
+    });
+  }
+
+  async function boot() {
+    if (state.loading) return;
+    state.loading = true;
+    bindTools();
+    bindMessages();
+    updateCount();
+    setComposerState();
+
+    if (!$("#chatMessages")) {
+      state.loading = false;
+      return;
+    }
+
+    setStatus("در حال اتصال به ارتباطات تیم…");
+    try {
+      const api = await waitForClient();
+      if (!api) throw new Error("Supabase client is unavailable");
+      await load();
+      subscribe(api);
+      setStatus("ارتباط تیم برقرار است");
+    } catch (error) {
+      console.error("[KillZone Chat] boot", error);
+      setStatus("اتصال به چت برقرار نشد؛ دوباره تلاش کن.", true);
+      const box = $("#chatMessages");
+      if (box) box.innerHTML = `<div class="kz-chat-empty">اتصال برقرار نشد. صفحه رو رفرش کن.</div>`;
+    } finally {
+      state.loading = false;
+    }
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot, { once: true });
+  else boot();
 })();
