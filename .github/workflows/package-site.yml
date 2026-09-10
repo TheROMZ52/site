@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - refactor/js-cleanup-2026-09-10
 
 permissions:
   contents: read
