@@ -15,30 +15,6 @@
 </head>
 <body>
   <a class="return" href="/games" aria-label="بازگشت به گیم هاب">← گیم هاب</a>
-  <iframe id="gameFrame" class="game-frame" src="Minecraft-ErrorArea.html" title="Minecraft KILLZONE" allow="fullscreen; gamepad; pointer-lock" allowfullscreen></iframe>
-  <script>
-    (function(){
-      const frame=document.getElementById('gameFrame');
-      function clean(){
-        try{
-          const doc=frame.contentDocument;
-          if(!doc)return;
-          doc.title='Minecraft // KILLZONE';
-          doc.querySelectorAll('a').forEach(function(a){
-            const text=(a.textContent||'').toLowerCase();
-            const href=(a.getAttribute('href')||'').toLowerCase();
-            if(text.includes('errorarea')||href.includes('errorarea'))a.remove();
-          });
-          doc.querySelectorAll('*').forEach(function(el){
-            if(el.children.length===0 && /errorarea/i.test(el.textContent||'')){
-              el.textContent=(el.textContent||'').replace(/errorarea/ig,'KILLZONE');
-            }
-          });
-        }catch(e){ console.warn('KillZone game cleanup unavailable',e); }
-      }
-      frame.addEventListener('load',clean);
-      setTimeout(clean,250);
-    })();
-  </script>
+  <iframe id="gameFrame" class="game-frame" src="minecraft-game.html" title="Minecraft KILLZONE" allow="fullscreen; gamepad; pointer-lock" allowfullscreen></iframe>
 </body>
 </html>
