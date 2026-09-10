@@ -95,3 +95,56 @@ window.dispatchEvent(new CustomEvent("kz:supabase-ready"));
     { once: true },
   );
 })();
+
+(function () {
+  "use strict";
+  const install = () => {
+    const nav = document.querySelector("nav.main");
+    const header = document.querySelector("header");
+    if (!nav || !header) return;
+
+    if (!nav.querySelector('a[href="/news"]')) {
+      const link = document.createElement("a");
+      link.href = "/news";
+      link.textContent = "اخبار";
+      const join = nav.querySelector('a[href="/join"]');
+      nav.insertBefore(link, join || null);
+    }
+
+    header.style.zIndex = "10000";
+    header.style.position = "sticky";
+    nav.style.position = "relative";
+    nav.style.zIndex = "10002";
+
+    const menu = document.getElementById("menuToggle");
+    if (menu) {
+      menu.style.position = "relative";
+      menu.style.zIndex = "10003";
+    }
+
+    const styleId = "kz-mobile-nav-fix";
+    if (!document.getElementById(styleId)) {
+      const style = document.createElement("style");
+      style.id = styleId;
+      style.textContent = `
+        header, header nav, header .menu-toggle { isolation: isolate; }
+        @media (max-width: 700px) {
+          header { z-index: 10000 !important; }
+          header nav.main,
+          header nav.main.open,
+          header nav.main.is-open,
+          header nav.main.show { z-index: 10002 !important; }
+          header nav.main a { position: relative; z-index: 10003 !important; }
+          header .menu-toggle { z-index: 10004 !important; }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", install, { once: true });
+  } else {
+    install();
+  }
+})();
