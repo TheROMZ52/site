@@ -25,8 +25,15 @@
 .kz-text-action{border:0;background:none;color:var(--ember);font:700 11px 'Vazirmatn',sans-serif;cursor:pointer;padding:6px;}
 .kz-text-action:hover{text-decoration:underline;}
 .kz-members-page #membersCommunityContainer{min-height:220px;}
+.kz-rank-section{margin-top:28px;}
+.kz-rank-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:12px;padding:12px 14px;border-inline-start:3px solid var(--ember);border-block:1px solid rgba(89,80,62,.48);background:linear-gradient(90deg,rgba(33,31,24,.7),rgba(16,16,14,.35));}
+.kz-rank-heading-main{display:flex;align-items:center;gap:12px;min-width:0;}
+.kz-rank-chevron{color:var(--ember);font:700 12px/1 'Press Start 2P',monospace;letter-spacing:-2px;direction:ltr;white-space:nowrap;}
+.kz-rank-kicker{display:block;color:rgba(244,237,220,.4);font:700 7px 'Press Start 2P',monospace;letter-spacing:.5px;direction:ltr;}
+.kz-rank-heading h2{margin:6px 0 0;color:var(--paper);font-size:20px;}
+.kz-rank-count{flex:none;color:var(--paper-dim);font-size:10px;padding:6px 9px;border:1px solid rgba(89,80,62,.55);background:rgba(8,8,7,.32);}
 .kz-members-page .kz-profile-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
-.kz-members-page .kz-profile-card{position:relative;display:grid;grid-template-columns:64px minmax(0,1fr);gap:14px;align-items:start;min-height:136px;padding:17px;background:linear-gradient(145deg,rgba(35,32,25,.82),rgba(13,13,11,.64));border:1px solid rgba(89,80,62,.78);box-shadow:0 18px 45px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.04);cursor:pointer;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;overflow:hidden;}
+.kz-members-page .kz-profile-card{position:relative;display:grid;grid-template-columns:64px minmax(0,1fr);gap:14px;align-items:start;min-height:148px;padding:17px;background:linear-gradient(145deg,rgba(35,32,25,.82),rgba(13,13,11,.64));border:1px solid rgba(89,80,62,.78);box-shadow:0 18px 45px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.04);cursor:pointer;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;overflow:hidden;}
 .kz-members-page .kz-profile-card:before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:linear-gradient(180deg,var(--ember),transparent);opacity:.8;}
 .kz-members-page .kz-profile-card:hover{transform:translateY(-3px);border-color:rgba(223,99,48,.66);box-shadow:0 25px 55px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.05);}
 .kz-members-page .kz-profile-card:focus-visible{outline:2px solid var(--ember);outline-offset:3px;}
@@ -35,9 +42,12 @@
 .kz-members-page .kz-profile-name-row{display:flex;align-items:center;gap:8px;min-width:0;}
 .kz-members-page .kz-profile-name{margin:0;color:var(--paper);font-size:16px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .kz-members-page .kz-staff-mark{flex:none;padding:3px 5px;border:1px solid rgba(223,99,48,.3);color:var(--ember);font:700 6px 'Press Start 2P',monospace;}
+.kz-members-page .kz-member-rank-line{display:flex;align-items:center;gap:7px;margin-top:6px;color:var(--paper-dim);font-size:10px;font-weight:800;}
+.kz-members-page .kz-member-rank-chevron{color:var(--ember);font-size:8px;letter-spacing:-1px;direction:ltr;overflow:hidden;max-width:92px;white-space:nowrap;}
 .kz-members-page .kz-profile-meta{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;color:var(--paper-dim);font-size:10px;}
 .kz-members-page .kz-profile-meta span{padding:4px 7px;border:1px solid rgba(89,80,62,.5);background:rgba(7,7,6,.28);}
 .kz-members-page .kz-profile-bio{margin:9px 0 0;color:#c9c1b0;font-size:11px;line-height:1.75;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.kz-members-page .kz-profile-bio.is-empty{color:rgba(244,237,220,.4);}
 .kz-members-page .kz-profile-side{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;min-height:0;}
 .kz-members-page .kz-profile-arrow{font:700 13px 'Press Start 2P',monospace;color:var(--ember);transition:transform .18s ease;}
 .kz-members-page .kz-profile-card:hover .kz-profile-arrow{transform:translateX(-4px);}
@@ -49,16 +59,16 @@
 .kz-members-page .kz-runtime-presence small{color:rgba(244,237,220,.42);font-size:9px;}
 .kz-members-page .kz-community-empty,.kz-members-page .kz-community-loading{padding:42px 24px;text-align:center;border:1px dashed rgba(89,80,62,.55);background:rgba(18,17,14,.45);color:var(--paper-dim);}
 .kz-members-page .kz-community-empty strong{display:block;color:var(--paper);font-size:15px;margin-bottom:7px;}
-.kz-members-page .kz-filter-empty{padding:50px 24px;text-align:center;border:1px dashed rgba(89,80,62,.55);background:rgba(18,17,14,.4);color:var(--paper-dim);}
+.kz-members-page .kz-filter-empty{margin-top:18px;padding:50px 24px;text-align:center;border:1px dashed rgba(89,80,62,.55);background:rgba(18,17,14,.4);color:var(--paper-dim);}
 .kz-members-page .kz-filter-empty strong{display:block;color:var(--paper);font-size:15px;margin-bottom:6px;}
-.kz-runtime-guests{margin-top:26px!important;border-top:1px solid rgba(89,80,62,.5);padding-top:22px;}
 .kz-runtime-guest-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
 .kz-runtime-guest-card{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid rgba(89,80,62,.6);background:rgba(10,10,8,.48);}
 .kz-runtime-guest-card .avatar{width:42px;height:42px;flex:0 0 42px;margin:0;border:1px solid var(--line);}
 .kz-runtime-guest-card .body{min-width:0;flex:1;}.kz-runtime-guest-card .name{font-weight:800;color:var(--paper);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.kz-runtime-guest-card .meta{margin-top:4px;color:var(--paper-dim);font-size:10px}.kz-runtime-guest-card .actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
 .kz-community-overlay{position:fixed!important;inset:0!important;z-index:650!important;background:rgba(5,5,4,.84)!important;backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);}
 .kz-community-overlay .modal{position:relative;z-index:651!important;}
+.kz-fallback-profile{min-width:0;}.kz-fallback-achievement{padding:12px;border:1px solid rgba(89,80,62,.48);background:rgba(8,8,7,.3);margin-top:8px}.kz-fallback-achievement strong{color:var(--paper);}.kz-fallback-achievement p{margin:6px 0 0;color:var(--paper-dim);font-size:11px;line-height:1.7}
 @media(max-width:1120px){.kz-members-hero{grid-template-columns:1fr}.kz-members-control{grid-template-columns:minmax(200px,1fr) repeat(2,minmax(140px,.6fr));}.kz-members-admin-actions{grid-column:1/-1}.kz-members-page .kz-profile-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
-@media(max-width:700px){.kz-members-page{padding:32px 12px 58px}.kz-members-hero{padding:25px 19px}.kz-members-hero h1{font-size:38px}.kz-members-hero-stats{grid-template-columns:repeat(3,1fr)}.kz-members-hero-stats div{padding:15px 9px}.kz-members-hero-stats strong{font-size:18px}.kz-members-hero-stats span{font-size:9px}.kz-members-control{grid-template-columns:1fr 1fr;padding:11px}.kz-members-search-wrap{grid-column:1/-1}.kz-members-admin-actions{display:grid;grid-template-columns:1fr 1fr}.kz-members-admin-actions .btn{width:100%}.kz-members-page .kz-profile-grid{grid-template-columns:1fr}.kz-members-page .kz-profile-card{min-height:128px}.kz-runtime-guest-grid{grid-template-columns:1fr}.kz-members-resultbar{padding-inline:2px}}
+@media(max-width:700px){.kz-members-page{padding:32px 12px 58px}.kz-members-hero{padding:25px 19px}.kz-members-hero h1{font-size:38px}.kz-members-hero-stats{grid-template-columns:repeat(3,1fr)}.kz-members-hero-stats div{padding:15px 9px}.kz-members-hero-stats strong{font-size:18px}.kz-members-hero-stats span{font-size:9px}.kz-members-control{grid-template-columns:1fr 1fr;padding:11px}.kz-members-search-wrap{grid-column:1/-1}.kz-members-admin-actions{display:grid;grid-template-columns:1fr 1fr}.kz-members-admin-actions .btn{width:100%}.kz-members-page .kz-profile-grid{grid-template-columns:1fr}.kz-members-page .kz-profile-card{min-height:136px}.kz-rank-heading{align-items:flex-start;padding:11px}.kz-rank-heading h2{font-size:17px}.kz-rank-count{padding:5px 7px}.kz-runtime-guest-grid{grid-template-columns:1fr}.kz-members-resultbar{padding-inline:2px}}
 @media(max-width:430px){.kz-members-hero-stats{gap:0}.kz-members-hero-stats strong{font-size:15px}.kz-members-hero-stats span{font-size:8px}.kz-members-control{grid-template-columns:1fr}.kz-members-admin-actions{grid-column:1/-1}.kz-members-hero:after{display:none}}
 @media(prefers-reduced-motion:reduce){.kz-members-page .kz-profile-card,.kz-members-page .kz-profile-arrow{transition:none!important}}
