@@ -21,6 +21,9 @@ jobs:
         with:
           node-version: 20
 
+      - name: Remove stale renderer
+        run: rm -f js/members-page.js
+
       - name: Format JavaScript
         run: npx --yes prettier@3.6.2 --write "js/**/*.js"
 
