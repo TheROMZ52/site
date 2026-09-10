@@ -63,9 +63,13 @@ window.dispatchEvent(new CustomEvent("kz:supabase-ready"));
       style.textContent=`header,header nav,header .menu-toggle{isolation:isolate}@media(max-width:700px){header{z-index:10000!important}header nav.main,header nav.main.open,header nav.main.is-open,header nav.main.show{z-index:10002!important}header nav.main a{position:relative;z-index:10003!important}header .menu-toggle{z-index:10004!important}}`;
       document.head.appendChild(style);
     }
-    if(!window.__kzChatScriptLoading&&!window.kzChatBooted){
+    const chatLoaded=[...document.scripts].some(s=>String(s.src||"").includes("/js/chat.js"));
+    if(!chatLoaded&&!window.__kzChatScriptLoading&&!window.kzChatBooted){
       window.__kzChatScriptLoading=true;
-      const s=document.createElement("script"); s.defer=true; s.src="/js/chat.js?v=20260910"; document.body.appendChild(s);
+      const s=document.createElement("script");
+      s.src="/js/chat.js?v=20260910";
+      s.async=false;
+      document.body.appendChild(s);
     }
   };
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",install,{once:true}); else install();
