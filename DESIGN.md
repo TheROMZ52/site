@@ -22,6 +22,13 @@
 ## Signature
 The site is styled as a KillZone field console: broad dark surfaces, an ember/orange command accent, subtle tactical grid texture, and small machine-like labels. The homepage's stats rail is the primary composition signature; it should remain quiet while the content carries the hierarchy.
 
+## Premium Game Hub
+- The Game Hub is a production catalog surface, not a generic game-card gallery.
+- Game cards use broad tactical panels, a thin command bar, subtle diagonal field markings, and restrained depth on hover.
+- Status, action, focus, disabled and reduced-motion states are part of the component language; unavailable Multiplayer actions stay visibly secondary and explain their state.
+- The hub intro carries the page thesis while a compact operational status rail communicates the current state of available titles.
+- Mobile game browsing collapses to a single-column mode stack without changing action order or meaning.
+
 ## Community features
 - Public member cards are **profiles, not ranks**. Rank remains an internal account property and is never rendered on the public profile surface.
 - The members page is a **Squad Directory**: a compact operational hero, total/online/game counts, search, game filter, online/offline filter, sorting, result count, and a reset action.
