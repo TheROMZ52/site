@@ -12,9 +12,22 @@
     rejected: 'درخواست رد شده'
   };
 
-  // Custom Iran flag artwork: Lion and Sun.
-  // Only 🇮🇷 is handled here; every other emoji continues through Twemoji.
   const LION_SUN_FLAG = 'https://upload.wikimedia.org/wikipedia/commons/f/fd/State_flag_of_Iran_%281964%E2%80%931980%29.svg';
+  const KZ_BG_IMAGE = 'https://fjzhkprnxznijwmjrlka.supabase.co/storage/v1/object/public/imageframe/mtskdtwm-zvk5o-IMG_20260908_143422_756.webp';
+
+  function injectMobileBackground(){
+    if(document.getElementById('kz-mobile-bg')) return;
+    const layer=document.createElement('div');
+    layer.id='kz-mobile-bg';
+    layer.setAttribute('aria-hidden','true');
+    const image=document.createElement('img');
+    image.src=KZ_BG_IMAGE;
+    image.alt='';
+    image.decoding='async';
+    image.draggable=false;
+    layer.appendChild(image);
+    document.body.prepend(layer);
+  }
 
   function injectButtonStyles(){
     if(document.getElementById('kz-button-system')) return;
@@ -173,6 +186,7 @@
   }
   function boot(){
     injectButtonStyles();
+    injectMobileBackground();
     injectTwemoji();
     patchUnsafeSeed();
     patchUploadPhoto();
