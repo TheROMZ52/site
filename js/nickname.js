@@ -1,111 +1,142 @@
 // KillZone nickname feature.
 // Login identity stays `username`; `nickname` is display-only for the Members page.
-(function(){
-  'use strict';
+(function () {
+  "use strict";
 
   const MAX_NICKNAME_LENGTH = 32;
 
-  function esc(value){
-    return typeof window.escapeHtml === 'function'
+  function esc(value) {
+    return typeof window.escapeHtml === "function"
       ? window.escapeHtml(value)
-      : String(value ?? '').replace(/[&<>\"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
+      : String(value ?? "").replace(
+          /[&<>\"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '\"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
   }
 
-  function displayName(account){
-    const nickname = String(account?.nickname ?? '').trim();
-    return nickname || String(account?.username ?? '').trim() || '—';
+  function displayName(account) {
+    const nickname = String(account?.nickname ?? "").trim();
+    return nickname || String(account?.username ?? "").trim() || "—";
   }
 
   // Keep the existing member-card layout/behavior; only swap the visible name.
-  function patchMemberCards(){
-    if(typeof window.buildMemberCard !== 'function' || window.buildMemberCard.__kzNickname) return;
+  function patchMemberCards() {
+    if (
+      typeof window.buildMemberCard !== "function" ||
+      window.buildMemberCard.__kzNickname
+    )
+      return;
     const original = window.buildMemberCard;
-    const wrapped = function(account, staff, accountsCache){
+    const wrapped = function (account, staff, accountsCache) {
       const card = original(account, staff, accountsCache);
-      const heading = card?.querySelector('h4');
-      if(heading) heading.textContent = displayName(account);
-      const avatar = card?.querySelector('.avatar');
-      if(avatar && avatar.tagName === 'IMG') avatar.alt = displayName(account);
+      const heading = card?.querySelector("h4");
+      if (heading) heading.textContent = displayName(account);
+      const avatar = card?.querySelector(".avatar");
+      if (avatar && avatar.tagName === "IMG") avatar.alt = displayName(account);
       return card;
     };
     wrapped.__kzNickname = true;
     window.buildMemberCard = wrapped;
   }
 
-  function addNicknameField(){
-    const form = document.getElementById('kzAccountForm');
-    if(!form || document.getElementById('kzAccountNickname')) return;
-    const gameField = document.getElementById('kzAccountGame')?.closest('.account-field');
-    if(!gameField) return;
+  function addNicknameField() {
+    const form = document.getElementById("kzAccountForm");
+    if (!form || document.getElementById("kzAccountNickname")) return;
+    const gameField = document
+      .getElementById("kzAccountGame")
+      ?.closest(".account-field");
+    if (!gameField) return;
 
-    const field = document.createElement('div');
-    field.className = 'account-field';
-    field.innerHTML = `<label for="kzAccountNickname">نیک‌نیم</label><input id="kzAccountNickname" value="${esc(window.currentUser?.nickname || '')}" maxlength="${MAX_NICKNAME_LENGTH}" placeholder="مثلاً ShadowWolf"><small>این اسم فقط برای نمایش در بخش اعضا استفاده می‌شه؛ ورود همچنان با نام‌کاربری انجام می‌شه.</small>`;
+    const field = document.createElement("div");
+    field.className = "account-field";
+    field.innerHTML = `<label for="kzAccountNickname">نیک‌نیم</label><input id="kzAccountNickname" value="${esc(window.currentUser?.nickname || "")}" maxlength="${MAX_NICKNAME_LENGTH}" placeholder="مثلاً ShadowWolf"><small>این اسم فقط برای نمایش در بخش اعضا استفاده می‌شه؛ ورود همچنان با نام‌کاربری انجام می‌شه.</small>`;
     gameField.parentNode.insertBefore(field, gameField);
   }
 
-  async function saveNicknameCapture(event){
+  async function saveNicknameCapture(event) {
     const form = event.target;
-    if(form?.id !== 'kzAccountForm') return;
+    if (form?.id !== "kzAccountForm") return;
     // Capture phase prevents account.js's older submit handler from issuing a second update.
     event.preventDefault();
     event.stopImmediatePropagation();
 
     const user = window.currentUser;
-    if(!user || user.team_status !== 'approved' || typeof sb === 'undefined') return;
+    if (!user || user.team_status !== "approved" || typeof sb === "undefined")
+      return;
 
-    const input = document.getElementById('kzAccountNickname');
-    const nickname = String(input?.value || '').trim();
-    const msg = document.getElementById('kzAccountMsg');
-    const button = document.getElementById('kzSaveAccount');
+    const input = document.getElementById("kzAccountNickname");
+    const nickname = String(input?.value || "").trim();
+    const msg = document.getElementById("kzAccountMsg");
+    const button = document.getElementById("kzSaveAccount");
 
-    if(nickname.length > MAX_NICKNAME_LENGTH){
-      if(msg) msg.innerHTML = '<div class="account-msg err">نیک‌نیم باید حداکثر ۳۲ کاراکتر باشه.</div>';
+    if (nickname.length > MAX_NICKNAME_LENGTH) {
+      if (msg)
+        msg.innerHTML =
+          '<div class="account-msg err">نیک‌نیم باید حداکثر ۳۲ کاراکتر باشه.</div>';
       return;
     }
 
-    if(button) button.disabled = true;
-    try{
-      const updates = { nickname, game:(document.getElementById('kzAccountGame')?.value || '').trim() };
-      const file = document.getElementById('kzAccountPhoto')?.files?.[0];
-      if(file){
-        const url = await uploadPhoto(file, (kind,text)=>{ if(msg) msg.innerHTML=`<div class="account-msg ${kind==='ok'?'ok':'err'}">${esc(text)}</div>`; });
-        if(!url) throw new Error('آپلود عکس ناموفق بود.');
+    if (button) button.disabled = true;
+    try {
+      const updates = {
+        nickname,
+        game: (document.getElementById("kzAccountGame")?.value || "").trim(),
+      };
+      const file = document.getElementById("kzAccountPhoto")?.files?.[0];
+      if (file) {
+        const url = await uploadPhoto(file, (kind, text) => {
+          if (msg)
+            msg.innerHTML = `<div class="account-msg ${kind === "ok" ? "ok" : "err"}">${esc(text)}</div>`;
+        });
+        if (!url) throw new Error("آپلود عکس ناموفق بود.");
         updates.photo = url;
       }
-      const pass = document.getElementById('kzAccountPass')?.value || '';
-      if(pass) updates.pass_hash = await hashPass(pass);
+      const pass = document.getElementById("kzAccountPass")?.value || "";
+      if (pass) updates.pass_hash = await hashPass(pass);
 
       const { data, error } = await sb
-        .from('accounts')
+        .from("accounts")
         .update(updates)
-        .eq('id', user.id)
-        .select('*')
+        .eq("id", user.id)
+        .select("*")
         .maybeSingle();
-      if(error) throw error;
-      if(!data) throw new Error('اکانت پیدا نشد یا اجازه ویرایش نداری.');
+      if (error) throw error;
+      if (!data) throw new Error("اکانت پیدا نشد یا اجازه ویرایش نداری.");
 
       window.currentUser = data;
-      if(typeof saveSession === 'function') saveSession(data);
-      if(msg) msg.innerHTML = '<div class="account-msg ok">تغییرات با موفقیت ذخیره شد ✔</div>';
+      if (typeof saveSession === "function") saveSession(data);
+      if (msg)
+        msg.innerHTML =
+          '<div class="account-msg ok">تغییرات با موفقیت ذخیره شد ✔</div>';
 
-      const title = document.querySelector('.profile-name h2');
-      if(title) title.textContent = displayName(data);
-    }catch(error){
-      console.error('KillZone nickname save failed', error);
-      if(msg) msg.innerHTML = `<div class="account-msg err">${esc(error.message || 'ذخیره تغییرات ناموفق بود.')}</div>`;
-    }finally{
-      if(button) button.disabled = false;
+      const title = document.querySelector(".profile-name h2");
+      if (title) title.textContent = displayName(data);
+    } catch (error) {
+      console.error("KillZone nickname save failed", error);
+      if (msg)
+        msg.innerHTML = `<div class="account-msg err">${esc(error.message || "ذخیره تغییرات ناموفق بود.")}</div>`;
+    } finally {
+      if (button) button.disabled = false;
     }
   }
 
   patchMemberCards();
 
-  if(document.getElementById('kzAccountApp')){
+  if (document.getElementById("kzAccountApp")) {
     const observer = new MutationObserver(addNicknameField);
-    observer.observe(document.getElementById('kzAccountApp'), {childList:true, subtree:true});
+    observer.observe(document.getElementById("kzAccountApp"), {
+      childList: true,
+      subtree: true,
+    });
     addNicknameField();
-    document.addEventListener('submit', saveNicknameCapture, true);
+    document.addEventListener("submit", saveNicknameCapture, true);
   }
 
   window.kzDisplayName = displayName;
