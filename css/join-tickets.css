@@ -1,18 +1,93 @@
-/* KillZone — membership requests / tickets. Visual-only: no ticket data is changed. */
-.kz-ticket{width:100%;max-width:1120px;margin:0 auto;overflow:hidden;border:1px solid rgba(255,255,255,.1);border-radius:18px;background:linear-gradient(145deg,rgba(20,23,20,.95),rgba(8,10,9,.94));box-shadow:0 24px 70px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.035);color:#f2f3ef}
-.kz-ticket-head{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:24px 26px;border-bottom:1px solid rgba(255,255,255,.1);background:linear-gradient(180deg,rgba(255,255,255,.035),transparent)}
-.kz-ticket-head>div:first-child{min-width:0}.kz-ticket-head h2{margin:5px 0 7px;color:#fff;font-size:clamp(19px,2vw,26px);line-height:1.25}.kz-ticket-head p{margin:0;color:#a9ada5;font-size:12px;line-height:1.8}.kz-eyebrow{color:#e7c16a;font:700 10px/1.4 "JetBrains Mono",monospace;letter-spacing:.12em}
-.kz-status{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;min-height:32px;padding:6px 12px;border:1px solid currentColor;border-radius:999px;font-size:11px;font-weight:800;white-space:nowrap;background:rgba(255,255,255,.035)}
-.kz-status.review{color:#e7c16a;background:rgba(231,193,106,.08)}.kz-status.waiting{color:#79bfff;background:rgba(121,191,255,.08)}.kz-status.approved{color:#8fc56a;background:rgba(143,197,106,.08)}.kz-status.rejected{color:#ff9b83;background:rgba(255,82,82,.08)}.kz-status.closed{color:#aaa;background:rgba(255,255,255,.05)}
-.kz-dossier{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;overflow:hidden;border:1px solid rgba(255,255,255,.1);border-radius:14px;background:rgba(255,255,255,.1)}
-.kz-dossier-title{grid-column:1/-1;padding:13px 15px;background:rgba(255,255,255,.055);color:#fff;font-weight:800;font-size:13px}.kz-dossier-row{min-width:0;display:flex;flex-direction:column;gap:6px;padding:13px 15px;background:rgba(8,10,9,.94)}.kz-dossier-row span{color:#858b83;font-size:10px;font-weight:700}.kz-dossier-row strong{color:#e9ebe7;font-size:12px;line-height:1.8;overflow-wrap:anywhere;white-space:pre-wrap}
-.kz-ticket-layout{display:grid;grid-template-columns:minmax(300px,.85fr) minmax(0,1.35fr);gap:18px;padding:22px}.kz-ticket-layout>*{min-width:0}
-.kz-chat,.kz-ticket-chat,.kz-messages{min-width:0;display:flex;flex-direction:column;border:1px solid rgba(255,255,255,.1);border-radius:14px;background:rgba(5,7,6,.74);overflow:hidden}.kz-chat-head,.kz-messages-head{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.035)}.kz-chat-head strong,.kz-messages-head strong{display:block;color:#fff;font-size:13px}.kz-chat-head span,.kz-messages-head span{display:block;margin-top:3px;color:#7f867e;font-size:10px}
-.kz-message-list,.kz-messages-list,.kz-chat-messages{min-height:280px;max-height:560px;overflow-y:auto;overscroll-behavior:contain;padding:16px;display:flex;flex-direction:column;gap:11px;scrollbar-width:thin}.kz-message{width:min(88%,720px);padding:11px 13px;border:1px solid rgba(255,255,255,.1);border-radius:13px;background:rgba(255,255,255,.035);animation:kz-ticket-message-in .22s ease both}.kz-message.staff{align-self:flex-start;border-color:rgba(231,193,106,.18);background:rgba(231,193,106,.055);border-top-left-radius:5px}.kz-message.applicant{align-self:flex-end;background:rgba(255,255,255,.045);border-top-right-radius:5px}.kz-message-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:7px}.kz-message-meta strong{color:#f4f5f1;font-size:11px}.kz-message-meta time{color:#747b73;font-size:9px;white-space:nowrap}.kz-message-body{color:#d9dcd7;font-size:12px;line-height:1.95;overflow-wrap:anywhere;white-space:normal}
-.kz-chat-form,.kz-message-form{display:flex;gap:9px;padding:12px;border-top:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.025)}.kz-chat-form textarea,.kz-message-form textarea{flex:1;min-width:0;min-height:44px;max-height:150px;resize:vertical;border:1px solid rgba(255,255,255,.12);border-radius:11px;padding:10px 12px;background:rgba(0,0,0,.3);color:#fff;outline:none;line-height:1.7}.kz-chat-form textarea:focus,.kz-message-form textarea:focus{border-color:rgba(231,193,106,.55);box-shadow:0 0 0 3px rgba(231,193,106,.08)}.kz-chat-form button,.kz-message-form button{flex:0 0 auto;align-self:flex-end;min-height:42px}
-.kz-form-section{padding:22px;border-bottom:1px solid rgba(255,255,255,.1)}.kz-form-section:last-child{border-bottom:0}.kz-form-section h3{margin:5px 0 16px;color:#fff;font-size:18px}.kz-form-kicker{color:#e7c16a;font:700 10px/1.4 "JetBrains Mono",monospace;letter-spacing:.08em}.kz-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.kz-form-stack{display:grid;gap:14px}.kz-game-check{display:flex;align-items:center;gap:9px;padding:8px 0;font-size:13px;cursor:pointer}.kz-game-check input{accent-color:#e7c16a}.kz-submit-row{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:18px 22px;background:rgba(255,255,255,.025)}
-.kz-ticket-modal{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:18px;background:rgba(0,0,0,.72);backdrop-filter:blur(8px)}.kz-ticket-modal>*{width:min(1100px,100%);max-height:min(900px,calc(100vh - 36px));overflow:auto}.kz-ticket-close{position:absolute;top:18px;right:18px;z-index:2;width:38px;height:38px;border:1px solid rgba(255,255,255,.14);border-radius:10px;background:rgba(10,12,11,.85);color:#fff;cursor:pointer}
+/* KillZone — ticket UI only. Data and ticket logic are untouched. */
+
+.kz-ticket-overlay{position:fixed;inset:0;z-index:1200;display:grid;place-items:center;padding:20px;background:rgba(3,5,6,.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);overflow:auto}
+.kz-ticket-overlay[hidden]{display:none!important}
+
+.kz-ticket,.kz-ticket-modal{width:min(1120px,100%);max-width:1120px;min-width:0;color:#f4f6f2;background:#0d1115;border:1px solid #2b3540;border-radius:18px;box-shadow:0 30px 90px rgba(0,0,0,.55);overflow:hidden;isolation:isolate}
+.kz-ticket-modal{position:relative;max-height:calc(100vh - 40px);overflow:auto;overscroll-behavior:contain}
+.kz-ticket-modal>.kz-ticket-head,.kz-ticket>.kz-ticket-head{position:relative;z-index:1}
+
+.kz-ticket-head{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:22px 24px;background:linear-gradient(135deg,#171d23,#101419);border-bottom:1px solid #2b3540}
+.kz-ticket-head>div:first-child{min-width:0;flex:1}
+.kz-ticket-head h2{margin:5px 0 6px;color:#fff;font-size:clamp(18px,2vw,25px);line-height:1.35;overflow-wrap:anywhere}
+.kz-ticket-head p{margin:0;color:#9ba7b2;font-size:12px;line-height:1.8}
+.kz-eyebrow{display:block;color:#ff8a5f;font:700 10px/1.5 "JetBrains Mono","Vazirmatn",monospace;letter-spacing:.1em;direction:ltr;text-align:right;overflow-wrap:anywhere}
+.kz-status{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;min-width:94px;min-height:34px;padding:6px 12px;border:1px solid currentColor;border-radius:999px;font-size:11px;font-weight:800;white-space:nowrap}
+.kz-status.review{color:#e7c16a;background:rgba(231,193,106,.1)}
+.kz-status.waiting{color:#6eb8ff;background:rgba(110,184,255,.1)}
+.kz-status.approved{color:#82b85a;background:rgba(130,184,90,.1)}
+.kz-status.rejected{color:#f05252;background:rgba(240,82,82,.1)}
+.kz-status.closed{color:#9ba7b2;background:rgba(155,167,178,.08)}
+
+.kz-ticket-layout{display:grid;grid-template-columns:minmax(280px,.9fr) minmax(0,1.1fr);gap:16px;padding:18px;background:#0b0f13}
+.kz-ticket-layout>*{min-width:0}
+
+.kz-dossier,.kz-chat,.kz-ticket-chat,.kz-messages{min-width:0;border:1px solid #2b3540;border-radius:12px;background:#11161b;overflow:hidden}
+.kz-dossier{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:#2b3540;align-content:start}
+.kz-dossier-title{grid-column:1/-1;padding:13px 15px;background:#171d23;color:#fff;font-weight:800;font-size:13px}
+.kz-dossier-row{min-width:0;padding:12px 14px;background:#10151a;display:flex;flex-direction:column;gap:5px}
+.kz-dossier-row span{color:#687581;font-size:10px;font-weight:700}
+.kz-dossier-row strong{display:block;color:#e9edf0;font-size:12px;line-height:1.85;overflow-wrap:anywhere;word-break:break-word;white-space:pre-wrap}
+
+.kz-chat,.kz-ticket-chat,.kz-messages{display:flex;flex-direction:column;min-height:0}
+.kz-chat-head,.kz-messages-head{flex:0 0 auto;padding:13px 15px;background:#171d23;border-bottom:1px solid #2b3540}
+.kz-chat-head strong,.kz-messages-head strong{display:block;color:#fff;font-size:13px}
+.kz-chat-head span,.kz-messages-head span{display:block;margin-top:3px;color:#687581;font-size:10px}
+.kz-message-list,.kz-messages-list,.kz-chat-messages{min-width:0;min-height:260px;max-height:520px;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:14px;display:flex;flex-direction:column;gap:10px;background:#0b0f13;scrollbar-width:thin}
+.kz-message{width:min(88%,720px);min-width:0;padding:10px 12px;border:1px solid #2b3540;border-radius:12px;background:#151a20;overflow-wrap:anywhere;word-break:break-word;animation:kz-ticket-message-in .2s ease both}
+.kz-message.staff{align-self:flex-start;border-color:rgba(231,193,106,.24);background:rgba(231,193,106,.07);border-top-left-radius:4px}
+.kz-message.applicant{align-self:flex-end;background:#171d23;border-top-right-radius:4px}
+.kz-message-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;min-width:0}
+.kz-message-meta strong{min-width:0;color:#f4f6f2;font-size:11px;overflow-wrap:anywhere}
+.kz-message-meta time{flex:0 0 auto;color:#687581;font-size:9px;white-space:nowrap;direction:ltr}
+.kz-message-body{min-width:0;color:#d8dee3;font-size:12px;line-height:1.9;overflow-wrap:anywhere;word-break:break-word;white-space:normal}
+
+.kz-chat-form,.kz-message-form{display:flex;align-items:flex-end;gap:8px;flex:0 0 auto;padding:10px;background:#11161b;border-top:1px solid #2b3540}
+.kz-chat-form textarea,.kz-message-form textarea{flex:1 1 auto;width:100%;min-width:0;min-height:44px;max-height:150px;resize:vertical;border:1px solid #3d4a57;border-radius:10px;padding:10px 12px;background:#090d11;color:#f4f6f2;outline:0;line-height:1.7}
+.kz-chat-form textarea::placeholder,.kz-message-form textarea::placeholder{color:#687581}
+.kz-chat-form textarea:focus,.kz-message-form textarea:focus{border-color:#ff6338;box-shadow:0 0 0 3px rgba(255,99,56,.1)}
+.kz-chat-form button,.kz-message-form button{flex:0 0 auto;min-height:42px;white-space:nowrap}
+
+.kz-ticket-close{position:sticky;float:right;top:10px;margin:-2px 10px 0 0;z-index:20;width:38px;height:38px;border:1px solid #3d4a57;border-radius:9px;background:#11161b;color:#fff;cursor:pointer;display:grid;place-items:center;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.kz-ticket-close:hover{background:#f05252;border-color:#f05252;color:#fff}
+
+.kz-form-section{padding:22px;border-bottom:1px solid #2b3540;background:#10151a}
+.kz-form-section:last-child{border-bottom:0}
+.kz-form-section h3{margin:5px 0 16px;color:#fff;font-size:18px}
+.kz-form-kicker{color:#ff8a5f;font:700 10px/1.5 "JetBrains Mono","Vazirmatn",monospace;letter-spacing:.08em}
+.kz-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.kz-form-stack{display:grid;gap:14px}
+.kz-game-check{display:flex;align-items:center;gap:9px;padding:8px 0;font-size:13px;cursor:pointer}
+.kz-game-check input{accent-color:#ff6338}
+.kz-submit-row{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:18px 22px;background:#11161b;border-top:1px solid #2b3540}
+
+.kz-ticket .btn,.kz-ticket-modal .btn{position:relative;z-index:3;visibility:visible;opacity:1;pointer-events:auto}
+.kz-ticket .field,.kz-ticket-modal .field{min-width:0}
+.kz-ticket .field input,.kz-ticket .field select,.kz-ticket .field textarea,.kz-ticket-modal .field input,.kz-ticket-modal .field select,.kz-ticket-modal .field textarea{width:100%;min-width:0;box-sizing:border-box}
+
 @keyframes kz-ticket-message-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
-@media(max-width:820px){.kz-ticket-layout{grid-template-columns:1fr}.kz-message{width:min(94%,720px)}}
-@media(max-width:620px){.kz-ticket-head{align-items:flex-start;flex-direction:column;padding:19px}.kz-ticket-layout{padding:12px}.kz-dossier{grid-template-columns:1fr}.kz-dossier-title{grid-column:auto}.kz-form-grid{grid-template-columns:1fr}.kz-form-section{padding:18px}.kz-submit-row{align-items:stretch;flex-direction:column}.kz-submit-row .btn{width:100%}.kz-chat-form,.kz-message-form{align-items:stretch;flex-direction:column}.kz-chat-form button,.kz-message-form button{width:100%}.kz-message-list,.kz-messages-list,.kz-chat-messages{min-height:240px;max-height:55vh;padding:12px}}
+
+@media(max-width:820px){
+  .kz-ticket-layout{grid-template-columns:1fr;padding:12px}
+  .kz-message{width:min(94%,720px)}
+}
+@media(max-width:620px){
+  .kz-ticket-overlay{padding:8px;place-items:start center}
+  .kz-ticket,.kz-ticket-modal{border-radius:13px;max-height:calc(100vh - 16px)}
+  .kz-ticket-head{align-items:flex-start;flex-direction:column;padding:17px 16px;padding-top:50px}
+  .kz-status{min-width:0}
+  .kz-ticket-layout{padding:8px;gap:10px}
+  .kz-dossier{grid-template-columns:1fr}
+  .kz-dossier-title{grid-column:1}
+  .kz-form-grid{grid-template-columns:1fr}
+  .kz-form-section{padding:17px 14px}
+  .kz-submit-row{align-items:stretch;flex-direction:column;padding:15px}
+  .kz-submit-row .btn{width:100%}
+  .kz-chat-form,.kz-message-form{align-items:stretch;flex-direction:column}
+  .kz-chat-form button,.kz-message-form button{width:100%}
+  .kz-message-list,.kz-messages-list,.kz-chat-messages{min-height:220px;max-height:48vh;padding:10px}
+  .kz-message{width:94%;padding:9px 10px}
+  .kz-message-meta{align-items:flex-start;flex-direction:column;gap:2px}
+  .kz-ticket-close{position:absolute;top:9px;right:9px;float:none;margin:0}
+}
 @media(prefers-reduced-motion:reduce){.kz-message{animation:none}}
