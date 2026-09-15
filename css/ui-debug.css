@@ -1,0 +1,51 @@
+/* KillZone UI stability patch — 2026-09-16 */
+:root{--kz-stroke-strong:var(--kz-line-strong)}
+html{overflow-x:hidden!important}
+body{overflow-x:hidden!important}
+button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{max-width:100%}
+header{isolation:isolate}
+header nav.main{min-width:0}
+header .user-box{min-width:0}
+header .user-box>*{min-width:0}
+.modal{overscroll-behavior:contain}
+.overlay{overscroll-behavior:none}
+.kz-members-search input,.kz-chat-search input{min-width:0}
+.kz-members-control,.kz-members-hero,.kz-chat-shell,.kz-chat-hero,.game-hub-intro,.kz-ticket,.account-grid{min-width:0}
+@media(max-width:1180px){
+  header nav.main{display:none!important}
+  header .menu-toggle{display:inline-flex!important;align-items:center!important;justify-content:center!important}
+}
+@media(max-width:700px){
+  header{grid-template-columns:minmax(0,1fr) auto auto!important}
+  header .user-box{max-width:46vw!important;overflow:hidden!important}
+  header .user-box .user-chip,header .user-box .link-btn{overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+  header .user-box .user-chip>span:not(.tier){overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+  header nav.main.open{display:flex!important}
+  .hero-copy:before{display:none}
+  .hero-copy:after{top:-16px;font-size:7px}
+  .hero h1{max-width:100%;overflow-wrap:anywhere}
+  .field-console{clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px))!important}
+  .console-top{flex-wrap:wrap}
+  .console-status{grid-template-columns:auto auto minmax(0,1fr)!important}
+  .console-status strong{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .section-title h2{font-size:24px}
+  .kz-form-section{overflow:hidden}
+  .kz-submit-row #kzJoinFormMsg{min-width:0;width:100%}
+  footer{overflow:hidden}
+}
+@media(max-width:430px){
+  header .user-box{max-width:38vw!important}
+  .hero h1{font-size:clamp(31px,11vw,54px)!important}
+  .console-stats{gap:6px!important}
+  .console-stats>div{min-width:calc(33.333% - 4px)!important;padding-inline:7px!important}
+  .console-stats span{font-size:6px!important;letter-spacing:-.2px}
+  .console-stats b{font-size:15px!important}
+  .field-console{padding:16px!important}
+}
+@media(min-width:1181px){
+  .field-console{max-width:430px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*:before,*:after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+}
