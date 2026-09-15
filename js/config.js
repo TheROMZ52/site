@@ -74,3 +74,24 @@ window.dispatchEvent(new CustomEvent("kz:supabase-ready"));
   };
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",install,{once:true}); else install();
 })();
+
+(function () {
+  "use strict";
+  const loadAuthBridge = () => {
+    if (window.__kzAuthBridgeLoading || window.__kzAuthBridgeLoaded) return;
+    window.__kzAuthBridgeLoading = true;
+    const script = document.createElement("script");
+    script.src = "/js/auth-bridge.js?v=20260916";
+    script.async = false;
+    script.onload = () => {
+      window.__kzAuthBridgeLoaded = true;
+      window.__kzAuthBridgeLoading = false;
+    };
+    script.onerror = () => {
+      window.__kzAuthBridgeLoading = false;
+      console.error("[KillZone Auth] failed to load auth bridge");
+    };
+    document.head.appendChild(script);
+  };
+  window.addEventListener("DOMContentLoaded", () => window.setTimeout(loadAuthBridge, 0), { once: true });
+})();
