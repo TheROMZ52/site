@@ -2,10 +2,10 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
-  # Home page
+  ErrorDocument 503 /503.html
+
   DirectoryIndex index.html
 
-  # Redirect old .html URLs to clean URLs (preserve query strings)
   RewriteCond %{THE_REQUEST} \s/+games\.html(?:[?\s]) [NC]
   RewriteRule ^games\.html$ /games [R=301,L,NE]
 
@@ -24,7 +24,6 @@
   RewriteCond %{THE_REQUEST} \s/+account\.html(?:[?\s]) [NC]
   RewriteRule ^account\.html$ /account [R=301,L,NE]
 
-  # Clean URLs -> actual HTML files
   RewriteRule ^games/?$ games.html [L]
   RewriteRule ^members/?$ members.html [L]
   RewriteRule ^join/?$ join.html [L]
