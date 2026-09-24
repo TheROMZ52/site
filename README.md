@@ -1,4 +1,4 @@
-# KillZone Team Site
+# KillZone Team Site پر
 
 سایت استاتیک KillZone با HTML/CSS/JS و Supabase.
 
