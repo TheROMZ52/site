@@ -2,34 +2,35 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="KillZone — پایان یک عملیات.">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="robots" content="noindex,nofollow">
-<title>KILLZONE // OFFLINE</title>
+<title>سیکتیر کلیزون</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#050505;color:#eee;font-family:Vazirmatn,sans-serif}body{min-height:100vh;display:grid;place-items:center;overflow:hidden;background:radial-gradient(circle at 50% 35%,#28100b 0,#0c0908 30%,#050505 68%)}body:before{content:"";position:fixed;inset:0;background:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:46px 46px;mask-image:linear-gradient(to bottom,transparent,#000 15%,#000 85%,transparent);animation:grid 14s linear infinite}body:after{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(255,60,20,.025) 4px);animation:scan 7s linear infinite}.wrap{position:relative;width:min(900px,92vw);padding:46px 34px;text-align:center;border:1px solid #71301f;background:linear-gradient(145deg,rgba(28,12,8,.94),rgba(6,6,6,.96));box-shadow:0 0 80px rgba(170,45,15,.13),inset 0 0 50px rgba(255,60,20,.025);overflow:hidden}.wrap:before{content:"";position:absolute;inset:-2px;background:conic-gradient(from 0deg,transparent 0 72%,#ff4b24 78%,transparent 84%);z-index:-1;animation:spin 8s linear infinite}.tag{font:700 12px Orbitron,sans-serif;letter-spacing:5px;color:#ff6a3d;margin-bottom:24px}.code{font:900 clamp(72px,18vw,170px)/.8 Orbitron,sans-serif;color:#eee;text-shadow:3px 0 #ff3d1e,-3px 0 #5d8b72;animation:glitch 2.8s infinite}.title{font:800 clamp(25px,5vw,48px) Orbitron,Vazirmatn,sans-serif;letter-spacing:2px;margin:28px 0 10px}.desc{color:#aaa;font-size:15px;line-height:2;margin:0 auto 26px;max-width:620px}.terminal{margin:26px auto;padding:17px 20px;text-align:left;direction:ltr;max-width:650px;border:1px solid #33221d;background:#080808;color:#a9b0a9;font:13px/2 monospace}.terminal .red{color:#ff6040}.cursor{display:inline-block;width:7px;height:14px;background:#ff4b24;vertical-align:-2px;animation:blink 1s steps(1) infinite}.buttons{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}.btn{border:1px solid #7e3825;padding:12px 22px;color:#eee;text-decoration:none;font-weight:700;background:#160b08;transition:.2s}.btn:hover{transform:translateY(-2px);border-color:#ff6039;box-shadow:0 8px 30px rgba(255,70,30,.14)}.btn.primary{background:#c6381e;border-color:#ff6040}.footer{margin-top:28px;color:#555;font:10px Orbitron,sans-serif;letter-spacing:3px}@keyframes grid{to{background-position:46px 46px}}@keyframes scan{to{transform:translateY(12px)}}@keyframes spin{to{transform:rotate(360deg)}}@keyframes glitch{0%,88%,100%{transform:none}90%{transform:skewX(-5deg)}92%{transform:translateX(5px)}94%{transform:translateX(-4px)}}@keyframes blink{50%{opacity:0}}@media(max-width:600px){.wrap{padding:36px 20px}.desc{font-size:13px}.terminal{font-size:11px}.tag{letter-spacing:3px}}
-@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{display:grid;place-items:center;background:#030303;color:#fff;font-family:Vazirmatn,sans-serif;position:relative}
+body:before{content:"";position:fixed;inset:-50%;background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(255,255,255,.025) 4px),linear-gradient(115deg,transparent 25%,rgba(255,0,0,.08),transparent 55%);animation:drift 8s linear infinite;pointer-events:none}
+body:after{content:"";position:fixed;inset:0;background:radial-gradient(circle at center,transparent 25%,rgba(0,0,0,.72) 100%);pointer-events:none}
+main{position:relative;text-align:center;padding:40px;z-index:2}
+h1{margin:0;font-size:clamp(58px,13vw,190px);font-weight:900;line-height:.95;letter-spacing:-5px;transform:skew(-7deg);text-shadow:5px 0 #ff173d,-5px 0 #00e5ff,0 0 45px rgba(255,255,255,.12);animation:glitch 2.7s infinite}
+.line{width:min(680px,80vw);height:2px;margin:34px auto 0;background:linear-gradient(90deg,transparent,#fff,transparent);box-shadow:0 0 18px rgba(255,255,255,.5);animation:pulse 1.4s infinite}
+.small{margin-top:18px;font-size:12px;letter-spacing:6px;color:#777;direction:ltr}
+.noise{position:fixed;inset:0;opacity:.06;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");pointer-events:none;z-index:3}
+@keyframes glitch{0%,87%,100%{transform:skew(-7deg)}88%{transform:translate(7px,-2px) skew(-7deg)}90%{transform:translate(-8px,2px) skew(-7deg)}92%{transform:translate(3px) skew(-7deg)}}
+@keyframes pulse{50%{opacity:.35;transform:scaleX(.8)}}
+@keyframes drift{to{transform:translate(7%,5%)}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important}}
 </style>
 </head>
 <body>
-<main class="wrap">
-<div class="tag">KILLZONE // FINAL TRANSMISSION</div>
-<div class="code">503</div>
-<h1 class="title">THE BATTLEFIELD IS OFFLINE.</h1>
-<p class="desc">عملیات KillZone به پایان رسیده است.<br>سرور و مقر فعلی تیم دیگر در وضعیت عملیاتی نیستند.</p>
-<div class="terminal">
-<span class="red">[KZ]</span> CONNECTION: TERMINATED<br>
-<span class="red">[KZ]</span> STATUS: OPERATION CLOSED<br>
-<span class="red">[KZ]</span> SIGNAL: LOST <span class="cursor"></span>
-</div>
-<div class="buttons">
-<a class="btn primary" href="/">RETRY CONNECTION</a>
-<a class="btn" href="/503">VIEW FINAL STATUS</a>
-</div>
-<div class="footer">KILLZONE TEAM // 2026 // END OF OPERATION</div>
+<div class="noise"></div>
+<main>
+<h1>سیکتیر کلیزون</h1>
+<div class="line"></div>
+<div class="small">CONNECTION TERMINATED</div>
 </main>
 </body>
 </html>
