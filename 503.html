@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#08090b">
+<meta name="robots" content="noindex,nofollow">
+<title>503 | KillZone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Vazirmatn:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#08090b;--panel:#101318;--line:#252b34;--red:#ff3b30;--orange:#ff8a3d;--white:#f5f7fa;--muted:#8d96a3}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--white);font-family:Vazirmatn,sans-serif}
+body{overflow:hidden}
+body:before{content:"";position:fixed;inset:0;background:linear-gradient(rgba(255,59,48,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,59,48,.035) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(circle at center,#000,transparent 80%);pointer-events:none}
+.scanlines{position:fixed;inset:0;pointer-events:none;opacity:.13;background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(255,255,255,.08) 4px);animation:scan 8s linear infinite}
+.wrap{min-height:100vh;display:grid;place-items:center;padding:22px}
+.panel{width:min(980px,100%);position:relative;padding:clamp(28px,6vw,70px);border:1px solid var(--line);background:linear-gradient(145deg,rgba(16,19,24,.96),rgba(7,8,10,.98));box-shadow:0 35px 100px rgba(0,0,0,.65);overflow:hidden}
+.panel:before{content:"";position:absolute;inset:-2px;background:conic-gradient(from 0deg,transparent 0 70%,rgba(255,59,48,.5),transparent 78%);animation:spin 7s linear infinite;opacity:.45;z-index:-1}
+.panel:after{content:"503";position:absolute;right:-25px;bottom:-90px;font:900 clamp(180px,36vw,360px)/1 Orbitron,sans-serif;color:rgba(255,59,48,.035);transform:skewX(-10deg);pointer-events:none}
+.badge{display:inline-flex;align-items:center;gap:10px;border:1px solid #54302e;background:rgba(255,59,48,.05);padding:9px 13px;color:#ff9c96;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--red);box-shadow:0 0 20px var(--red);animation:pulse .8s ease-in-out infinite}
+h1{font:900 clamp(76px,18vw,170px)/.85 Orbitron,sans-serif;margin:32px 0 12px;color:var(--red);letter-spacing:-.06em;text-shadow:0 0 35px rgba(255,59,48,.25);animation:glitch 3.5s infinite}
+h2{font-size:clamp(23px,4vw,42px);margin:0 0 15px;font-weight:900}
+.lead{max-width:720px;color:var(--muted);font-size:clamp(15px,2.1vw,19px);line-height:1.9;margin:0 0 28px}
+.terminal{position:relative;border:1px solid var(--line);background:#050608;padding:18px 20px;margin:25px 0 30px;font:12px/2.2 ui-monospace,SFMono-Regular,Consolas,monospace;color:#aeb7c4;direction:ltr;text-align:left;box-shadow:inset 0 0 35px rgba(0,0,0,.6);overflow:hidden}
+.terminal:before{content:"";position:absolute;left:0;right:0;top:-30%;height:40%;background:linear-gradient(transparent,rgba(255,59,48,.12),transparent);animation:beam 3.2s linear infinite}
+.red{color:var(--red)}.orange{color:var(--orange)}.cursor{display:inline-block;width:8px;height:15px;background:#ff8a3d;vertical-align:-3px;animation:blink .7s steps(2,end) infinite}
+.actions{display:flex;gap:12px;flex-wrap:wrap;position:relative;z-index:2}
+a,button{border:1px solid var(--line);background:#151920;color:var(--white);padding:12px 18px;text-decoration:none;font:800 15px Vazirmatn,sans-serif;cursor:pointer;transition:.18s ease}
+a:hover,button:hover{transform:translateY(-2px);border-color:var(--orange);box-shadow:0 8px 25px rgba(255,59,48,.12)}
+.primary{background:var(--red);border-color:var(--red);color:white}
+.meta{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;border-top:1px dashed var(--line);margin-top:34px;padding-top:17px;color:var(--muted);font-size:12px}
+.meta b{color:var(--white)}
+@keyframes pulse{50%{transform:scale(.45);opacity:.45}} @keyframes blink{50%{opacity:0}}
+@keyframes scan{to{transform:translateY(44px)}} @keyframes spin{to{transform:rotate(360deg)}} @keyframes beam{to{transform:translateY(320%)}} 
+@keyframes glitch{0%,88%,100%{transform:none}90%{transform:translate(3px,-2px) skewX(-2deg)}92%{transform:translate(-3px,2px) skewX(2deg)}94%{transform:none}}
+@media(max-width:600px){body{overflow:auto}.wrap{padding:12px}.panel{padding:25px 19px}.terminal{font-size:10px}.actions>*{width:100%;text-align:center}.meta{display:block}.meta div+div{margin-top:8px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="scanlines"></div>
+<main class="wrap">
+<section class="panel" aria-labelledby="title">
+<div class="badge"><span class="dot"></span> KILLZONE // SYSTEM STATUS</div>
+<h1>503</h1>
+<h2 id="title">THE BATTLEFIELD IS OFFLINE.</h2>
+<p class="lead">The server couldn't complete this request right now. The system is not gone — the battlefield is simply offline. Stand by while the lights come back on.</p>
+<div class="terminal" aria-live="polite">
+<div>&gt; connection: <span class="red">INTERRUPTED</span></div>
+<div>&gt; battlefield_core: <span class="orange">OFFLINE</span></div>
+<div>&gt; recovery_sequence: <span id="progress">████░░░░░░ 40%</span></div>
+<div>&gt; status: waiting_for_reconnection <span class="cursor"></span></div>
+</div>
+<div class="actions">
+<a class="primary" href="/">RETURN TO BASE</a>
+<button id="retry" type="button">RETRY CONNECTION</button>
+</div>
+<div class="meta">
+<div>ERROR CODE: <b>503 // SERVICE UNAVAILABLE</b></div>
+<div>STATUS: <b id="status">STANDBY</b></div>
+</div>
+</section>
+</main>
+<script>
+const states=[
+['████░░░░░░ 40%','STANDBY'],
+['██████░░░░ 60%','RECONNECTING'],
+['████████░░ 80%','RESTORING'],
+['██████████ 100%','SIGNAL ACQUIRED']
+];
+let i=0;
+document.getElementById('retry').addEventListener('click',()=>{
+ i=(i+1)%states.length;
+ document.getElementById('progress').textContent=states[i][0];
+ document.getElementById('status').textContent=states[i][1];
+});
+</script>
+</body>
+</html>
