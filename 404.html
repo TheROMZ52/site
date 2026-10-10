@@ -3,74 +3,191 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#10100e">
-  <title>404 | KillZone</title>
+  <meta name="theme-color" content="#090a0d">
+  <meta name="robots" content="noindex, nofollow">
+  <title>404 | منطقه پیدا نشد — KillZone</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Vazirmatn:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    :root{--ink:#10100e;--surface:#191812;--surface2:#211f18;--stroke:#3b362a;--strong:#59503e;--ember:#df6330;--green:#728b4b;--text:#f4eddc;--muted:#a59b86}
-    *{box-sizing:border-box}
-    html,body{margin:0;min-height:100%;background:var(--ink);color:var(--text);font-family:Vazirmatn,sans-serif}
-    body{overflow-x:hidden}
-    body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.18;background-image:linear-gradient(rgba(244,237,220,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(244,237,220,.08) 1px,transparent 1px);background-size:32px 32px;mask-image:linear-gradient(to bottom,#000,transparent 90%)}
-    .wrap{min-height:100vh;display:grid;place-items:center;padding:28px}
-    .console{width:min(920px,100%);position:relative;border:1px solid var(--stroke);background:linear-gradient(145deg,rgba(33,31,24,.97),rgba(16,16,14,.98));box-shadow:0 28px 90px rgba(0,0,0,.55);padding:clamp(24px,5vw,58px);overflow:hidden}
-    .console:after{content:"404";position:absolute;left:-18px;bottom:-65px;font:900 clamp(150px,30vw,300px)/1 "Press Start 2P";color:rgba(223,99,48,.045);pointer-events:none;transform:rotate(-7deg)}
-    .tag{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--strong);padding:8px 12px;color:var(--muted);font-size:12px;font-weight:800;letter-spacing:.04em}
-    .dot{width:8px;height:8px;background:var(--ember);box-shadow:0 0 14px var(--ember);animation:blink 1s steps(2,end) infinite}
-    h1{font:400 clamp(72px,16vw,150px)/.9 "Press Start 2P";letter-spacing:-.08em;margin:30px 0 18px;color:var(--ember);text-shadow:7px 7px 0 rgba(223,99,48,.08)}
-    h2{font-size:clamp(25px,5vw,46px);margin:0 0 12px;font-weight:900}
-    .lead{max-width:650px;color:var(--muted);font-size:clamp(16px,2.4vw,20px);line-height:1.9;margin:0 0 28px}
-    .terminal{position:relative;z-index:1;border:1px solid var(--stroke);background:#0b0b09;padding:17px 18px;margin:22px 0 28px;font:13px/2 "Press Start 2P",monospace;color:#b9c89a;direction:ltr;text-align:left;box-shadow:inset 0 0 30px rgba(0,0,0,.35)}
-    .terminal .bad{color:#df6330}.cursor{display:inline-block;width:9px;height:16px;background:#b9c89a;vertical-align:-3px;animation:blink .8s steps(2,end) infinite}
-    .actions{position:relative;z-index:2;display:flex;gap:12px;flex-wrap:wrap}
-    a,button{font:800 15px Vazirmatn,sans-serif;text-decoration:none;cursor:pointer;border:1px solid var(--strong);padding:12px 18px;background:var(--surface2);color:var(--text);transition:transform .16s ease,border-color .16s ease,background .16s ease}
-    a:hover,button:hover{transform:translateY(-2px);border-color:var(--ember);background:#29251c}
-    a.primary{background:var(--ember);border-color:var(--ember);color:#fff8eb}
-    .intel{position:relative;z-index:1;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:34px;padding-top:18px;border-top:1px dashed var(--stroke);color:var(--muted);font-size:12px}
-    .intel b{color:var(--text)}
-    @keyframes blink{50%{opacity:.2}}
-    @media(max-width:600px){.wrap{padding:14px}.console{padding:24px 20px}h1{margin-top:25px}.terminal{font-size:10px;overflow:auto}.actions>*{width:100%;text-align:center}.intel{display:block}.intel div+div{margin-top:8px}}
-    @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+    :root {
+      color-scheme: dark;
+      --bg: #090a0d;
+      --panel: rgba(16, 18, 23, .88);
+      --panel-strong: #101217;
+      --line: rgba(255, 255, 255, .11);
+      --line-hot: rgba(255, 64, 76, .45);
+      --red: #ff404c;
+      --red-dark: #a91524;
+      --orange: #ff7547;
+      --text: #f4f5f7;
+      --muted: #969ba7;
+      --green: #8bd3a7;
+    }
+    * { box-sizing: border-box; }
+    html { min-height: 100%; background: var(--bg); }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background:
+        radial-gradient(ellipse at 15% 20%, rgba(169, 21, 36, .22), transparent 37%),
+        radial-gradient(ellipse at 90% 82%, rgba(255, 64, 76, .09), transparent 32%),
+        var(--bg);
+      color: var(--text);
+      font-family: Vazirmatn, sans-serif;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .24;
+      background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(to bottom, #000, transparent 92%);
+    }
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .13;
+      background: repeating-linear-gradient(to bottom, transparent 0 3px, rgba(0,0,0,.42) 4px 5px);
+    }
+    a, button { -webkit-tap-highlight-color: transparent; }
+    .page { min-height: 100vh; display: flex; flex-direction: column; padding: 28px clamp(18px, 4vw, 64px) 20px; position: relative; }
+    .topbar { width: min(1440px, 100%); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 18px; border-bottom: 1px solid var(--line); padding-bottom: 18px; }
+    .brand { display: inline-flex; align-items: center; gap: 12px; color: var(--text); text-decoration: none; direction: ltr; }
+    .brand-mark { width: 38px; height: 38px; display: grid; place-items: center; background: var(--red); color: #fff; font: 13px "Press Start 2P", monospace; clip-path: polygon(0 0,100% 0,100% 76%,76% 100%,0 100%); box-shadow: 0 0 26px rgba(255,64,76,.18); }
+    .brand-name { font-size: 17px; font-weight: 900; letter-spacing: .08em; }
+    .brand-name span { color: var(--red); }
+    .top-status { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 12px; font-weight: 800; letter-spacing: .08em; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); box-shadow: 0 0 13px var(--red); animation: pulse 1.8s ease-in-out infinite; }
+    main { width: min(1440px, 100%); flex: 1; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(300px, .8fr); align-items: center; gap: clamp(34px, 7vw, 110px); padding: clamp(48px, 9vh, 110px) 0; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 10px; color: #ff7b84; font: 10px "Press Start 2P", monospace; line-height: 1.8; letter-spacing: .03em; }
+    .eyebrow::before { content: ""; width: 26px; height: 2px; background: var(--red); box-shadow: 0 0 12px var(--red); }
+    .hero { min-width: 0; }
+    .error-code { position: relative; display: inline-block; margin: 27px 0 18px; font: clamp(82px, 16vw, 196px)/.9 "Press Start 2P", monospace; letter-spacing: -.12em; color: var(--text); text-shadow: 5px 0 0 rgba(255,64,76,.72), -5px 0 0 rgba(76,154,255,.24); }
+    .error-code::after { content: "404"; position: absolute; inset: 0; color: var(--red); opacity: .35; clip-path: inset(46% 0 38% 0); transform: translateX(9px); animation: glitch 4.5s infinite steps(1,end); }
+    h1 { font-size: clamp(29px, 4.2vw, 53px); line-height: 1.35; margin: 0 0 14px; font-weight: 900; letter-spacing: -.04em; }
+    h1 span { color: var(--red); }
+    .description { max-width: 610px; color: #b0b4be; font-size: clamp(15px, 1.6vw, 18px); line-height: 2; margin: 0; }
+    .description strong { color: var(--text); font-weight: 800; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+    .action { min-height: 49px; display: inline-flex; align-items: center; justify-content: center; gap: 11px; padding: 12px 19px; border: 1px solid var(--line); background: rgba(255,255,255,.035); color: var(--text); text-decoration: none; font: 800 14px Vazirmatn, sans-serif; transition: transform .18s ease, border-color .18s ease, background .18s ease; cursor: pointer; }
+    .action:hover { transform: translateY(-3px); border-color: var(--line-hot); background: rgba(255,64,76,.08); }
+    .action:focus-visible { outline: 2px solid var(--orange); outline-offset: 4px; }
+    .action.primary { background: var(--red); border-color: var(--red); color: #fff; box-shadow: 0 8px 28px rgba(255,64,76,.16); }
+    .action.primary:hover { background: #ff5963; }
+    .arrow { font-size: 19px; line-height: 1; }
+    .briefing { position: relative; border: 1px solid var(--line); background: linear-gradient(145deg, rgba(21,23,29,.94), rgba(10,11,15,.94)); padding: 22px; box-shadow: 0 30px 100px rgba(0,0,0,.38); overflow: hidden; }
+    .briefing::before { content: ""; position: absolute; top: 0; right: 0; width: 78px; height: 3px; background: var(--red); box-shadow: 0 0 22px var(--red); }
+    .briefing-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 17px; border-bottom: 1px solid var(--line); }
+    .briefing-head h2 { margin: 0; font-size: 12px; font-weight: 900; letter-spacing: .05em; }
+    .briefing-head span { color: var(--muted); font: 9px "Press Start 2P", monospace; }
+    .radar-wrap { display: grid; place-items: center; padding: 20px 0 16px; }
+    .radar { width: min(100%, 260px); aspect-ratio: 1; position: relative; border-radius: 50%; border: 1px solid rgba(255,64,76,.25); background: repeating-radial-gradient(circle, transparent 0 26px, rgba(255,64,76,.15) 27px 28px), linear-gradient(90deg, transparent calc(50% - .5px), rgba(255,64,76,.15) 50%, transparent calc(50% + .5px)), linear-gradient(0deg, transparent calc(50% - .5px), rgba(255,64,76,.15) 50%, transparent calc(50% + .5px)); overflow: hidden; }
+    .radar::before { content: ""; position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(from 0deg, transparent 0deg 286deg, rgba(255,64,76,.03) 310deg, rgba(255,64,76,.32) 359deg, transparent 360deg); animation: sweep 7s linear infinite; }
+    .radar::after { content: ""; position: absolute; width: 9px; height: 9px; top: 28%; left: 62%; border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 5px rgba(255,117,71,.13), 0 0 18px var(--orange); animation: pulse 1.8s infinite; }
+    .radar-center { position: absolute; width: 7px; height: 7px; top: 50%; left: 50%; transform: translate(-50%,-50%); border-radius: 50%; background: var(--red); box-shadow: 0 0 16px var(--red); }
+    .radar-label { position: absolute; color: rgba(255,255,255,.38); font: 8px "Press Start 2P", monospace; }
+    .radar-label.n { top: 9px; left: 50%; transform: translateX(-50%); }
+    .radar-label.e { right: 10px; top: 50%; transform: translateY(-50%); }
+    .radar-label.s { bottom: 9px; left: 50%; transform: translateX(-50%); }
+    .radar-label.w { left: 10px; top: 50%; transform: translateY(-50%); }
+    .telemetry { display: grid; gap: 0; border-top: 1px solid var(--line); }
+    .telemetry-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 13px 0; border-bottom: 1px solid var(--line); font-size: 12px; }
+    .telemetry-row span { color: var(--muted); }
+    .telemetry-row strong { font-size: 11px; direction: ltr; letter-spacing: .03em; }
+    .telemetry-row .danger { color: #ff737d; }
+    .telemetry-row .ok { color: var(--green); }
+    .scan-button { width: 100%; margin-top: 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 13px 14px; border: 1px solid var(--line-hot); background: rgba(255,64,76,.06); color: var(--text); font: 800 12px Vazirmatn, sans-serif; cursor: pointer; }
+    .scan-button:hover { background: rgba(255,64,76,.12); }
+    .scan-button:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+    .scan-button .scan-state { color: var(--red); font: 9px "Press Start 2P", monospace; }
+    .scan-result { min-height: 20px; margin: 10px 0 0; color: var(--muted); font-size: 11px; line-height: 1.8; }
+    footer { width: min(1440px, 100%); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 14px; padding-top: 17px; border-top: 1px solid var(--line); color: #777d88; font-size: 11px; }
+    footer .code { direction: ltr; font: 9px "Press Start 2P", monospace; color: #5d626d; }
+    @keyframes pulse { 50% { opacity: .45; } }
+    @keyframes sweep { to { transform: rotate(360deg); } }
+    @keyframes glitch { 0%, 92%, 100% { transform: translateX(9px); } 93% { transform: translateX(-4px); } 95% { transform: translateX(5px); } 97% { transform: translateX(-2px); } }
+    @media (max-width: 900px) { main { grid-template-columns: minmax(0,1fr) minmax(260px,.78fr); gap: 28px; } .briefing { padding: 17px; } }
+    @media (max-width: 720px) { .page { padding: 18px 16px 16px; } .topbar { padding-bottom: 14px; } .brand-mark { width: 33px; height: 33px; } .top-status { font-size: 10px; } main { grid-template-columns: 1fr; gap: 32px; padding: 52px 0 42px; } .hero { text-align: center; } .eyebrow { justify-content: center; font-size: 8px; } .error-code { font-size: clamp(76px, 22vw, 130px); margin-top: 28px; } h1 { font-size: clamp(27px, 7vw, 38px); } .description { margin-inline: auto; } .actions { justify-content: center; } .briefing { width: min(100%, 480px); margin: 0 auto; } .radar { width: 210px; } footer { flex-direction: column; text-align: center; } }
+    @media (max-width: 420px) { .top-status .status-label { display: none; } .actions { flex-direction: column; } .action { width: 100%; } .briefing-head h2 { font-size: 10px; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
   </style>
 </head>
 <body>
-  <main class="wrap">
-    <section class="console" aria-labelledby="title">
-      <div class="tag"><span class="dot" aria-hidden="true"></span> KILLZONE FIELD CONSOLE // ROUTE LOST</div>
-      <h1 aria-label="خطای 404">404</h1>
-      <h2 id="title">اوه! این صفحه فرار کرد. 🏃‍♂️💨</h2>
-      <p class="lead">مسیر موردنظر پیدا نشد. یا صفحه جابه‌جا شده، یا یک سرباز ناشناس لینک را با خودش برده! نگران نباش؛ هنوز مأموریت شکست نخورده.</p>
+  <div class="page">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="KillZone — صفحه اصلی">
+        <span class="brand-mark" aria-hidden="true">KZ</span>
+        <span class="brand-name">KILL<span>ZONE</span></span>
+      </a>
+      <div class="top-status"><span class="status-dot" aria-hidden="true"></span><span class="status-label">FIELD SYSTEM</span><span>ROUTE LOST</span></div>
+    </header>
 
-      <div class="terminal" aria-live="polite">
-        <div>&gt; scanning_sector: <span class="bad">NOT_FOUND</span></div>
-        <div>&gt; searching_for_page: ██████████ 0%</div>
-        <div>&gt; result: target escaped through ventilation shaft</div>
-        <div>&gt; recommendation: return_to_base <span class="cursor" aria-hidden="true"></span></div>
-      </div>
+    <main>
+      <section class="hero" aria-labelledby="page-title">
+        <div class="eyebrow">KILLZONE // LOST SECTOR</div>
+        <div class="error-code" aria-label="خطای ۴۰۴">404</div>
+        <h1 id="page-title">اینجا خبری نیست؛ <span>منطقه گم شده.</span></h1>
+        <p class="description">مسیر درخواستی در نقشهٔ عملیات ثبت نشده. شاید مختصات اشتباهه، شاید صفحه جابه‌جا شده؛ در هر صورت، <strong>این مأموریت هنوز تموم نشده.</strong> مسیر رو عوض کن و برگرد به پایگاه.</p>
+        <div class="actions">
+          <a class="action primary" href="/"><span>برگشت به پایگاه</span><span class="arrow" aria-hidden="true">←</span></a>
+          <a class="action" href="/games"><span>ورود به گیم هاب</span><span class="arrow" aria-hidden="true">↗</span></a>
+          <button class="action" id="back-button" type="button"><span>صفحه قبلی</span><span class="arrow" aria-hidden="true">↶</span></button>
+        </div>
+      </section>
 
-      <div class="actions">
-        <a class="primary" href="/">🏠 برگشت به پایگاه</a>
-        <button type="button" id="retry">🔎 دوباره اسکن کن</button>
-      </div>
+      <aside class="briefing" aria-label="گزارش بررسی مسیر">
+        <div class="briefing-head"><h2>TACTICAL SCANNER</h2><span>KZ-04 / SYS</span></div>
+        <div class="radar-wrap">
+          <div class="radar" aria-hidden="true">
+            <span class="radar-label n">N</span><span class="radar-label e">E</span><span class="radar-label s">S</span><span class="radar-label w">W</span><span class="radar-center"></span>
+          </div>
+        </div>
+        <div class="telemetry" aria-live="polite">
+          <div class="telemetry-row"><span>وضعیت مسیر</span><strong class="danger" id="route-status">NOT FOUND</strong></div>
+          <div class="telemetry-row"><span>شناسه خطا</span><strong>ERR_404</strong></div>
+          <div class="telemetry-row"><span>وضعیت پایگاه</span><strong class="ok">OPERATIONAL</strong></div>
+        </div>
+        <button class="scan-button" id="scan-button" type="button"><span>اسکن دوبارهٔ مختصات</span><span class="scan-state" id="scan-state">READY ↻</span></button>
+        <p class="scan-result" id="scan-result">اسکن آماده است. برای بررسی دوباره، دستور اسکن را اجرا کن.</p>
+      </aside>
+    </main>
 
-      <div class="intel">
-        <div>ERROR CODE: <b>404 // ROUTE MISSING</b></div>
-        <div>STATUS: <b id="status">TARGET ESCAPED</b></div>
-      </div>
-    </section>
-  </main>
+    <footer><span>© 2026 KillZone Team · Fight • Survive • Dominate</span><span class="code">CONNECTION // 404</span></footer>
+  </div>
   <script>
-    const messages=[
-      'TARGET ESCAPED // خیلی سریع بود 😭',
-      'NPC NOT FOUND // احتمالاً AFK است.',
-      'MAP SCAN FAILED // نقشه را برعکس گرفته بودیم.',
-      'ROUTE HIDING // قایم‌باشک بازی می‌کند.',
-      'MISSION UPDATE // صفحه هنوز پیدا نشده، ولی باحال بود.'
-    ];
-    document.getElementById('retry').addEventListener('click',()=>{
-      document.getElementById('status').textContent=messages[Math.floor(Math.random()*messages.length)];
+    const scanButton = document.getElementById('scan-button');
+    const scanState = document.getElementById('scan-state');
+    const scanResult = document.getElementById('scan-result');
+    const routeStatus = document.getElementById('route-status');
+    let scanning = false;
+
+    scanButton.addEventListener('click', () => {
+      if (scanning) return;
+      scanning = true;
+      scanButton.disabled = true;
+      scanState.textContent = 'SCANNING';
+      scanResult.textContent = 'در حال اسکن مختصات درخواستی…';
+      routeStatus.textContent = 'SCANNING';
+      routeStatus.className = '';
+      window.setTimeout(() => {
+        routeStatus.textContent = 'NOT FOUND';
+        routeStatus.className = 'danger';
+        scanState.textContent = 'NO SIGNAL';
+        scanResult.textContent = 'اسکن تمام شد؛ این مسیر همچنان پیدا نشد. از دکمه‌های بالا برای ادامه استفاده کن.';
+        scanButton.disabled = false;
+        scanning = false;
+      }, 850);
+    });
+
+    document.getElementById('back-button').addEventListener('click', () => {
+      if (window.history.length > 1) window.history.back();
+      else window.location.href = '/';
     });
   </script>
 </body>
