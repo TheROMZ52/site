@@ -1,5 +1,7 @@
 # KillZone Team Site پر
 
+[فارسی](README.md) · [English](README.en.md)
+
 سایت استاتیک KillZone با HTML/CSS/JS و Supabase.
 
 ## ساختار
