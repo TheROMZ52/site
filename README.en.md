@@ -1,5 +1,6 @@
 # KillZone Team Website
 
+The KillZone team's home base: people, games, and team bits — fewer spreadsheets, more squad energy.
 [فارسی](README.md) · [English](README.en.md)
 
 A static website for the KillZone team, built with HTML, CSS, JavaScript, and Supabase.
