@@ -1,6 +1,7 @@
 # KillZone Team Site پر
 
 یه پایگاه برای تیم KillZone؛ از معرفی اعضا تا مدیریت ماجراهای تیم، بدون نیاز به جلسه‌ی سه‌ساعته.
+
 [فارسی](README.md) · [English](README.en.md)
 
 سایت استاتیک KillZone با HTML/CSS/JS و Supabase.
